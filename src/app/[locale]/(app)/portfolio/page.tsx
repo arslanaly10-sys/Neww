@@ -10,6 +10,7 @@ import { Card, PageHeader, Badge } from "@/components/ui";
 import { Fig, SampleBadge } from "@/components/fig";
 import { Stat } from "@/components/stat";
 import { Stagger } from "@/components/motion";
+import { Sheen } from "@/components/brand-fx";
 import { NoAccess } from "@/components/no-access";
 import { ValueChart } from "@/components/charts";
 import { AllocationBars } from "@/components/allocation";
@@ -48,26 +49,26 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
 
   return (
     <div className="space-y-8">
-      <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <section aria-label={pk("title")} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 md:flex-row md:items-center md:justify-between">
-        <div className="max-w-xl"><h2 className="font-display text-xl">{pk("title")}</h2><p className="text-sm text-muted">{pk("lead")}</p><p className="mt-1 text-xs text-muted">{pk("note")}</p></div>
+        <div className="max-w-xl"><h2 className="font-display text-xl"><Sheen>{pk("title")}</Sheen></h2><p className="text-sm text-muted">{pk("lead")}</p><p className="mt-1 text-xs text-muted">{pk("note")}</p></div>
         <div className="flex flex-col items-start gap-3 md:items-end"><PackButtons /><Link href="/portfolio/scenarios" className="text-sm text-gold underline underline-offset-4">{sc("openScenarios")}</Link></div>
       </section>
 
       <Stagger as="section" aria-label={t("kpiValue")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label={t("kpiValue")}>
+        <Stat glow label={t("kpiValue")}>
           <Fig label={t("kpiValue")} value={money(m.value, currency, locale, { compact: true })} source={t("valueSrc", { n: m.count })}
             calc={`${money(m.value, "EGP", locale)}${currency === "USD" ? ` ÷ ${fx}` : ""}`} />
         </Stat>
-        <Stat label={t("kpiYield")} hint={!showAssetYield ? t("yieldAgg") : undefined}>
+        <Stat glow label={t("kpiYield")} hint={!showAssetYield ? t("yieldAgg") : undefined}>
           <Fig label={t("kpiYield")} value={pct(netYield, locale, 1)} source={t("yieldSrc", { from: dateFmt(agg.from, locale), to: dateFmt(agg.to, locale) })}
             calc={showAssetYield ? `${money(agg.net, "EGP", locale)} ÷ ${money(m.value, "EGP", locale)}` : undefined} />
         </Stat>
-        <Stat label={t("kpiIncome")} hint={`${int(m.incomeUnits, locale)} / ${int(m.count, locale)}`}>
+        <Stat glow label={t("kpiIncome")} hint={`${int(m.incomeUnits, locale)} / ${int(m.count, locale)}`}>
           <Fig label={t("kpiIncome")} value={int(m.incomeUnits, locale)} source={t("incomeSrc")} />
         </Stat>
-        <Stat label={t("kpiGain")} hint={<bdi>{pct(m.gainPct, locale)}</bdi>}>
+        <Stat glow label={t("kpiGain")} hint={<bdi>{pct(m.gainPct, locale)}</bdi>}>
           <Fig label={t("kpiGain")} value={money(m.gain, currency, locale, { compact: true })} source={t("gainSrc")} calc={`${money(m.value, "EGP", locale)} − ${money(m.cost, "EGP", locale)}`} />
         </Stat>
       </Stagger>

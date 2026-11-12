@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/cn";
 import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
+import { BlurHeadline } from "./brand-fx";
 
 export const buttonStyles = cva(
   "inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
@@ -39,11 +40,13 @@ export function Skeleton({ className }: { className?: string }) {
   return <div aria-hidden="true" className={cn("skeleton h-4 w-full", className)} />;
 }
 
-export function PageHeader({ title, lead, children }: { title: string; lead?: string; children?: React.ReactNode }) {
+/** `animated` blurs the title in word by word (React Bits BlurText); the page keeps a real <h1> either way. */
+export function PageHeader({ title, lead, children, animated = false }: { title: string; lead?: string; children?: React.ReactNode; animated?: boolean }) {
+  const titleClass = "font-display text-3xl leading-tight text-text md:text-4xl";
   return (
     <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        <h1 className="font-display text-3xl leading-tight text-text md:text-4xl">{title}</h1>
+        {animated ? <BlurHeadline text={title} className={titleClass} /> : <h1 className={titleClass}>{title}</h1>}
         {lead && <p className="mt-2 max-w-2xl text-muted">{lead}</p>}
       </div>
       {children}
