@@ -1,0 +1,168 @@
+import "server-only";
+import { and, desc, eq, inArray, ne } from "drizzle-orm";
+import { withSession } from "@/db/client";
+import { documents, districts, investorUpdates, marketSeries, valuations } from "@/db/schema";
+import { getPortfolio, type PortfolioRow } from "../access";
+import { getAggregateIncome } from "../portfolio-data";
+import { momentum3m, portfolioMetrics, sentiment } from "../metrics";
+import { assessRisk } from "../risk";
+import { DEMO_TODAY } from "../assumptions";
+import { can } from "../permissions";
+import { dateFmt, money, pct } from "../format";
+import type { CurrentUser } from "../session";
+import type { HorusCtx, ToolOut } from "./types";
+
+/**
+ * Deterministic functions Horus may call. The model never computes: it asks one of these and quotes the result.
+ * Every function runs under the signed-in user's row-level security, so a role never receives rows it may not see.
+ * Each output carries ready-made display strings (in the user's language and currency) and the citation ids that back it.
+ */
+const sess = (c: HorusCtx) => ({ userId: c.user.id, role: c.user.role });
+const asUser = (c: HorusCtx) => c.user as unknown as CurrentUser;
+const days = (a: string, b: string) => Math.round((new Date(`${b}T00:00:00Z`).getTime() - new Date(`${a}T00:00:00Z`).getTime()) / 86400000);
+const money$ = (c: HorusCtx) => (egp: number) => ({ egp, display: money(egp, c.currency, c.locale, { fx: c.fx, compact: true }), full: money(egp, c.currency, c.locale, { fx: c.fx }) });
+
+export const TOOLS = [
+  { name: "portfolio_summary", description: "Portfolio totals: number of assets, total value, cost, unrealised gain, income-producing units, vacant units and the aggregate net yield for the last 12 months.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "list_assets", description: "List assets, optionally filtered. Use for questions about which assets are vacant, in a district, or of a type, or about the largest holdings.", input_schema: { type: "object", properties: { occupancy: { type: "string", enum: ["let", "vacant", "owner", "land"] }, districtId: { type: "string" }, type: { type: "string", enum: ["apartment", "villa", "office", "retail", "land", "mixed"] }, sortBy: { type: "string", enum: ["value", "id"] }, limit: { type: "integer", minimum: 1, maximum: 30 } }, additionalProperties: false } },
+  { name: "asset_detail", description: "Everything on record about one asset: facts, value and cost, lease, documents and the deterministic risk score.", input_schema: { type: "object", properties: { assetId: { type: "string", description: "e.g. A-001" } }, required: ["assetId"], additionalProperties: false } },
+  { name: "expiring_leases", description: "Leases that end within a number of days of the data date, with the days remaining.", input_schema: { type: "object", properties: { withinDays: { type: "integer", minimum: 1, maximum: 730 } }, additionalProperties: false } },
+  { name: "document_gaps", description: "Documents that are missing, expired or pending, with the asset each belongs to.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "district_market", description: "Sample market index, three-month momentum and sentiment label for one district or all districts, with the source and publication note.", input_schema: { type: "object", properties: { districtId: { type: "string" } }, additionalProperties: false } },
+  { name: "concentration", description: "Share of portfolio value by district.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "explain_valuation", description: "Explain a valuation: the model estimate, each driver's effect, the range, confidence, the five comparable sales and any human adjustment with its reason. Defaults to the most recent valuation.", input_schema: { type: "object", properties: { valuationId: { type: "string", description: "e.g. V-0001" } }, additionalProperties: false } },
+  { name: "recent_updates", description: "Latest published investor updates (title, date, text).", input_schema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 12 } }, additionalProperties: false } },
+] as const;
+
+export const TOOL_NAMES = TOOLS.map((t) => t.name) as string[];
+type Args = Record<string, unknown>;
+
+async function portfolio(c: HorusCtx) { return getPortfolio(asUser(c)); }
+
+const impl: Record<string, (c: HorusCtx, a: Args) => Promise<ToolOut>> = {
+  async portfolio_summary(c) {
+    const rows = await portfolio(c);
+    const m = portfolioMetrics(rows);
+    const agg = await getAggregateIncome();
+    const f = money$(c);
+    return {
+      cites: ["calc:portfolio_summary"],
+      data: {
+        assetCount: m.count, value: f(m.value), cost: f(m.cost), unrealisedGain: f(m.gain), unrealisedGainPct: pct(m.gainPct, c.locale),
+        incomeProducingUnits: m.incomeUnits, vacantUnits: rows.filter((r) => r.occupancy === "vacant").length,
+        netYield12m: pct(agg.net / m.value, c.locale), netYieldPeriod: `${dateFmt(agg.from, c.locale)} – ${dateFmt(agg.to, c.locale)}`,
+        note: c.user.role === "investor" ? "Net yield is an aggregate; individual asset income is not available to this role." : undefined,
+      },
+    };
+  },
+
+  async list_assets(c, a) {
+    let rows = await portfolio(c);
+    if (a.occupancy) rows = rows.filter((r) => r.occupancy === a.occupancy);
+    if (a.districtId) rows = rows.filter((r) => r.districtId === a.districtId);
+    if (a.type) rows = rows.filter((r) => r.type === a.type);
+    rows = [...rows].sort((x, y) => (a.sortBy === "id" ? x.id.localeCompare(y.id) : y.valueEgp - x.valueEgp));
+    const total = rows.length;
+    rows = rows.slice(0, Math.min(Number(a.limit ?? 10), 30));
+    const f = money$(c);
+    return {
+      cites: rows.map((r) => `asset:${r.id}`),
+      data: { matchingCount: total, shown: rows.length, assets: rows.map((r) => ({ id: r.id, name: c.locale === "ar" ? r.nameAr : r.name, district: c.locale === "ar" ? r.district.nameAr : r.district.name, type: r.type, occupancy: r.occupancy, value: f(r.valueEgp), vacantSince: r.vacantSince ? dateFmt(r.vacantSince, c.locale) : undefined })) },
+    };
+  },
+
+  async asset_detail(c, a) {
+    const all = await portfolio(c);
+    const r = all.find((x) => x.id === String(a.assetId));
+    if (!r) return { cites: [], data: { error: "asset_not_found" } };
+    const docs = await withSession(sess(c), (tx) => tx.select().from(documents).where(eq(documents.assetId, r.id)));
+    const share = portfolioMetrics(all).allocation.find((d) => d.id === r.districtId)!.value / portfolioMetrics(all).value;
+    const risk = assessRisk({ occupancy: r.occupancy, vacantSince: r.vacantSince, leaseEnd: r.lease?.endDate ?? null, leaseCurrency: r.lease?.currency ?? null, docs, districtShare: share });
+    const f = money$(c);
+    const lease = r.lease;
+    return {
+      cites: [`asset:${r.id}`, ...(lease ? [`lease:${lease.id}`] : []), ...docs.map((d) => `doc:${d.id}`), `calc:risk_${r.id}`],
+      data: {
+        id: r.id, name: c.locale === "ar" ? r.nameAr : r.name, district: c.locale === "ar" ? r.district.nameAr : r.district.name, type: r.type, areaSqm: r.areaSqm,
+        value: f(r.valueEgp), cost: f(r.costEgp), occupancy: r.occupancy, valueSetOn: dateFmt(r.valueSetOn, c.locale), valueSource: r.valueSource,
+        lease: lease ? { id: lease.id, tenant: c.locale === "ar" ? lease.tenant.nameAr : lease.tenant.name, start: dateFmt(lease.startDate, c.locale), end: dateFmt(lease.endDate, c.locale), daysRemaining: days(DEMO_TODAY, lease.endDate), monthlyRent: lease.monthlyRent === null ? "hidden for this role" : `${lease.currency} ${lease.monthlyRent}` } : null,
+        documents: docs.map((d) => ({ id: d.id, kind: d.kind, status: d.status })),
+        risk: { score: risk.score, band: risk.band, drivers: risk.drivers.map((d) => ({ driver: d.key, score: d.score, reason: d.reason.id, params: d.reason.params })) },
+      },
+    };
+  },
+
+  async expiring_leases(c, a) {
+    const within = Number(a.withinDays ?? 120);
+    const rows = (await portfolio(c)).filter((r) => r.lease && days(DEMO_TODAY, r.lease.endDate) <= within).sort((x, y) => x.lease!.endDate.localeCompare(y.lease!.endDate));
+    return {
+      cites: rows.flatMap((r) => [`lease:${r.lease!.id}`, `asset:${r.id}`]),
+      data: { withinDays: within, count: rows.length, leases: rows.map((r) => ({ leaseId: r.lease!.id, assetId: r.id, asset: c.locale === "ar" ? r.nameAr : r.name, tenant: c.locale === "ar" ? r.lease!.tenant.nameAr : r.lease!.tenant.name, endDate: dateFmt(r.lease!.endDate, c.locale), daysRemaining: days(DEMO_TODAY, r.lease!.endDate) })) },
+    };
+  },
+
+  async document_gaps(c) {
+    const docs = await withSession(sess(c), (tx) => tx.select().from(documents).where(ne(documents.status, "verified")));
+    const rows = await portfolio(c);
+    const name = (id: string) => { const r = rows.find((x) => x.id === id); return r ? (c.locale === "ar" ? r.nameAr : r.name) : id; };
+    return {
+      cites: docs.flatMap((d) => [`doc:${d.id}`, `asset:${d.assetId}`]),
+      data: { count: docs.length, documents: docs.map((d) => ({ id: d.id, assetId: d.assetId, asset: name(d.assetId), kind: d.kind, status: d.status, expiresOn: d.expiresOn ? dateFmt(d.expiresOn, c.locale) : undefined })) },
+    };
+  },
+
+  async district_market(c, a) {
+    const ds = await withSession(sess(c), (tx) => tx.select().from(districts));
+    const series = await withSession(sess(c), (tx) => tx.select().from(marketSeries).orderBy(marketSeries.month));
+    const picked = ds.filter((d) => !a.districtId || d.id === a.districtId);
+    const out = picked.map((d) => {
+      const v = series.filter((s) => s.districtId === d.id).map((s) => Number(s.priceIndex));
+      const m = momentum3m(v);
+      return { id: d.id, district: c.locale === "ar" ? d.nameAr : d.name, latestIndex: v[v.length - 1].toFixed(1), momentum3m: pct(m, c.locale), sentiment: sentiment(m) };
+    });
+    return {
+      cites: picked.map((d) => `market:${d.id}`),
+      data: { districts: out, source: "Synthetic sample series generated for this demo (published 1 Nov 2026). Not CBE or CAPMAS data.", rule: "Cooling below -1%, Stable within plus or minus 1%, Warming above +1% over three months." },
+    };
+  },
+
+  async concentration(c) {
+    const m = portfolioMetrics(await portfolio(c));
+    return {
+      cites: ["calc:concentration"],
+      data: { districts: m.allocation.map((d) => ({ id: d.id, district: c.locale === "ar" ? d.nameAr : d.name, share: pct(d.value / m.value, c.locale), assets: d.count })) },
+    };
+  },
+
+  async explain_valuation(c, a) {
+    const rows = await withSession(sess(c), (tx) => tx.select().from(valuations).where(a.valuationId ? eq(valuations.id, String(a.valuationId)) : inArray(valuations.status, ["confirmed", "in_review"])).orderBy(desc(valuations.createdAt)).limit(1));
+    const v = rows[0];
+    if (!v) return { cites: [], data: { error: "valuation_not_found" } };
+    const r = v.result as { drivers: { key: string; factor: number | null; deltaEgp: number; valueAfterEgp: number }[]; lowEgp: number; highEgp: number; spreadPct: number; confidence: { level: string; dispersion: number | null }; comps: { id: string; soldOn: string; areaSqm: number; priceEgp: number; similarity: number }[]; compsImpliedEgp: number | null; driftVsCompsPct: number | null };
+    const f = money$(c);
+    return {
+      cites: [`valuation:${v.id}`, ...r.comps.map((x) => `sale:${x.id}`)],
+      data: {
+        id: v.id, assetId: v.assetId, status: v.status, assumptionSet: v.assumptionSetId, modelEstimate: f(v.modelEstimateEgp), finalValue: v.finalValueEgp ? f(v.finalValueEgp) : null,
+        adjustment: v.finalValueEgp ? pct(v.finalValueEgp / v.modelEstimateEgp - 1, c.locale) : null, adjustmentReason: v.adjustmentReason,
+        range: { low: f(r.lowEgp), high: f(r.highEgp), spreadPct: `${r.spreadPct}%` }, confidence: r.confidence.level,
+        drivers: r.drivers.map((d) => ({ driver: d.key, factor: d.factor === null ? null : d.factor.toFixed(3), effect: f(d.deltaEgp), valueAfter: f(d.valueAfterEgp) })),
+        comparables: r.comps.map((x) => ({ id: x.id, soldOn: dateFmt(x.soldOn, c.locale), areaSqm: x.areaSqm, price: f(x.priceEgp), similarity: pct(x.similarity, c.locale, 0) })),
+        comparablesImplied: r.compsImpliedEgp ? f(r.compsImpliedEgp) : null, driftVsComparables: r.driftVsCompsPct === null ? null : `${r.driftVsCompsPct}%`,
+      },
+    };
+  },
+
+  async recent_updates(c, a) {
+    const rows = await withSession(sess(c), (tx) => tx.select().from(investorUpdates).where(and(eq(investorUpdates.status, "published"))).orderBy(desc(investorUpdates.postedOn)).limit(Math.min(Number(a.limit ?? 3), 12)));
+    return { cites: rows.map((u) => `update:${u.id}`), data: { count: rows.length, updates: rows.map((u) => ({ id: u.id, date: dateFmt(u.postedOn, c.locale), title: c.locale === "ar" ? u.titleAr : u.title, text: c.locale === "ar" ? u.bodyAr : u.body })) } };
+  },
+};
+
+export async function runTool(name: string, args: Args, c: HorusCtx): Promise<ToolOut> {
+  const fn = impl[name];
+  if (!fn) return { cites: [], data: { error: "unknown_tool" } };
+  if (!can(c.user.role, "horus.use")) return { cites: [], data: { error: "forbidden" } };
+  try { return await fn(c, args ?? {}); } catch { return { cites: [], data: { error: "tool_failed" } }; }
+}
+export type { PortfolioRow };

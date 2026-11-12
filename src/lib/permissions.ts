@@ -1,0 +1,40 @@
+/** Single source of truth for role permissions. The Governance matrix is generated from this map. */
+export type Role = "investor" | "manager" | "admin";
+export const ROLES: Role[] = ["investor", "manager", "admin"];
+
+export const PERMISSIONS = {
+  "portfolio.view": { investor: true, manager: true, admin: false },
+  "asset.view": { investor: true, manager: true, admin: false },
+  "asset.income_costs.view": { investor: false, manager: true, admin: false },
+  "valuation.run": { investor: true, manager: true, admin: false },
+  "valuation.send_for_review": { investor: true, manager: true, admin: false },
+  "valuation.confirm": { investor: false, manager: true, admin: false },
+  "horus.use": { investor: true, manager: true, admin: false },
+  "update.draft": { investor: false, manager: true, admin: false },
+  "scenario.run": { investor: true, manager: true, admin: false },
+  "scenario.save": { investor: false, manager: true, admin: false },
+  "document.confirm_extraction": { investor: false, manager: true, admin: false },
+  "pack.generate": { investor: true, manager: true, admin: false },
+  "market.view": { investor: true, manager: true, admin: true },
+  "alerts.view": { investor: true, manager: true, admin: true },
+  "approvals.decide": { investor: false, manager: true, admin: true },
+  "governance.view": { investor: true, manager: true, admin: true },
+  "audit.view": { investor: false, manager: false, admin: true },
+  "audit.verify": { investor: false, manager: false, admin: true },
+  "role.change": { investor: false, manager: false, admin: true },
+  "demo.reset": { investor: false, manager: false, admin: true },
+} as const satisfies Record<string, Record<Role, boolean>>;
+
+export type Permission = keyof typeof PERMISSIONS;
+export const can = (role: Role, p: Permission) => PERMISSIONS[p][role];
+
+export const AREAS = ["overview", "portfolio", "asset", "valuation", "market", "governance"] as const;
+export type Area = (typeof AREAS)[number];
+export const AREA_ACCESS: Record<Area, Role[]> = {
+  overview: ["investor", "manager", "admin"],
+  portfolio: ["investor", "manager"],
+  asset: ["investor", "manager"],
+  valuation: ["investor", "manager"],
+  market: ["investor", "manager", "admin"],
+  governance: ["investor", "manager", "admin"],
+};

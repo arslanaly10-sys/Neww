@@ -1,0 +1,14 @@
+[
+  {
+    "file": "sample-lease-en.pdf",
+    "sha256": "6fbfd94439f66a57cb4573d4dfee399882aa24bf0508fe2ea18434ff3f491cb1"
+  },
+  {
+    "file": "sample-deed-ar.pdf",
+    "sha256": "cd3139b9b29fb4dd8b21a1a71df53027685407cb10b8a4bf0fcf8af7d059aba7"
+  },
+  {
+    "file": "sample-lease-bilingual.pdf",
+    "sha256": "288ac34aaa374246d109c0c302c1bd607c73aee0ebb564c05e73311b7f459e67"
+  }
+]

@@ -1,0 +1,52 @@
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/cn";
+import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
+
+export const buttonStyles = cva(
+  "inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        gold: "bg-gold-fill text-on-gold hover:brightness-110",
+        outline: "border border-line bg-transparent text-text hover:bg-surface-2",
+        ghost: "bg-transparent text-text hover:bg-surface-2",
+      },
+      size: { sm: "min-h-9 px-3 text-[13px]", md: "", icon: "min-h-10 w-10 px-0" },
+    },
+    defaultVariants: { variant: "outline", size: "md" },
+  },
+);
+export function Button({ className, variant, size, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof buttonStyles>) {
+  return <button className={cn(buttonStyles({ variant, size }), className)} {...p} />;
+}
+
+export function Card({ className, ...p }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("rounded-lg border border-line bg-surface p-5", className)} {...p} />;
+}
+
+export function Badge({ className, tone = "muted", ...p }: HTMLAttributes<HTMLSpanElement> & { tone?: "muted" | "gold" | "teal" | "danger" | "ok" }) {
+  const tones = {
+    muted: "border-line text-muted",
+    gold: "border-gold/50 text-gold",
+    teal: "border-teal/50 text-teal",
+    danger: "border-danger/50 text-danger",
+    ok: "border-ok/50 text-ok",
+  };
+  return <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide", tones[tone], className)} {...p} />;
+}
+
+export function Skeleton({ className }: { className?: string }) {
+  return <div aria-hidden="true" className={cn("skeleton h-4 w-full", className)} />;
+}
+
+export function PageHeader({ title, lead, children }: { title: string; lead?: string; children?: React.ReactNode }) {
+  return (
+    <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div className="min-w-0">
+        <h1 className="font-display text-3xl leading-tight text-text md:text-4xl">{title}</h1>
+        {lead && <p className="mt-2 max-w-2xl text-muted">{lead}</p>}
+      </div>
+      {children}
+    </header>
+  );
+}
