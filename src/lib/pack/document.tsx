@@ -145,7 +145,11 @@ export function PackDocument({ m, t, ta, ty, hashes }: Props) {
           <Polyline points={pts(vs)} stroke={C.gold} strokeWidth={2} fill="none" />
         </Svg>
         <View style={[s.row, { justifyContent: "space-between", marginTop: 3 }]}><Text style={{ fontSize: 8, color: C.muted }}>{dateFmt(m.performance.months[0].month, loc)}</Text><Text style={{ fontSize: 8, color: C.muted }}>{dateFmt(m.performance.months[m.performance.months.length - 1].month, loc)}</Text></View>
-        <View style={[s.row, { gap: 14, marginTop: 6 }]}><Text style={{ color: C.gold }}>— {t("valueLabel")}</Text><Text style={{ color: C.teal }}>- - {t("costLabel")}</Text></View>
+        <View style={[s.row, { gap: 14, marginTop: 6, alignItems: "center" }]}>
+          {/* Legend keys drawn as line samples (solid for value, dashed for cost) rather than typed dashes */}
+          <View style={[s.row, { gap: 4, alignItems: "center" }]}><View style={{ width: 14, height: 1.5, backgroundColor: C.gold }} /><Text style={{ color: C.gold }}>{t("valueLabel")}</Text></View>
+          <View style={[s.row, { gap: 4, alignItems: "center" }]}><View style={[s.row, { gap: 2 }]}><View style={{ width: 4, height: 1.5, backgroundColor: C.teal }} /><View style={{ width: 4, height: 1.5, backgroundColor: C.teal }} /><View style={{ width: 4, height: 1.5, backgroundColor: C.teal }} /></View><Text style={{ color: C.teal }}>{t("costLabel")}</Text></View>
+        </View>
         <Text style={s.h2}>{t("perfTable")}</Text>
         <Table head={[t("colMonth"), t("valueLabel"), t("costLabel")]} widths={[34, 33, 33]}
           rows={[m.performance.months[0], m.performance.months[11], m.performance.months[23], m.performance.months[m.performance.months.length - 1]].map((x) => [dateFmt(x.month, loc), money$(x.value, true), money$(x.cost, true)])} />
@@ -171,7 +175,7 @@ export function PackDocument({ m, t, ta, ty, hashes }: Props) {
         <Table head={[t("colAsset"), t("colValue"), t("colScore"), t("colWhy")]} widths={[28, 16, 14, 42]}
           rows={m.risks.map((r) => [
             `${ar ? r.nameAr : r.name} (${r.id})`, money$(r.valueEgp, true),
-            <Text key="s" style={[s.cell, { color: bandColor(r.band), fontWeight: 600 }]}>{r.score}/100 – {ta(`band_${r.band}`)}</Text>,
+            <Text key="s" style={[s.cell, { color: bandColor(r.band), fontWeight: 600 }]}>{r.score}/100, {ta(`band_${r.band}`)}</Text>,
             r.top.map((d) => `${ta(`driver_${d.key}`)}: ${ta(`r_${d.reason.id}`, d.reason.params)}`).join("; "),
           ])} />
         <Text style={[s.muted, { marginTop: 10 }]}>{t("riskNote")}</Text>

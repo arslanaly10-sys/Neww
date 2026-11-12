@@ -39,11 +39,11 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
       <div>
         <PageHeader animated title={ta("title")} lead={ta("lead")}><SampleBadge /></PageHeader>
         <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Stat glow label={ta("events")}><span className="num">{int(n, locale)}</span></Stat>
-          <Stat glow label={ta("policies")}><span className="num">{int((pol.rows[0] as { n: number }).n, locale)}</span></Stat>
-          <Stat glow label={ta("head")}><span className="num break-all font-sans text-base">{head?.hash.slice(0, 16)}…</span></Stat>
-          <Stat glow label={g("audTitle")}><span className={chain.ok ? "text-ok" : "text-danger"}>{chain.ok ? g("chainOk") : g("chainBad", { seq: chain.firstBad!.seq })}</span></Stat>
-          <Stat glow label={al("approvalsTitle")}><Link href="/overview/alerts" className="num underline decoration-gold/50 underline-offset-4">{int(att.approvals, locale)}</Link></Stat>
+          <Stat label={ta("events")}><span className="num">{int(n, locale)}</span></Stat>
+          <Stat label={ta("policies")}><span className="num">{int((pol.rows[0] as { n: number }).n, locale)}</span></Stat>
+          <Stat label={ta("head")}><span className="num break-all font-sans text-base">{head?.hash.slice(0, 16)}…</span></Stat>
+          <Stat label={g("audTitle")}><span className={chain.ok ? "text-ok" : "text-danger"}>{chain.ok ? g("chainOk") : g("chainBad", { seq: chain.firstBad!.seq })}</span></Stat>
+          <Stat label={al("approvalsTitle")}><Link href="/overview/alerts" className="num underline decoration-gold/50 underline-offset-4">{int(att.approvals, locale)}</Link></Stat>
         </Stagger>
         <div className="mt-6"><LiveFeed currency={currency} fx={SAMPLE_FX_EGP_PER_USD} limit={6} compact /></div>
         <p className="mt-8 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}</p>
@@ -63,20 +63,20 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
     <div>
       <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
       <Stagger as="section" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Stat glow label={t("value")}>
+        <Stat label={t("value")}>
           <Fig label={t("value")} value={money(m.value, currency, locale, { compact: true })} source={t("valueSrc", { n: m.count })}
             calc={`${money(m.value, "EGP", locale)}${currency === "USD" ? ` ÷ ${rate}` : ""}`} />
         </Stat>
-        <Stat glow label={t("cost")}>
+        <Stat label={t("cost")}>
           <Fig label={t("cost")} value={money(m.cost, currency, locale, { compact: true })} source={t("costSrc")} />
         </Stat>
-        <Stat glow label={t("gain")} hint={<span className="num">{pct(m.gainPct, locale)}</span>}>
+        <Stat label={t("gain")} hint={<span className="num">{pct(m.gainPct, locale)}</span>}>
           <Fig label={t("gain")} value={money(m.gain, currency, locale, { compact: true })} source={t("gainSrc")} calc={`${money(m.value, "EGP", locale)} − ${money(m.cost, "EGP", locale)}`} />
         </Stat>
-        <Stat glow label={t("assets")}>
+        <Stat label={t("assets")}>
           <Fig label={t("assets")} value={int(m.count, locale)} source={t("assetsSrc")} />
         </Stat>
-        <Stat glow label={t("income")} hint={t("ofTotal", { total: int(m.count, locale) })}>
+        <Stat label={t("income")} hint={t("ofTotal", { total: int(m.count, locale) })}>
           <Fig label={t("income")} value={int(m.incomeUnits, locale)} source={t("incomeSrc")} />
         </Stat>
       </Stagger>

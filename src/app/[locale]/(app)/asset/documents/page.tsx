@@ -3,7 +3,7 @@ import { AlertTriangle, CalendarClock, FileWarning } from "lucide-react";
 import { pageContext } from "@/lib/page";
 import { can } from "@/lib/permissions";
 import { getDocumentFlags, type DocFlag } from "@/lib/docs/service";
-import { dateFmt } from "@/lib/format";
+import { dateFmt, listSep } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { Badge, Card, PageHeader } from "@/components/ui";
 import { SampleBadge } from "@/components/fig";
@@ -43,7 +43,7 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
       <section aria-labelledby="flags">
         <h2 id="flags" className="mb-3 font-display text-2xl">{t("flagsTitle")}</h2>
         <ul className="mb-4 flex flex-wrap gap-2">
-          {order.map((k) => <li key={k}><Badge tone={tone[k]} className="normal-case">{t(k)}: <bdi>{counts[k]}</bdi></Badge></li>)}
+          {order.map((k) => <li key={k}><Badge tone={tone[k]} className="">{t(k)}: <bdi>{counts[k]}</bdi></Badge></li>)}
         </ul>
         {flags.length === 0 ? <Card className="text-sm text-muted">{t("noFlags")}</Card> : (
           <ul className="grid gap-2 md:grid-cols-2">
@@ -55,9 +55,9 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
                     <I aria-hidden="true" size={18} className={f.kind === "missing" || f.kind === "expired" ? "mt-0.5 shrink-0 text-danger" : "mt-0.5 shrink-0 text-gold"} />
                     <div className="min-w-0 flex-1">
                       <p>{text(f)}</p>
-                      <p className="mt-0.5 text-xs text-muted">{when(f)}{when(f) ? " · " : ""}<Link href={`/asset/${f.assetId}`} className="tap text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
+                      <p className="mt-0.5 text-xs text-muted">{when(f)}{when(f) ? listSep(locale) : ""}<Link href={`/asset/${f.assetId}`} className="tap text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
                     </div>
-                    <Badge tone={tone[f.kind]} className="shrink-0 normal-case">{t(f.kind)}</Badge>
+                    <Badge tone={tone[f.kind]} className="shrink-0">{t(f.kind)}</Badge>
                   </Card>
                 </li>
               );

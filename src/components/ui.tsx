@@ -8,9 +8,9 @@ export const buttonStyles = cva(
   {
     variants: {
       variant: {
-        gold: "bg-gold-fill text-on-gold hover:brightness-110",
-        outline: "border border-line bg-transparent text-text hover:border-gold/60 hover:bg-surface-2",
-        ghost: "bg-transparent text-text hover:bg-surface-2",
+        gold: "bg-gold-fill text-on-gold hover:brightness-110 active:brightness-95",
+        outline: "border border-line bg-transparent text-text hover:border-gold/60 hover:bg-surface-2 active:bg-line/60",
+        ghost: "bg-transparent text-text hover:bg-surface-2 active:bg-line/60",
       },
       // Phones get 44px tap targets; from md up the compact desktop heights return.
       size: { sm: "min-h-11 px-3 text-[13px] md:min-h-9", md: "min-h-11 md:min-h-10", icon: "min-h-11 w-11 px-0 md:min-h-10 md:w-10" },
@@ -34,7 +34,7 @@ export function Badge({ className, tone = "muted", ...p }: HTMLAttributes<HTMLSp
     danger: "border-danger/50 text-danger",
     ok: "border-ok/50 text-ok",
   };
-  return <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide", tones[tone], className)} {...p} />;
+  return <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold  ", tones[tone], className)} {...p} />;
 }
 
 export function Skeleton({ className }: { className?: string }) {

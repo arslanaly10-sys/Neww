@@ -47,10 +47,10 @@ export function ValueChart({ data, currency, fx, label, costLabel }: { data: His
   return (
     <div>
       <div id={liveId} aria-live="polite" className="mb-3 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-4">
-        <p><span className="block text-xs uppercase tracking-wide text-muted">{t("month")}</span><span className="font-semibold">{sel.label}</span></p>
-        <p><span className="block text-xs uppercase tracking-wide text-muted">{label}</span><bdi className="font-display text-xl">{f(sel.value)}</bdi></p>
-        <p><span className="block text-xs uppercase tracking-wide text-muted">{costLabel}</span><bdi>{f(sel.cost)}</bdi></p>
-        <p><span className="block text-xs uppercase tracking-wide text-muted">{t("change")}</span><bdi>{pct(sinceStart, locale)}</bdi> <span className="text-xs text-muted">{t("sinceStart")}</span><br /><bdi className="text-xs text-muted">{pct(mom, locale)} {t("vsPrev")}</bdi></p>
+        <p><span className="block text-xs text-muted">{t("month")}</span><span className="font-semibold">{sel.label}</span></p>
+        <p><span className="block text-xs text-muted">{label}</span><bdi className="font-display text-xl">{f(sel.value)}</bdi></p>
+        <p><span className="block text-xs text-muted">{costLabel}</span><bdi>{f(sel.cost)}</bdi></p>
+        <p><span className="block text-xs text-muted">{t("change")}</span><bdi>{pct(sinceStart, locale)}</bdi> <span className="text-xs text-muted">{t("sinceStart")}</span><br /><bdi className="text-xs text-muted">{pct(mom, locale)} {t("vsPrev")}</bdi></p>
       </div>
       <div
         ref={wrap} dir="ltr" tabIndex={0} role="group" aria-describedby={liveId}

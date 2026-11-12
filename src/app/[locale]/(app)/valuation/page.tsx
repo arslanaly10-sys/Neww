@@ -6,7 +6,7 @@ import { pageContext } from "@/lib/page";
 import { getPortfolio } from "@/lib/access";
 import { listValuations } from "@/lib/valuation-service";
 import { can } from "@/lib/permissions";
-import { dateFmt, money, pct } from "@/lib/format";
+import { dateFmt, money, pct, listSep } from "@/lib/format";
 import { SAMPLE_FX_EGP_PER_USD, VALUATION_ASSUMPTIONS } from "@/lib/assumptions";
 import { Badge, Card, PageHeader } from "@/components/ui";
 import { NoAccess } from "@/components/no-access";
@@ -57,9 +57,9 @@ export default async function Valuation({ params, searchParams }: { params: Prom
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="flex flex-wrap items-center gap-2"><span className="num font-semibold text-gold">{v.id}</span><Badge tone="gold">{t("status_in_review")}</Badge>
-                        {v.requiredApprovals > 1 && <Badge tone="danger" className="normal-case">{t("needsTwoShort", { n: v.approvedBy.length, m: v.requiredApprovals })}</Badge>}</p>
-                      <p className="mt-1 text-sm">{v.assetId ? `${v.assetId} · ${ar ? v.assetNameAr : v.assetName}` : t("adHoc")}</p>
-                      <p className="text-xs text-muted">{t("proposedBy", { name: ar ? v.proposerNameAr : v.proposerName })} · <bdi>{dateFmt(v.createdAt.slice(0, 10), locale)}</bdi></p>
+                        {v.requiredApprovals > 1 && <Badge tone="danger" className="">{t("needsTwoShort", { n: v.approvedBy.length, m: v.requiredApprovals })}</Badge>}</p>
+                      <p className="mt-1 text-sm">{v.assetId ? `${v.assetId}: ${ar ? v.assetNameAr : v.assetName}` : t("adHoc")}</p>
+                      <p className="text-xs text-muted">{t("proposedBy", { name: ar ? v.proposerNameAr : v.proposerName })}{listSep(locale)}<bdi>{dateFmt(v.createdAt.slice(0, 10), locale)}</bdi></p>
                       <p className="mt-2 text-sm"><span className="text-muted">{t("modelEstimate")}:</span> <bdi>{money(v.modelEstimateEgp, currency, locale, { fx })}</bdi> → <span className="text-muted">{t("finalValue")}:</span> <bdi className="font-semibold">{money(v.finalValueEgp ?? v.modelEstimateEgp, currency, locale, { fx })}</bdi> <bdi className="text-muted">({pct(v.adjustmentPct, locale)})</bdi></p>
                       {v.reasonCode && <p className="mt-1 text-sm text-muted"><span className="text-text">{t(`rc_${v.reasonCode}` as "rc_other")}:</span> {v.reason}</p>}
                     </div>

@@ -5,7 +5,7 @@ import { CheckCircle2, FileUp } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { confirmExtractionAction, extractSampleAction, identifyUploadAction } from "@/app/docs-actions";
 import type { ExtractionView, FieldView } from "@/lib/docs/service";
-import { dateFmt, money } from "@/lib/format";
+import { dateFmt, money, listSep } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "../ui";
 
@@ -61,7 +61,7 @@ export function Reader() {
             <Button className="mt-3" onClick={() => input.current?.click()} disabled={pending}>{t("choose")}</Button>
           </div>
         </div>
-        <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-muted">{t("orSample")}</p>
+        <p className="mb-2 mt-5 text-xs font-semibold text-muted">{t("orSample")}</p>
         <ul className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {SAMPLE_IDS.map((s) => <li key={s}><Button size="sm" onClick={() => load(s)} disabled={pending} className="w-full text-start sm:w-auto">{t(`sample_${s}` as "sample_lease-en")}</Button></li>)}
         </ul>
@@ -114,7 +114,7 @@ function Extraction({ view, reload }: { view: ExtractionView; reload: () => void
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-display text-xl">{t("extractTitle", { file: view.sample.file })}</h2>
-          <p className="text-sm text-muted">{t("forAsset", { asset: `${view.asset.id} · ${ar ? view.asset.nameAr : view.asset.name}` })} · {t("pages", { n: view.pageCount })} · <Link href={`/asset/${view.asset.id}`} className="text-gold underline underline-offset-4">{t("openAsset")}</Link> · <a href={`/samples/${view.sample.file}`} target="_blank" rel="noreferrer" className="text-gold underline underline-offset-4">{t("openPdf")}</a></p>
+          <p className="text-sm text-muted">{t("forAsset", { asset: `${view.asset.id}: ${ar ? view.asset.nameAr : view.asset.name}` })}{listSep(locale)}{t("pages", { n: view.pageCount })}{listSep(locale)}<Link href={`/asset/${view.asset.id}`} className="text-gold underline underline-offset-4">{t("openAsset")}</Link>{listSep(locale)}<a href={`/samples/${view.sample.file}`} target="_blank" rel="noreferrer" className="text-gold underline underline-offset-4">{t("openPdf")}</a></p>
           <p className="mt-1 text-xs text-muted">{t("engine", { engine: view.engine })}</p>
         </div>
         <Badge tone="gold">{view.sample.language === "bilingual" ? t("bothLangs") : view.sample.language === "ar" ? t("onlyAr") : t("onlyEn")}</Badge>
@@ -127,8 +127,8 @@ function Extraction({ view, reload }: { view: ExtractionView; reload: () => void
             <div>
               <p className="font-semibold">{label(f.key)}</p>
               <p className="mt-1 flex flex-wrap gap-1.5">
-                <Badge tone={f.needsCheck ? "gold" : "ok"} className="normal-case">{f.needsCheck ? t("conf_check") : t("conf_high")}<bdi className="ms-1.5">{Math.round(f.confidence * 100)}%</bdi></Badge>
-                {f.recordValue !== null && <Badge tone={f.differs ? "danger" : "muted"} className="normal-case">{f.differs ? t("differs") : t("matches")}</Badge>}
+                <Badge tone={f.needsCheck ? "gold" : "ok"} className="">{f.needsCheck ? t("conf_check") : t("conf_high")}<bdi className="ms-1.5">{Math.round(f.confidence * 100)}%</bdi></Badge>
+                {f.recordValue !== null && <Badge tone={f.differs ? "danger" : "muted"} className="">{f.differs ? t("differs") : t("matches")}</Badge>}
               </p>
             </div>
             <div className="min-w-0">
@@ -142,7 +142,7 @@ function Extraction({ view, reload }: { view: ExtractionView; reload: () => void
               )}
               <p className="mt-1 text-xs text-muted">{t("colRecord")}: <bdi>{fmtRecord(f)}</bdi></p>
               {f.conflict && <p className="mt-1 text-xs text-danger">{t("conflict", { en: String(f.conflict.en), ar: String(f.conflict.ar) })}</p>}
-              <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">{t("colSource")} · {t("page", { n: f.page })} · {f.langs.length === 2 ? t("bothLangs") : f.langs[0] === "ar" ? t("onlyAr") : t("onlyEn")}</summary><p dir="auto" className="mt-1 rounded bg-surface-2 p-2">{f.snippet}</p></details>
+              <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">{t("colSource")}{listSep(locale)}{t("page", { n: f.page })}{listSep(locale)}{f.langs.length === 2 ? t("bothLangs") : f.langs[0] === "ar" ? t("onlyAr") : t("onlyEn")}</summary><p dir="auto" className="mt-1 rounded bg-surface-2 p-2">{f.snippet}</p></details>
             </div>
             <div className="flex items-start md:justify-end">
               {needs(f) ? (

@@ -69,7 +69,7 @@ export function ChainControls({ initial }: { initial: ChainCheck }) {
         <h3 className="font-semibold">{t("reset")}</h3>
         <p className="mb-3 mt-1 text-xs text-muted">{t("resetHelp")}</p>
         <form className="flex flex-wrap items-end gap-2" onSubmit={(e) => { e.preventDefault(); reset(); }}>
-          <div><label htmlFor="rs" className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">{t("resetConfirm")}</label><input id="rs" dir="ltr" autoComplete="off" className="min-h-10 w-40 rounded-md border border-line bg-surface px-3 text-sm" value={phrase} onChange={(e) => setPhrase(e.target.value)} /></div>
+          <div><label htmlFor="rs" className="mb-1 block text-xs font-semibold text-muted">{t("resetConfirm")}</label><input id="rs" dir="ltr" autoComplete="off" className="min-h-10 w-40 rounded-md border border-line bg-surface px-3 text-sm" value={phrase} onChange={(e) => setPhrase(e.target.value)} /></div>
           <Button type="submit" size="sm" disabled={pending || phrase !== "RESET"}>{t("resetGo")}</Button>
         </form>
       </Card>

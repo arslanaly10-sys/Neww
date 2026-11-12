@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { money, pct, int, type Currency } from "@/lib/format";
+import { money, pct, int, type Currency, listSep } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Badge, Card } from "./ui";
 
@@ -70,12 +70,12 @@ export function HoldingsTable({ rows, currency, fx, showYield }: { rows: Holding
           <li key={r.id}>
             <Card className="p-4">
               <Link href={`/asset/${r.id}`} className="block font-semibold text-gold underline-offset-4 hover:underline">{ar ? r.nameAr : r.name}</Link>
-              <p className="text-xs text-muted">{ar ? r.districtAr : r.district} · {ty(r.type as "villa")} · <bdi>{int(r.areaSqm, locale)}</bdi> {u("sqm")}</p>
+              <p className="text-xs text-muted">{ar ? r.districtAr : r.district}{listSep(locale)}{ty(r.type as "villa")}{listSep(locale)}<bdi>{int(r.areaSqm, locale)}</bdi> {u("sqm")}</p>
               <div className="mt-2 flex items-center justify-between gap-2">
                 <bdi className="font-display text-lg">{money(r.value, currency, locale, { fx, compact: true })}</bdi>
                 <Badge tone={tone[r.occupancy as "let"]}>{st(r.occupancy as "let")}</Badge>
               </div>
-              <p className="mt-1 text-xs text-muted">{t("colGain")}: <bdi>{gainOf(r)}</bdi>{showYield && r.netYield !== null && <> · {t("colYield")}: <bdi>{pct(r.netYield, locale)}</bdi></>}</p>
+              <p className="mt-1 text-xs text-muted">{t("colGain")}: <bdi>{gainOf(r)}</bdi>{showYield && r.netYield !== null && <>{listSep(locale)}{t("colYield")}: <bdi>{pct(r.netYield, locale)}</bdi></>}</p>
             </Card>
           </li>
         ))}
@@ -84,11 +84,11 @@ export function HoldingsTable({ rows, currency, fx, showYield }: { rows: Holding
       <div className="hidden overflow-hidden rounded-lg border border-line md:block">
         <table className="w-full text-sm">
           <caption className="sr-only">{t("holdings")}. {t("sortHelp")}</caption>
-          <thead className="bg-surface-2 text-xs uppercase tracking-wide text-muted">
+          <thead className="bg-surface-2 text-xs text-muted">
             <tr>
               {cols.map((c) => (
                 <th key={c.k} scope="col" aria-sort={key === c.k ? (dir === "asc" ? "ascending" : "descending") : "none"} className={cn("px-3 py-2.5 font-semibold", c.num ? "text-end" : "text-start")}>
-                  <button type="button" onClick={() => pick(c.k)} className={cn("inline-flex min-h-8 items-center gap-1 uppercase tracking-wide hover:text-text", key === c.k && "text-gold")}>
+                  <button type="button" onClick={() => pick(c.k)} className={cn("inline-flex min-h-8 items-center gap-1   hover:text-text", key === c.k && "text-gold")}>
                     {c.label}
                     {key === c.k ? (dir === "asc" ? <ArrowUp aria-hidden="true" size={12} /> : <ArrowDown aria-hidden="true" size={12} />) : <ChevronsUpDown aria-hidden="true" size={12} />}
                   </button>

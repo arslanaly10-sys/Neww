@@ -52,9 +52,11 @@
   --color-ok: var(--ok);
   --font-display: "Playfair Display", "Noto Naskh Arabic", Georgia, serif;
   --font-sans: "Manrope", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-display-ar: "Noto Naskh Arabic", "Playfair Display", serif;
+  --font-sans-ar: "IBM Plex Sans Arabic", "Manrope", system-ui, sans-serif;
 }
 
-html { background: var(--bg); }
+html { background: var(--bg); overflow-x: clip; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -62,10 +64,10 @@ body {
   font-size: 15px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
-html[lang="ar"] body { font-family: "IBM Plex Sans Arabic", "Manrope", system-ui, sans-serif; font-size: 16px; line-height: 1.7; }
-html[lang="ar"] .font-display { font-family: "Noto Naskh Arabic", "Playfair Display", serif; letter-spacing: 0; }
+html[lang="ar"] body { font-family: var(--font-sans-ar); font-size: 16px; line-height: 1.7; }
+html[lang="ar"] .font-display { font-family: var(--font-display-ar); letter-spacing: 0; }
 
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 ::selection { background: var(--gold-fill); color: var(--on-gold); }

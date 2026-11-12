@@ -39,5 +39,9 @@ export function money(egp: number, cur: Currency, locale: string, opts: { compac
 export const pct = (x: number, locale: string, digits = 1) =>
   new Intl.NumberFormat(loc(locale), { style: "percent", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(x);
 export const int = (x: number, locale: string) => new Intl.NumberFormat(loc(locale)).format(x);
+/** Joins meta items (district, type, size): a comma, the Arabic comma in Arabic. Replaces the old middle dot. */
+export const listSep = (locale: string) => (locale === "ar" ? "، " : ", ");
+/** Between the two ends of a range (dates, values): a word, never a dash. */
+export const rangeSep = (locale: string) => (locale === "ar" ? " إلى " : " to ");
 export const dateFmt = (iso: string, locale: string) =>
   new Intl.DateTimeFormat(loc(locale), { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(iso));

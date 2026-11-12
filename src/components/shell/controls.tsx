@@ -23,7 +23,7 @@ export function RoleSwitcher({ users, currentId }: { users: DemoUser[]; currentI
         <ChevronDown aria-hidden="true" size={14} />
       </Menu.Trigger>
       <Menu.Portal>
-        <Menu.Content align="end" sideOffset={6} collisionPadding={12} className="z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-lg border border-line bg-surface p-1.5 shadow-xl">
+        <Menu.Content align="end" sideOffset={6} collisionPadding={12} className="z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-lg border border-line bg-surface p-1.5 shadow-md">
           <Menu.Label className="px-2.5 py-1.5 text-xs text-muted">{t("switchedNote")}</Menu.Label>
           {users.map((u) => (
             <Menu.Item key={u.id} onSelect={() => start(() => switchUser(u.id, locale))}
@@ -69,7 +69,7 @@ export function CurrencyToggle({ current, rate, className }: { current: "EGP" | 
     <div role="group" aria-label={t("currency")} title={t("rate", { rate })} className={cn("inline-flex overflow-hidden rounded-md border border-line", className)}>
       {(["EGP", "USD"] as const).map((c) => (
         <button key={c} type="button" onClick={() => set(c)} aria-pressed={current === c} disabled={pending}
-          className={cn("min-h-11 px-3 text-[13px] font-semibold md:min-h-9", current === c ? "bg-gold-fill text-on-gold" : "text-muted hover:bg-surface-2")}>
+          className={cn("min-h-11 px-3 text-[13px] font-semibold md:min-h-9", current === c ? "bg-gold-fill text-on-gold" : "text-muted hover:bg-surface-2 active:bg-line/60")}>
           {c}
         </button>
       ))}

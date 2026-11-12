@@ -57,18 +57,18 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
       </section>
 
       <Stagger as="section" aria-label={t("kpiValue")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat glow label={t("kpiValue")}>
+        <Stat label={t("kpiValue")}>
           <Fig label={t("kpiValue")} value={money(m.value, currency, locale, { compact: true })} source={t("valueSrc", { n: m.count })}
             calc={`${money(m.value, "EGP", locale)}${currency === "USD" ? ` ÷ ${fx}` : ""}`} />
         </Stat>
-        <Stat glow label={t("kpiYield")} hint={!showAssetYield ? t("yieldAgg") : undefined}>
+        <Stat label={t("kpiYield")} hint={!showAssetYield ? t("yieldAgg") : undefined}>
           <Fig label={t("kpiYield")} value={pct(netYield, locale, 1)} source={t("yieldSrc", { from: dateFmt(agg.from, locale), to: dateFmt(agg.to, locale) })}
             calc={showAssetYield ? `${money(agg.net, "EGP", locale)} ÷ ${money(m.value, "EGP", locale)}` : undefined} />
         </Stat>
-        <Stat glow label={t("kpiIncome")} hint={`${int(m.incomeUnits, locale)} / ${int(m.count, locale)}`}>
+        <Stat label={t("kpiIncome")} hint={`${int(m.incomeUnits, locale)} / ${int(m.count, locale)}`}>
           <Fig label={t("kpiIncome")} value={int(m.incomeUnits, locale)} source={t("incomeSrc")} />
         </Stat>
-        <Stat glow label={t("kpiGain")} hint={<bdi>{pct(m.gainPct, locale)}</bdi>}>
+        <Stat label={t("kpiGain")} hint={<bdi>{pct(m.gainPct, locale)}</bdi>}>
           <Fig label={t("kpiGain")} value={money(m.gain, currency, locale, { compact: true })} source={t("gainSrc")} calc={`${money(m.value, "EGP", locale)} − ${money(m.cost, "EGP", locale)}`} />
         </Stat>
       </Stagger>

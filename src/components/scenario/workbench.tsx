@@ -7,12 +7,12 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { publishScenarioSetAction, reproduceScenarioAction, runScenarioAction, saveScenarioAction } from "@/app/scenario-actions";
 import type { RunOutput, SavedScenario, SetInfo } from "@/lib/scenario-service";
 import type { CaseResult, ScenarioInputs } from "@/lib/scenario";
-import { dateFmt, int, money, pct, type Currency } from "@/lib/format";
+import { dateFmt, int, money, pct, type Currency, listSep, rangeSep } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "../ui";
 
 const field = "min-h-11 w-full rounded-md border border-line bg-surface px-3 text-sm text-text";
-const labelCls = "mb-1 block text-xs font-semibold uppercase tracking-wide text-muted";
+const labelCls = "mb-1 block text-xs font-semibold   text-muted";
 const KEYS = ["fx", "rate", "vacancy", "rentGrowth"] as const;
 const STEP = { fx: 0.5, rate: 0.5, vacancy: 1, rentGrowth: 0.5 } as const;
 
@@ -137,26 +137,26 @@ export function ScenarioWorkbench({ initial, sets, saved, canSave, currency, fx:
               <li key={a.id}><Card className="p-4">
                 <Link href={`/asset/${a.id}`} className="font-semibold text-gold underline-offset-4 hover:underline">{ar ? m.nameAr : m.name}</Link>
                 <p className="mt-1 flex items-center justify-between gap-2 text-sm"><bdi className="font-display text-lg">{f(a.value)}</bdi><bdi className={a.changePct < 0 ? "text-danger" : "text-ok"}>{pct(a.changePct, locale)}</bdi></p>
-                <p className="mt-1 text-xs text-muted">{t("colRisk")}: <bdi>{a.baseRisk} → {a.risk}</bdi> · {t("colYield")}: <bdi>{a.yield === null ? t("yieldHidden") : pct(a.yield, locale)}</bdi></p>
+                <p className="mt-1 text-xs text-muted">{t("colRisk")}: <bdi>{a.baseRisk} → {a.risk}</bdi>{listSep(locale)}{t("colYield")}: <bdi>{a.yield === null ? t("yieldHidden") : pct(a.yield, locale)}</bdi></p>
               </Card></li>
             ))}
           </ul>
           <div className="hidden overflow-x-auto rounded-lg border border-line md:block">
             <table className="w-full text-sm">
               <caption className="sr-only">{t("assetsTitle")}</caption>
-              <thead className="bg-surface-2 text-xs uppercase tracking-wide text-muted">
+              <thead className="bg-surface-2 text-xs text-muted">
                 <tr>{[["colAsset", "start"], ["colBase", "end"], ["colCentral", "end"], ["colChange", "end"], ["colRange", "end"], ["colYield", "end"], ["colRisk", "end"]].map(([k, al]) => <th key={k} scope="col" className={cn("px-3 py-2.5 font-semibold", al === "end" ? "text-end" : "text-start")}>{t(k as "colAsset")}</th>)}</tr>
               </thead>
               <tbody>
                 {rows.map(({ a, low, high, m }) => (
                   <tr key={a.id} className="border-t border-line">
-                    <td className="px-3 py-2"><Link href={`/asset/${a.id}`} className="font-semibold text-gold underline-offset-4 hover:underline">{ar ? m.nameAr : m.name}</Link><span className="ms-2 text-xs text-muted">{ty(m.type as "villa")} · {st(m.occupancy as "let")}</span></td>
+                    <td className="px-3 py-2"><Link href={`/asset/${a.id}`} className="font-semibold text-gold underline-offset-4 hover:underline">{ar ? m.nameAr : m.name}</Link><span className="ms-2 text-xs text-muted">{ty(m.type as "villa")}{listSep(locale)}{st(m.occupancy as "let")}</span></td>
                     <td className="whitespace-nowrap px-3 py-2 text-end"><bdi className="text-muted">{f(a.baseValue)}</bdi></td>
                     <td className="whitespace-nowrap px-3 py-2 text-end"><bdi className="font-semibold">{f(a.value)}</bdi></td>
                     <td className="px-3 py-2 text-end"><bdi className={a.changePct < 0 ? "text-danger" : a.changePct > 0 ? "text-ok" : "text-muted"}>{pct(a.changePct, locale)}</bdi></td>
-                    <td className="whitespace-nowrap px-3 py-2 text-end text-xs text-muted"><bdi>{f(low.value)}</bdi> – <bdi>{f(high.value)}</bdi></td>
+                    <td className="whitespace-nowrap px-3 py-2 text-end text-xs text-muted"><bdi>{f(low.value)}</bdi>{rangeSep(locale)}<bdi>{f(high.value)}</bdi></td>
                     <td className="px-3 py-2 text-end"><bdi className={a.yield === null ? "text-xs text-muted" : ""}>{a.yield === null ? "–" : pct(a.yield, locale)}</bdi></td>
-                    <td className="whitespace-nowrap px-3 py-2 text-end"><Badge tone={bandTone[a.riskBand]} className="normal-case"><bdi>{a.baseRisk} → {a.risk}</bdi></Badge></td>
+                    <td className="whitespace-nowrap px-3 py-2 text-end"><Badge tone={bandTone[a.riskBand]} className=""><bdi>{a.baseRisk} → {a.risk}</bdi></Badge></td>
                   </tr>
                 ))}
               </tbody>
@@ -181,7 +181,7 @@ function CaseCard({ id, title, hint, c, f, center }: { id: string; title: string
   const p = c.portfolio;
   return (
     <Card className={cn("min-w-0", center && "border-gold/60")} id={`case-${id}`}>
-      <p className="flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-muted"><span>{title}</span></p>
+      <p className="flex items-center justify-between gap-2 text-xs font-semibold text-muted"><span>{title}</span></p>
       <p className="mt-2 font-display text-3xl"><bdi>{f(p.value)}</bdi></p>
       <p className={cn("text-sm", p.changePct < 0 ? "text-danger" : p.changePct > 0 ? "text-ok" : "text-muted")}><bdi>{pct(p.changePct, locale)}</bdi> <span className="text-muted">{t("vsBase")}</span></p>
       <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
@@ -249,7 +249,7 @@ function SavedList({ saved, onLoad }: { saved: SavedScenario[]; onLoad: (s: Save
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p><span className="num font-semibold text-gold">{s.id}</span> <span className="font-semibold">{s.name}</span></p>
-                  <p className="text-xs text-muted">{t("by", { name: locale === "ar" ? s.ownerNameAr : s.ownerName })} · <bdi>{dateFmt(s.createdAt.slice(0, 10), locale)}</bdi> · <span className="num">{s.assumptionSetId}</span></p>
+                  <p className="text-xs text-muted">{t("by", { name: locale === "ar" ? s.ownerNameAr : s.ownerName })}{listSep(locale)}<bdi>{dateFmt(s.createdAt.slice(0, 10), locale)}</bdi>{listSep(locale)}<span className="num">{s.assumptionSetId}</span></p>
                   <p className="mt-1 text-xs text-muted">{t("params", { fx: s.inputs.fx, rate: s.inputs.rate, vac: s.inputs.vacancy, g: s.inputs.rentGrowth })}</p>
                   {s.notes && <p className="mt-1 text-xs">{s.notes}</p>}
                 </div>

@@ -25,7 +25,7 @@ export function VerifyPack() {
         start(async () => setRes(await verifyPackAction(h)));
       }}>
         <div className="flex-1">
-          <label htmlFor="pk-hash" className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">{t("verifyLabel")}</label>
+          <label htmlFor="pk-hash" className="mb-1 block text-xs font-semibold text-muted">{t("verifyLabel")}</label>
           <input id="pk-hash" dir="ltr" spellCheck={false} autoComplete="off" className="min-h-11 w-full rounded-md border border-line bg-surface px-3 font-mono text-xs" value={hash} onChange={(e) => setHash(e.target.value)} />
         </div>
         <Button type="submit" variant="gold" disabled={pending}>{pending ? t("working") : t("verify")}</Button>

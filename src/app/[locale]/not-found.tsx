@@ -8,7 +8,7 @@ export default async function NotFound() {
   const t = await getTranslations("error");
   return (
     <main id="main" className="relative isolate grid min-h-dvh w-full place-items-center px-4">
-      <HeroDots className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_center,#000_15%,transparent_70%)]" />
+      <HeroDots className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_center,var(--color-text)_15%,transparent_70%)]" />
       <Card className="w-full max-w-xl text-center">
         <Wordmark className="mb-4 block" />
         <BlurHeadline text="404" className="font-display text-3xl" />

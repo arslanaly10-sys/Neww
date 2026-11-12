@@ -60,13 +60,13 @@ export function AlertsBoard({ open, snoozed, canSnooze, currency, fx, userNames 
           <div className="flex items-start gap-3">
             <I aria-hidden="true" size={18} className={cn("mt-0.5 shrink-0", a.severity === "high" ? "text-danger" : "text-gold")} />
             <div className="min-w-0 flex-1 text-sm">
-              <p className="flex flex-wrap items-center gap-2"><Badge tone={TONE[a.severity]} className="normal-case">{t(`sev_${a.severity}` as "sev_high")}</Badge><span className="text-xs text-muted">{t(`kind_${a.kind}` as "kind_lease_renewal")}</span></p>
+              <p className="flex flex-wrap items-center gap-2"><Badge tone={TONE[a.severity]} className="">{t(`sev_${a.severity}` as "sev_high")}</Badge><span className="text-xs text-muted">{t(`kind_${a.kind}` as "kind_lease_renewal")}</span></p>
               <p className="mt-1">{text(a)}</p>
               <p className="mt-1 text-xs"><Link href={`/asset/${a.assetId}`} className="tap text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
               {isSnoozed && a.snoozeReason && <p className="mt-2 rounded bg-surface-2 p-2 text-xs text-muted">{t("snoozedBy", { name: userNames[a.snoozedBy ?? ""]?.[locale === "ar" ? "nameAr" : "name"] ?? a.snoozedBy ?? "", reason: a.snoozeReason })}</p>}
               {active === a.key && (
                 <form className="mt-3 space-y-2" onSubmit={(e) => { e.preventDefault(); snooze(a.key); }}>
-                  <label htmlFor={`sz-${a.key}`} className="block text-xs font-semibold uppercase tracking-wide text-muted">{t("snoozeReason")}</label>
+                  <label htmlFor={`sz-${a.key}`} className="block text-xs font-semibold text-muted">{t("snoozeReason")}</label>
                   <input id={`sz-${a.key}`} className="min-h-10 w-full rounded-md border border-line bg-surface px-3 text-sm" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={300} autoFocus />
                   <div className="flex gap-2"><Button type="submit" size="sm" variant="gold" disabled={pending || reason.trim().length < 10}>{t("snoozeConfirm")}</Button><Button type="button" size="sm" onClick={() => { setActive(null); setReason(""); }}>{t("cancel")}</Button></div>
                 </form>

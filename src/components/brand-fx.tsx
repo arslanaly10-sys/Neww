@@ -3,7 +3,6 @@ import { Fragment, useEffect, useRef, useState, useSyncExternalStore } from "rea
 import { motion } from "motion/react";
 import DotGrid from "./react-bits/Backgrounds/DotGrid/DotGrid";
 import ShinyText from "./react-bits/TextAnimations/ShinyText/ShinyText";
-import SpotlightCard from "./react-bits/Components/SpotlightCard/SpotlightCard";
 import StatusMark from "./react-bits/Micro/StatusMark/StatusMark";
 
 /**
@@ -93,21 +92,6 @@ export function BlurHeadline({ text, className }: { text: string; className?: st
 export function Sheen({ children }: { children: string }) {
   const p = usePalette();
   return <ShinyText text={children} color={p.text} shineColor={p.gold} speed={3.5} delay={4} glow={0} />;
-}
-
-/** A card with a soft gold light that follows the pointer, drawn on the app's own surface and border tokens. */
-export function GlowCard({ className, children }: { className?: string; children: React.ReactNode }) {
-  return (
-    <SpotlightCard
-      theme="light"
-      spotlightColor={PALETTE.dark.goldFill}
-      intensity={0.5}
-      className={className}
-      style={{ "--spotlight-card-surface": "var(--surface)", "--spotlight-card-border": "var(--line)", "--spotlight-card-shadow": "none" } as React.CSSProperties}
-    >
-      {children}
-    </SpotlightCard>
-  );
 }
 
 /**

@@ -11,7 +11,7 @@ import { ChainControls } from "@/components/audit/chain-controls";
 import { listAudit, verifyChain } from "@/lib/audit-service";
 import { can } from "@/lib/permissions";
 import { Link } from "@/i18n/navigation";
-import { dateFmt } from "@/lib/format";
+import { dateFmt, listSep } from "@/lib/format";
 
 export default async function Governance({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ q?: string; action?: string; p?: string }> }) {
   const { locale } = await params;
@@ -56,7 +56,7 @@ export default async function Governance({ params, searchParams }: { params: Pro
               <ul className="flex flex-wrap gap-1.5">
                 {ROLES.map((role) => (
                   <li key={role}>
-                    <Badge tone={PERMISSIONS[p][role] ? "ok" : "muted"} className={cn("normal-case", role === user.role && "ring-1 ring-gold")}>
+                    <Badge tone={PERMISSIONS[p][role] ? "ok" : "muted"} className={cn("", role === user.role && "ring-1 ring-gold")}>
                       {r(role)}: {PERMISSIONS[p][role] ? t("allowed") : t("denied")}
                     </Badge>
                   </li>
@@ -68,7 +68,7 @@ export default async function Governance({ params, searchParams }: { params: Pro
         <div className="hidden overflow-hidden rounded-lg border border-line md:block">
           <table className="w-full text-sm">
             <caption className="sr-only">{t("matrix")}</caption>
-            <thead className="bg-surface-2 text-xs uppercase tracking-wide text-muted">
+            <thead className="bg-surface-2 text-xs text-muted">
               <tr>
                 <th scope="col" className="px-3 py-2.5 text-start font-semibold">{t("matrix")}</th>
                 {ROLES.map((role) => <th key={role} scope="col" className={cn("px-2 py-2.5 text-center font-semibold", role === user.role && "text-gold")}>{r(role)}</th>)}
@@ -114,8 +114,8 @@ export default async function Governance({ params, searchParams }: { params: Pro
           <div className="space-y-6">
             <ChainControls initial={chain} />
             <form method="get" className="flex flex-wrap items-end gap-2">
-              <div><label htmlFor="aq" className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">{g("search")}</label><input id="aq" name="q" defaultValue={sp.q ?? ""} className="min-h-10 w-56 rounded-md border border-line bg-surface px-3 text-sm" /></div>
-              <div><label htmlFor="aa" className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">{g("colAction")}</label>
+              <div><label htmlFor="aq" className="mb-1 block text-xs font-semibold text-muted">{g("search")}</label><input id="aq" name="q" defaultValue={sp.q ?? ""} className="min-h-10 w-56 rounded-md border border-line bg-surface px-3 text-sm" /></div>
+              <div><label htmlFor="aa" className="mb-1 block text-xs font-semibold text-muted">{g("colAction")}</label>
                 <select id="aa" name="action" defaultValue={sp.action ?? ""} className="min-h-10 rounded-md border border-line bg-surface px-2 text-sm"><option value="">{g("allActions")}</option>{audit.actions.map((a) => <option key={a} value={a}>{g.has(`act_${a.replace(/\./g, "_")}`) ? g(`act_${a.replace(/\./g, "_")}` as "act_session_start") : a}</option>)}</select></div>
               <button type="submit" className="min-h-10 rounded-md border border-line px-4 text-sm font-semibold hover:bg-surface-2">{g("apply")}</button>
             </form>
@@ -130,7 +130,7 @@ export default async function Governance({ params, searchParams }: { params: Pro
                         <p><span className="num font-semibold text-gold">#{e.seq}</span> <span className="font-semibold">{label}</span> <span className="num text-xs text-muted">{e.action}</span></p>
                         <bdi className="text-xs text-muted">{dateFmt(e.at.slice(0, 10), locale)} {e.at.slice(11, 16)}</bdi>
                       </div>
-                      <p className="mt-0.5 text-xs text-muted">{e.actorId === "system" ? g("system") : ar ? e.actorNameAr : e.actorName} · <span className="num">{e.entity} {e.entityId}</span> · <span className="num font-mono">{e.hash.slice(0, 12)}…</span></p>
+                      <p className="mt-0.5 text-xs text-muted">{e.actorId === "system" ? g("system") : ar ? e.actorNameAr : e.actorName}{listSep(locale)}<span className="num">{e.entity} {e.entityId}</span>{listSep(locale)}<span className="num font-mono">{e.hash.slice(0, 12)}…</span></p>
                       <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">{g("detail")}</summary>
                         <pre dir="ltr" className="mt-1 overflow-x-auto rounded bg-surface-2 p-2 font-mono text-[11px]">{JSON.stringify(e.detail, null, 1)}</pre>
                         <p dir="ltr" className="mt-1 break-all font-mono text-[11px]">{g("prevHash")}: {e.prevHash}</p><p dir="ltr" className="break-all font-mono text-[11px]">{g("fullHash")}: {e.hash}</p></details>

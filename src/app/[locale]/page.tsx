@@ -6,13 +6,13 @@ import { users } from "@/db/schema";
 import { getCurrentUser } from "@/lib/session";
 import { signIn } from "@/app/actions";
 import { Wordmark, HorusGlyph } from "@/components/brand";
-import { buttonStyles } from "@/components/ui";
+import { Card, buttonStyles } from "@/components/ui";
 import { LangToggle } from "@/components/shell/controls";
 import { cn } from "@/lib/cn";
 import { DEMO_TODAY } from "@/lib/assumptions";
 import { dateFmt } from "@/lib/format";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion";
-import { BlurHeadline, GlowCard, HeroDots } from "@/components/brand-fx";
+import { BlurHeadline, HeroDots } from "@/components/brand-fx";
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -34,22 +34,23 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
       </header>
       <main id="main" className="isolate mx-auto w-full max-w-5xl flex-1 px-4 pb-16 pt-6 md:pt-14">
         <div className="relative">
-          <HeroDots className="pointer-events-none absolute -inset-x-4 -bottom-6 -top-14 -z-10 [mask-image:radial-gradient(ellipse_at_70%_40%,#000_10%,transparent_75%)] md:-top-24" />
-          <Reveal>
-            <p className="mb-3 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}</p>
-          </Reveal>
+          <HeroDots className="pointer-events-none absolute -inset-x-4 -bottom-6 -top-14 -z-10 [mask-image:radial-gradient(ellipse_at_70%_40%,var(--color-text)_10%,transparent_75%)] md:-top-24" />
           <BlurHeadline text={b("tagline")} className="font-display text-4xl leading-tight md:text-6xl" />
-          <Reveal delay={0.08}><p className="mt-4 max-w-xl text-lg text-muted">{b("valueLine")}. {b("aiLine")}.</p></Reveal>
+          <Reveal delay={0.08}>
+            <p className="mt-4 max-w-xl text-lg text-muted">{b("valueLine")}. {b("aiLine")}.</p>
+            {/* The brand line signs off the hero instead of standing over the headline as an eyebrow */}
+            <p className="mt-3 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}</p>
+          </Reveal>
         </div>
         <Reveal delay={0.16}>
           <h2 className="mb-1 mt-12 font-display text-2xl">{t("title")}</h2>
           <p className="mb-6 max-w-xl text-base text-muted">{t("sub")}</p>
         </Reveal>
-        <Stagger className="grid gap-4 md:grid-cols-3">
+        <Stagger className="grid gap-4 lg:grid-cols-3">
           {(["investor", "manager", "admin"] as const).map((role) => {
             const group = all.filter((u) => u.role === role);
             return (
-              <StaggerItem key={role} className="flex"><GlowCard className="flex flex-1 flex-col rounded-lg! p-5!">
+              <StaggerItem key={role} className="flex"><Card className="flex flex-1 flex-col">
                 <h3 className="font-display text-xl text-gold">{r(role)}</h3>
                 <p className="mb-4 mt-1 flex-1 text-base text-muted">{t(`${role}Desc` as "investorDesc")}</p>
                 <div className="flex flex-col gap-2">
@@ -61,7 +62,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
                     </form>
                   ))}
                 </div>
-              </GlowCard></StaggerItem>
+              </Card></StaggerItem>
             );
           })}
         </Stagger>

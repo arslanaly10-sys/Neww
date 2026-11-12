@@ -6,7 +6,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { runValuationAction, submitValuationAction } from "@/app/valuation-actions";
 import type { ValuationResult } from "@/lib/valuation";
 import { REASON_CODES } from "@/lib/reason-codes";
-import { money, pct, type Currency } from "@/lib/format";
+import { money, pct, type Currency, listSep } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "../ui";
 import { ResultView } from "./result-view";
@@ -17,7 +17,7 @@ const TYPES = ["apartment", "villa", "office", "retail", "land", "mixed"] as con
 const FINISHES = ["core_shell", "semi_finished", "fully_finished", "luxury"] as const;
 
 const field = "min-h-11 w-full rounded-md border border-line bg-surface px-3 text-sm text-text";
-const label = "mb-1 block text-xs font-semibold uppercase tracking-wide text-muted";
+const label = "mb-1 block text-xs font-semibold   text-muted";
 
 export function Workbench({ districts, assets, initialAssetId, currency, fx, role, threshold }: { districts: DistrictOption[]; assets: AssetOption[]; initialAssetId: string | null; currency: Currency; fx: number; role: string; threshold: number }) {
   const t = useTranslations("val");
@@ -104,7 +104,7 @@ export function Workbench({ districts, assets, initialAssetId, currency, fx, rol
             <label htmlFor="v-asset" className={label}>{t("fromAsset")}</label>
             <select id="v-asset" className={field} value={assetId ?? ""} onChange={(e) => prefill(e.target.value)}>
               <option value="">{t("adHoc")}</option>
-              {assetOptions.map((a) => <option key={a.id} value={a.id}>{a.id} · {ar ? a.nameAr : a.name}</option>)}
+              {assetOptions.map((a) => <option key={a.id} value={a.id}>{a.id}: {ar ? a.nameAr : a.name}</option>)}
             </select>
           </div>
           <div>
@@ -140,7 +140,7 @@ export function Workbench({ districts, assets, initialAssetId, currency, fx, rol
             <input id="v-age" className={cn(field, noAge && "opacity-50")} inputMode="numeric" type="number" min={0} max={150} disabled={noAge} placeholder={noAge ? t("notApplicable") : undefined} value={noAge ? "" : age} onChange={(e) => { setAge(e.target.value); setResult(null); }} />
           </div>
           <div>
-            <label htmlFor="v-address" className={label}>{t("address")} <span className="font-normal normal-case">({t("optional")})</span></label>
+            <label htmlFor="v-address" className={label}>{t("address")} <span className="font-normal">({t("optional")})</span></label>
             <input id="v-address" className={field} maxLength={200} value={address} onChange={(e) => setAddress(e.target.value)} aria-describedby="v-address-help" />
             <p id="v-address-help" className="mt-1 text-xs text-muted">{t("addressHelp")}</p>
           </div>
@@ -170,7 +170,7 @@ export function Workbench({ districts, assets, initialAssetId, currency, fx, rol
                   <div>
                     <label htmlFor="v-final" className={label}>{t("finalValue")} (EGP)</label>
                     <input id="v-final" className={field} inputMode="numeric" dir="ltr" value={finalStr ? Number(finalStr).toLocaleString("en-US") : ""} onChange={(e) => setFinalStr(e.target.value.replace(/[^\d]/g, ""))} />
-                    <p className="mt-1 text-xs text-muted">{t("modelEstimate")}: <bdi>{money(result.estimateEgp, "EGP", locale)}</bdi> · {t("adjustment")}: <bdi>{pct(adjPct, locale)}</bdi> {needsTwo && <Badge tone="gold" className="ms-1 normal-case">{t("needsTwo")}</Badge>}</p>
+                    <p className="mt-1 text-xs text-muted">{t("modelEstimate")}: <bdi>{money(result.estimateEgp, "EGP", locale)}</bdi>{listSep(locale)}{t("adjustment")}: <bdi>{pct(adjPct, locale)}</bdi> {needsTwo && <Badge tone="gold" className="ms-1">{t("needsTwo")}</Badge>}</p>
                   </div>
                   {adjusted && (
                     <div className="grid gap-4 sm:grid-cols-[14rem_1fr]">

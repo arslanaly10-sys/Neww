@@ -3,7 +3,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { money, pct, type Currency } from "@/lib/format";
+import { money, pct, type Currency, listSep } from "@/lib/format";
 
 export interface MapDistrict { id: string; name: string; nameAr: string; lat: number; lng: number; value: number; share: number; count: number }
 export interface MapAsset { id: string; name: string; nameAr: string; districtId: string; lat: number; lng: number; value: number }
@@ -131,7 +131,7 @@ export function PortfolioMap({ districts, assets, currency, fx }: { districts: M
       {sel && (
         <p className="mt-3 rounded-md border border-line bg-surface-2 p-3 text-sm" aria-live="polite">
           <Link href={`/asset/${sel.id}`} className="font-semibold text-gold underline underline-offset-4">{ar ? sel.nameAr : sel.name}</Link>
-          {" · "}<bdi>{money(sel.value, currency, locale, { fx, compact: true })}</bdi>
+          {listSep(locale)}<bdi>{money(sel.value, currency, locale, { fx, compact: true })}</bdi>
         </p>
       )}
     </div>

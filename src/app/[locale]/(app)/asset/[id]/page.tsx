@@ -3,10 +3,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { pageContext } from "@/lib/page";
 import { getDocuments, getPortfolio } from "@/lib/access";
 import { can } from "@/lib/permissions";
-import { dateFmt, int, money, pct } from "@/lib/format";
+import { dateFmt, int, money, pct, listSep, rangeSep } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { Badge, Card, PageHeader } from "@/components/ui";
-import { GlowCard } from "@/components/brand-fx";
 import { Fig, SampleBadge } from "@/components/fig";
 import { NoAccess } from "@/components/no-access";
 import { SAMPLE_FX_EGP_PER_USD } from "@/lib/assumptions";
@@ -64,27 +63,27 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
   return (
     <div>
       <Link href="/asset" className="tap mb-3 inline-block text-sm text-gold underline underline-offset-4">{t("back")}</Link>
-      <PageHeader animated title={ar ? a.nameAr : a.name} lead={`${ar ? a.district.nameAr : a.district.name} · ${ty(a.type as "villa")}${ar ? "" : ` · ${a.compound}`}`}>
+      <PageHeader animated title={ar ? a.nameAr : a.name} lead={`${ar ? a.district.nameAr : a.district.name}${listSep(locale)}${ty(a.type as "villa")}${ar ? "" : `${listSep(locale)}${a.compound}`}`}>
         <span className="flex items-center gap-2"><span className="num text-sm text-muted">{a.id}</span><SampleBadge /></span>
       </PageHeader>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <GlowCard className="rounded-lg! p-5!">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("value")}</p>
+        <Card>
+          <p className="text-xs font-semibold text-muted">{t("value")}</p>
           <p className="mt-2 font-display text-3xl">
-            <Fig label={t("value")} value={money(a.valueEgp, currency, locale)} source={`${a.valueSource === "seed" ? "Seed record" : a.valueSource} · ${t("valueSet", { date: dateFmt(a.valueSetOn, locale) })}`}
+            <Fig label={t("value")} value={money(a.valueEgp, currency, locale)} source={`${a.valueSource === "seed" ? "Seed record" : a.valueSource}${listSep(locale)}${t("valueSet", { date: dateFmt(a.valueSetOn, locale) })}`}
               calc={currency === "USD" ? `${money(a.valueEgp, "EGP", locale)} ÷ ${SAMPLE_FX_EGP_PER_USD}` : undefined} assumptions="AS-VAL-1.0.0" />
           </p>
-        </GlowCard>
-        <GlowCard className="rounded-lg! p-5!">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("cost")}</p>
+        </Card>
+        <Card>
+          <p className="text-xs font-semibold text-muted">{t("cost")}</p>
           <p className="mt-2 font-display text-3xl"><Fig label={t("cost")} value={money(a.costEgp, currency, locale)} source={t("acquired", { date: dateFmt(a.acquiredOn, locale) })} /></p>
-        </GlowCard>
-        <GlowCard className="rounded-lg! p-5!">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("value")} − {t("cost")}</p>
+        </Card>
+        <Card>
+          <p className="text-xs font-semibold text-muted">{t("value")} − {t("cost")}</p>
           <p className="mt-2 font-display text-3xl"><Fig label="Gain" value={money(gain, currency, locale)} source={`${money(a.valueEgp, "EGP", locale)} − ${money(a.costEgp, "EGP", locale)}`} /></p>
           <p className="num mt-1 text-xs text-muted">{pct(gain / a.costEgp, locale)}</p>
-        </GlowCard>
+        </Card>
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
@@ -103,7 +102,7 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
           {!l ? <p className="text-muted">{t("noLease")}</p> : (
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
               <div className="col-span-2"><dt className="text-muted">{t("tenant")}</dt><dd>{ar ? l.tenant.nameAr : l.tenant.name} <span className="num text-xs text-muted">{l.id}</span></dd></div>
-              <div className="col-span-2"><dt className="text-muted">{t("term")}</dt><dd><bdi>{dateFmt(l.startDate, locale)}</bdi> – <bdi>{dateFmt(l.endDate, locale)}</bdi></dd></div>
+              <div className="col-span-2"><dt className="text-muted">{t("term")}</dt><dd><bdi>{dateFmt(l.startDate, locale)}</bdi>{rangeSep(locale)}<bdi>{dateFmt(l.endDate, locale)}</bdi></dd></div>
               <div><dt className="text-muted">{t("rent")}</dt><dd>{showIncome && l.monthlyRent !== null ? <bdi>{l.currency === "USD" ? money(l.monthlyRent * SAMPLE_FX_EGP_PER_USD, currency, locale) : money(l.monthlyRent, currency, locale)}</bdi> : <span className="text-muted">{t("rentHidden")}</span>}</dd></div>
               <div><dt className="text-muted">{t("indexation")}</dt><dd className="num">{l.annualIndexationPct}%</dd></div>
               <div><dt className="text-muted">{t("deposit")}</dt><dd>{t("depositMonths", { n: l.depositMonths })}</dd></div>
@@ -144,13 +143,13 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
             <h2 className="font-display text-xl">{x("risk")}</h2>
             <Badge tone={bandTone[risk.band]}>{x(`band_${risk.band}` as "band_low")}</Badge>
           </div>
-          <p className="mb-4 flex items-baseline gap-2"><span className="text-xs uppercase tracking-wide text-muted">{x("riskScore")}</span>
+          <p className="mb-4 flex items-baseline gap-2"><span className="text-xs text-muted">{x("riskScore")}</span>
             <Fig label={x("riskScore")} value={`${risk.score}/100`} source={x("riskNote", { version: ltr(risk.version) })} assumptions="AS-RISK-1.1.0" calc={risk.drivers.map((d) => `${d.score} × ${Math.round(d.weight * 100)}%`).join(" + ")} />
           </p>
           <ul className="space-y-3">
             {risk.drivers.map((d) => (
               <li key={d.key} className="text-sm">
-                <div className="flex justify-between gap-3"><span className="font-semibold">{x(`driver_${d.key}` as "driver_fx")}</span><span className="text-muted"><bdi>{d.score}/100</bdi> · <bdi>{x("weight", { w: ltr(`${Math.round(d.weight * 100)}%`) })}</bdi></span></div>
+                <div className="flex justify-between gap-3"><span className="font-semibold">{x(`driver_${d.key}` as "driver_fx")}</span><span className="text-muted"><bdi>{d.score}/100</bdi>{listSep(locale)}<bdi>{x("weight", { w: ltr(`${Math.round(d.weight * 100)}%`) })}</bdi></span></div>
                 <div aria-hidden="true" className="my-1 h-1.5 rounded-full bg-surface-2"><div className="h-1.5 rounded-full bg-gold-fill" style={{ width: `${d.score}%` }} /></div>
                 <p className="text-xs text-muted">{x(`r_${d.reason.id}` as "r_leaseNa", d.reason.id === "concShare" ? { pct: ltr(`${d.reason.params.pct}%`) } : d.reason.params)}</p>
               </li>

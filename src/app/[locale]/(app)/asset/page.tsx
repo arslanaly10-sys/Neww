@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { pageContext } from "@/lib/page";
 import { getPortfolio } from "@/lib/access";
-import { money } from "@/lib/format";
+import { money, listSep } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { Card, PageHeader } from "@/components/ui";
 import { NoAccess } from "@/components/no-access";
@@ -25,7 +25,7 @@ export default async function AssetIndex({ params }: { params: Promise<{ locale:
               <Card className="h-full p-4 transition-colors hover:bg-surface-2">
                 <p className="num text-xs text-muted">{r.id}</p>
                 <p className="font-semibold text-gold">{ar ? r.nameAr : r.name}</p>
-                <p className="text-xs text-muted">{ar ? r.district.nameAr : r.district.name} · {ty(r.type as "villa")}</p>
+                <p className="text-xs text-muted">{ar ? r.district.nameAr : r.district.name}{listSep(locale)}{ty(r.type as "villa")}</p>
                 <p className="mt-2 font-display text-lg"><bdi>{money(r.valueEgp, currency, locale, { compact: true })}</bdi></p>
               </Card>
             </Link>

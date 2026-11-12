@@ -19,7 +19,7 @@ export function HorusButton({ className }: { className?: string }) {
   const t = useTranslations("horus");
   const { setOpen } = useHorus();
   return (
-    <button type="button" onClick={() => setOpen(true)} className={`inline-flex min-h-11 items-center gap-2 md:min-h-9 rounded-md border border-line px-3 text-[13px] font-semibold text-text hover:bg-surface-2 ${className ?? ""}`} aria-haspopup="dialog">
+    <button type="button" onClick={() => setOpen(true)} className={`inline-flex min-h-11 items-center gap-2 md:min-h-9 rounded-md border border-line px-3 text-[13px] font-semibold text-text hover:bg-surface-2 active:bg-line/60 ${className ?? ""}`} aria-haspopup="dialog">
       <HorusGlyph size={16} /><Sheen>{t("open")}</Sheen>
     </button>
   );
@@ -89,7 +89,7 @@ export function HorusPanel({ role }: { role: string }) {
             {turns.length === 0 && (
               <div>
                 <p className="text-sm text-muted">{t("welcome")}</p>
-                <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-muted">{t("suggested")}</p>
+                <p className="mb-2 mt-5 text-xs font-semibold text-muted">{t("suggested")}</p>
                 <ul className="flex flex-col gap-2">
                   {suggestions.map((k) => (
                     <li key={k}><button type="button" onClick={() => send(t(`q_${k}` as "q_value"))} className="min-h-11 w-full rounded-md border border-line bg-surface md:min-h-10 px-3 py-2 text-start text-sm hover:border-gold">{t(`q_${k}` as "q_value")}</button></li>
@@ -129,7 +129,7 @@ function Answer({ turn, onSave, busy }: { turn: Turn; onSave: () => void; busy: 
   return (
     <div className="space-y-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge tone={a.mode === "live" ? "ok" : "gold"} className="normal-case">{noticeText ?? (a.mode === "live" ? t("modeLive") : t("modeScripted"))}</Badge>
+        <Badge tone={a.mode === "live" ? "ok" : "gold"} className="">{noticeText ?? (a.mode === "live" ? t("modeLive") : t("modeScripted"))}</Badge>
       </div>
       {a.advice && <p className="rounded-md border border-line bg-surface p-3">{t("advice")}</p>}
       {a.cannotVerify && !a.advice && (
@@ -143,7 +143,7 @@ function Answer({ turn, onSave, busy }: { turn: Turn; onSave: () => void; busy: 
       ))}
       {a.draft && (
         <div className="rounded-md border border-gold/50 bg-surface p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gold">{t("draft")}</p>
+          <p className="text-xs font-semibold text-gold">{t("draft")}</p>
           <p className="mt-1 font-semibold">{a.draft.title}</p>
           <p className="mt-1 whitespace-pre-line text-muted">{a.draft.body}</p>
           <p className="mt-2 flex flex-wrap gap-1.5" aria-label={t("citations")}>{a.draft.cites.map((c) => <CitationChip key={c} id={c} />)}</p>

@@ -22,15 +22,15 @@ export function Fig({
         {value}
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content sideOffset={8} collisionPadding={12} className="z-50 w-[min(22rem,calc(100vw-1.5rem))] rounded-lg border border-line bg-surface p-4 text-sm shadow-xl">
+        <Popover.Content sideOffset={8} collisionPadding={12} className="z-50 w-[min(22rem,calc(100vw-1.5rem))] rounded-lg border border-line bg-surface p-4 text-sm shadow-md">
           <div className="mb-2 flex items-center justify-between gap-2">
             <span className="font-semibold text-text">{label}</span>
             <Badge tone="gold" title={s("badgeTitle")}>{s("badge")}</Badge>
           </div>
           <dl className="space-y-2 text-muted">
-            <div><dt className="text-[11px] font-semibold uppercase tracking-wide text-gold">{t("source")}</dt><dd>{source}</dd></div>
-            {calc && <div><dt className="text-[11px] font-semibold uppercase tracking-wide text-gold">{t("calc")}</dt><dd>{calc}</dd></div>}
-            <div><dt className="text-[11px] font-semibold uppercase tracking-wide text-gold">{t("assumptions")}</dt><dd className="num">{assumptions}</dd></div>
+            <div><dt className="text-[11px] font-semibold text-gold">{t("source")}</dt><dd>{source}</dd></div>
+            {calc && <div><dt className="text-[11px] font-semibold text-gold">{t("calc")}</dt><dd>{calc}</dd></div>}
+            <div><dt className="text-[11px] font-semibold text-gold">{t("assumptions")}</dt><dd className="num">{assumptions}</dd></div>
           </dl>
           <Link href="/valuation#register" className="mt-3 inline-block text-gold underline underline-offset-4">{t("open")}</Link>
           <Popover.Close className="sr-only">{t("close")}</Popover.Close>

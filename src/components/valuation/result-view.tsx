@@ -1,6 +1,6 @@
 "use client";
 import { useLocale, useTranslations } from "next-intl";
-import { int, money, pct, type Currency, dateFmt } from "@/lib/format";
+import { int, money, pct, type Currency, dateFmt, listSep, rangeSep } from "@/lib/format";
 import { Badge, Card } from "../ui";
 import type { ValuationResult } from "@/lib/valuation";
 import { Fig } from "../fig";
@@ -24,21 +24,21 @@ export function ResultView({ r, currency, fx, districtName }: { r: ValuationResu
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("modelEstimate")}</p>
+            <p className="text-xs font-semibold text-muted">{t("modelEstimate")}</p>
             <p className="font-display text-4xl leading-tight">
               <Fig label={t("modelEstimate")} value={f(r.estimateEgp)} source={t("estimateSrc", { id: r.assumptionSetId })} assumptions={r.assumptionSetId}
                 calc={r.drivers.map((d) => (d.factor === null ? `${int(r.inputs.areaSqm, locale)} × ${int(r.basePpsqm, locale)}` : `× ${d.factor.toFixed(3)}`)).join(" ")} />
             </p>
           </div>
           <div className="text-end">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("confidence")}</p>
+            <p className="text-xs font-semibold text-muted">{t("confidence")}</p>
             <Badge tone={tone[r.confidence.level]} className="mt-1 text-xs">{t(`conf_${r.confidence.level}` as "conf_high")}</Badge>
           </div>
         </div>
 
         <div className="mt-6">
-          <p className="mb-2 text-sm text-muted">{t("range")}: <bdi className="text-text">{f(r.lowEgp)}</bdi> – <bdi className="text-text">{f(r.highEgp)}</bdi> <span className="text-xs">(± <bdi>{r.spreadPct}%</bdi>)</span></p>
-          <div dir="ltr" role="img" aria-label={`${t("range")}: ${f(r.lowEgp)} – ${f(r.highEgp)}; ${t("modelEstimate")} ${f(r.estimateEgp)}`} className="relative h-3 rounded-full bg-surface-2">
+          <p className="mb-2 text-sm text-muted">{t("range")}: <bdi className="text-text">{f(r.lowEgp)}</bdi>{rangeSep(locale)}<bdi className="text-text">{f(r.highEgp)}</bdi> <span className="text-xs">(± <bdi>{r.spreadPct}%</bdi>)</span></p>
+          <div dir="ltr" role="img" aria-label={`${t("range")}: ${f(r.lowEgp)}${rangeSep(locale)}${f(r.highEgp)}; ${t("modelEstimate")} ${f(r.estimateEgp)}`} className="relative h-3 rounded-full bg-surface-2">
             <div className="absolute inset-y-0 start-0 end-0 rounded-full bg-gold-fill/30" />
             <div className="absolute -top-1.5 h-6 w-0.5 bg-gold" style={{ left: `${pos}%` }} />
           </div>
@@ -63,7 +63,7 @@ export function ResultView({ r, currency, fx, districtName }: { r: ValuationResu
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="font-semibold">{driverLabel(d.key)}</span>
                 <span className="text-muted">
-                  {d.factor === null ? <bdi>{int(r.inputs.areaSqm, locale)} {t("sqm")} × {f(r.basePpsqm)}</bdi> : <><bdi>× {d.factor.toFixed(3)}</bdi> · <bdi>{d.deltaEgp >= 0 ? "+" : "−"}{f(Math.abs(d.deltaEgp), { compact: true })}</bdi></>}
+                  {d.factor === null ? <bdi>{int(r.inputs.areaSqm, locale)} {t("sqm")} × {f(r.basePpsqm)}</bdi> : <><bdi>× {d.factor.toFixed(3)}</bdi>{listSep(locale)}<bdi>{d.deltaEgp >= 0 ? "+" : "−"}{f(Math.abs(d.deltaEgp), { compact: true })}</bdi></>}
                   {" → "}<bdi className="text-text">{f(d.valueAfterEgp, { compact: true })}</bdi>
                 </span>
               </div>
@@ -83,14 +83,14 @@ export function ResultView({ r, currency, fx, districtName }: { r: ValuationResu
               {r.comps.map((c) => (
                 <li key={c.id} className="rounded-md border border-line p-3 text-sm">
                   <p className="flex justify-between"><span className="num font-semibold text-gold">{c.id}</span><bdi>{f(c.priceEgp, { compact: true })}</bdi></p>
-                  <p className="text-xs text-muted"><bdi>{dateFmt(c.soldOn, locale)}</bdi> · <bdi>{int(c.areaSqm, locale)}</bdi> {t("sqm")} · {fi(c.finish as "luxury")} · {t("similarity")} <bdi>{pct(c.similarity, locale, 0)}</bdi></p>
+                  <p className="text-xs text-muted"><bdi>{dateFmt(c.soldOn, locale)}</bdi>{listSep(locale)}<bdi>{int(c.areaSqm, locale)}</bdi> {t("sqm")}{listSep(locale)}{fi(c.finish as "luxury")}{listSep(locale)}{t("similarity")} <bdi>{pct(c.similarity, locale, 0)}</bdi></p>
                 </li>
               ))}
             </ul>
             <div className="hidden overflow-hidden rounded-md border border-line md:block">
               <table className="w-full text-sm">
                 <caption className="sr-only">{t("comps")}</caption>
-                <thead className="bg-surface-2 text-xs uppercase tracking-wide text-muted">
+                <thead className="bg-surface-2 text-xs text-muted">
                   <tr>{["colSale", "colSold", "colArea", "colFinish", "colPrice", "colAdj", "similarity"].map((k, i) => <th key={k} scope="col" className={`px-3 py-2 font-semibold ${i >= 4 ? "text-end" : "text-start"}`}>{t(k as "colSale")}</th>)}</tr>
                 </thead>
                 <tbody>

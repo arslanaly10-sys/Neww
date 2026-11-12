@@ -55,7 +55,7 @@ export default async function Market({ params }: { params: Promise<{ locale: str
       <div className="hidden overflow-hidden rounded-lg border border-line md:block">
         <table className="w-full text-sm">
           <caption className="sr-only">{t("title")}</caption>
-          <thead className="bg-surface-2 text-xs uppercase tracking-wide text-muted">
+          <thead className="bg-surface-2 text-xs text-muted">
             <tr>{["district", "index", "momentum", "sentiment", "trend"].map((k) => <th key={k} scope="col" className="px-3 py-2.5 text-start font-semibold">{t(k as "district")}</th>)}</tr>
           </thead>
           <tbody>

@@ -32,7 +32,7 @@ export function CitationChip({ id }: { id: string }) {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/60" />
-        <Dialog.Content className="fixed start-1/2 top-[12vh] z-[61] max-h-[76vh] w-[min(30rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-y-auto rounded-xl border border-line bg-surface p-5 shadow-2xl rtl:translate-x-1/2">
+        <Dialog.Content className="fixed start-1/2 top-[12vh] z-[61] max-h-[76vh] w-[min(30rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-y-auto rounded-xl border border-line bg-surface p-5 shadow-md rtl:translate-x-1/2">
           <div className="flex items-start justify-between gap-3">
             <div>
               <Dialog.Title className="font-display text-xl">{detail?.title ?? `${t(`k_${kind}` as "k_asset")} ${short}`}</Dialog.Title>
