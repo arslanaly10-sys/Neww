@@ -11,7 +11,7 @@ export default async function NotFound() {
       <HeroDots className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_center,#000_15%,transparent_70%)]" />
       <Card className="w-full max-w-xl text-center">
         <Wordmark className="mb-4 block" />
-        <BlurHeadline text="404" className="justify-center font-display text-3xl" />
+        <BlurHeadline text="404" className="font-display text-3xl" />
         <p className="mt-2 text-muted">{t("notFound")}</p>
         <Link href="/overview" className={`${buttonStyles({ variant: "gold" })} mt-5`}>{t("home")}</Link>
       </Card>

@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import BlurText from "./react-bits/TextAnimations/BlurText/BlurText";
+import { Fragment, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { motion } from "motion/react";
 import DotGrid from "./react-bits/Backgrounds/DotGrid/DotGrid";
 import ShinyText from "./react-bits/TextAnimations/ShinyText/ShinyText";
 import SpotlightCard from "./react-bits/Components/SpotlightCard/SpotlightCard";
@@ -62,22 +62,30 @@ export function HeroDots({ className }: { className?: string }) {
   );
 }
 
-// Words stay fully opaque and only come into focus, so the text keeps its full contrast for the whole animation.
-const FOCUS_FROM = { filter: "blur(8px)", opacity: 1, y: 6 };
-const FOCUS_TO = [{ filter: "blur(0px)", opacity: 1, y: 0 }];
-
 /**
- * The page headline, blurred in word by word. A plain <h1> carries the text for screen readers and the page outline;
- * the animated copy is visual only (BlurText renders a <p>, which may not sit inside a heading).
+ * The page headline as a real, visible <h1> whose words come into focus one after another (the BlurText look, built
+ * with Motion so it can live inside a heading). Words stay fully opaque, so the text keeps its contrast throughout;
+ * data-anim lets globals.css show them at rest when JavaScript is not running.
  */
 export function BlurHeadline({ text, className }: { text: string; className?: string }) {
+  const words = text.split(" ");
   return (
-    <>
-      <h1 className="sr-only">{text}</h1>
-      <div aria-hidden="true">
-        <BlurText text={text} className={className} animateBy="words" delay={70} stepDuration={0.45} animationFrom={FOCUS_FROM} animationTo={FOCUS_TO} />
-      </div>
-    </>
+    <h1 className={className}>
+      {words.map((word, i) => (
+        <Fragment key={i}>
+          <motion.span
+            data-anim
+            className="inline-block"
+            initial={{ filter: "blur(8px)", y: 6 }}
+            animate={{ filter: "blur(0px)", y: 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1], delay: i * 0.07 }}
+          >
+            {word}
+          </motion.span>
+          {i < words.length - 1 ? " " : null}
+        </Fragment>
+      ))}
+    </h1>
   );
 }
 

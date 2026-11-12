@@ -78,7 +78,7 @@ html[lang="ar"] .font-display { font-family: "Noto Naskh Arabic", "Playfair Disp
 @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .fade-in { animation: fade-in .35s ease-out both; }
 
-/* Entrance animations (motion.tsx, BlurText) start hidden, blurred or collapsed. Without the data-js flag from the head
+/* Entrance animations (motion.tsx, BlurHeadline) start hidden, blurred or collapsed. Without the data-js flag from the head
    script (no JavaScript, or a bundle that never started) they show at rest instead, so no content stays hidden. */
 /* The sign-in dot field as a still pattern: used when WebGL is unavailable or lost, and when JavaScript is not running. */
 .hero-dots[data-still], html:not([data-js]) .hero-dots { background-image: radial-gradient(circle, var(--line) 1.5px, transparent 1.6px); background-size: 26px 26px; opacity: .7; }
@@ -86,8 +86,7 @@ html[lang="ar"] .font-display { font-family: "Noto Naskh Arabic", "Playfair Disp
 /* Standalone links and figure buttons get a 44px tap target on phones; desktop keeps them compact. */
 @media (max-width: 767.98px) { .tap { display: inline-flex; align-items: center; min-height: 44px; } }
 
-html:not([data-js]) [data-anim],
-html:not([data-js]) .blur-text span { opacity: 1 !important; transform: none !important; filter: none !important; }
+html:not([data-js]) [data-anim] { opacity: 1 !important; transform: none !important; filter: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
