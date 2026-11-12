@@ -11,6 +11,7 @@ import { HorusGlyph } from "../brand";
 import { Badge, Button } from "../ui";
 import { CitationChip } from "./citation-chip";
 import { useHorus } from "./provider";
+import { Sheen } from "../brand-fx";
 
 interface Turn { id: number; q: string; a?: HorusAnswer; saved?: string | null; saveError?: boolean }
 
@@ -19,7 +20,7 @@ export function HorusButton({ className }: { className?: string }) {
   const { setOpen } = useHorus();
   return (
     <button type="button" onClick={() => setOpen(true)} className={`inline-flex min-h-9 items-center gap-2 rounded-md border border-line px-3 text-[13px] font-semibold text-text hover:bg-surface-2 ${className ?? ""}`} aria-haspopup="dialog">
-      <HorusGlyph size={16} /><span>{t("open")}</span>
+      <HorusGlyph size={16} /><Sheen>{t("open")}</Sheen>
     </button>
   );
 }
