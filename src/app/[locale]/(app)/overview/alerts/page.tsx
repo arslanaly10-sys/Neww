@@ -22,7 +22,7 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
   const [{ open, snoozed }, approvals, allUsers] = await Promise.all([getAlerts(user), listApprovals(user), (await getDb()).select().from(users)]);
   const names = Object.fromEntries(allUsers.map((u) => [u.id, { name: u.name, nameAr: u.nameAr }]));
   return (
-    <div className="fade-in space-y-10">
+    <div className="space-y-10">
       <div>
         <Link href="/overview" className="mb-3 inline-block text-sm text-gold underline underline-offset-4">{o("title")}</Link>
         <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>

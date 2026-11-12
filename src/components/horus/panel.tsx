@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import * as Dialog from "@radix-ui/react-dialog";
+import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle2, Send, X } from "lucide-react";
 import { askHorusAction, saveDraftAction } from "@/app/horus-actions";
 import type { HorusAnswer } from "@/lib/horus/types";
@@ -26,6 +27,7 @@ export function HorusButton({ className }: { className?: string }) {
 export function HorusPanel({ role }: { role: string }) {
   const t = useTranslations("horus");
   const locale = useLocale();
+  const rtl = locale === "ar";
   const { open, setOpen, pending, consume } = useHorus();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [text, setText] = useState("");
@@ -61,9 +63,18 @@ export function HorusPanel({ role }: { role: string }) {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50" />
-        <Dialog.Content aria-describedby="horus-sub" className="fixed inset-y-0 end-0 z-50 flex w-full max-w-[28rem] flex-col border-s border-line bg-bg shadow-2xl sm:w-[28rem]">
+      <AnimatePresence>
+      {open && (
+      <Dialog.Portal forceMount>
+        <Dialog.Overlay forceMount asChild>
+          <motion.div className="fixed inset-0 z-40 bg-black/50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} />
+        </Dialog.Overlay>
+        <Dialog.Content forceMount asChild aria-describedby="horus-sub">
+        <motion.div
+          className="fixed inset-y-0 end-0 z-50 flex w-full max-w-[28rem] flex-col border-s border-line bg-bg shadow-2xl sm:w-[28rem]"
+          initial={{ x: rtl ? "-100%" : "100%" }} animate={{ x: 0 }} exit={{ x: rtl ? "-100%" : "100%" }}
+          transition={{ type: "spring", bounce: 0, visualDuration: 0.32 }}
+        >
           <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
             <div>
               <Dialog.Title className="flex items-center gap-2 font-display text-2xl"><HorusGlyph size={22} />{t("title")}</Dialog.Title>
@@ -101,8 +112,11 @@ export function HorusPanel({ role }: { role: string }) {
               className="min-h-12 flex-1 resize-none rounded-md border border-line bg-surface px-3 py-2 text-sm" />
             <Button type="submit" variant="gold" size="icon" disabled={busy || !text.trim()} aria-label={t("ask")}><Send aria-hidden="true" size={16} className="rtl:-scale-x-100" /></Button>
           </form>
+        </motion.div>
         </Dialog.Content>
       </Dialog.Portal>
+      )}
+      </AnimatePresence>
     </Dialog.Root>
   );
 }

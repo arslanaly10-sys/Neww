@@ -30,7 +30,7 @@ export default async function Market({ params }: { params: Promise<{ locale: str
   });
 
   return (
-    <div className="fade-in">
+    <div>
       <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <Card className="mb-6 p-4 text-sm">

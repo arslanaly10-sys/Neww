@@ -22,7 +22,7 @@ export default async function Scenarios({ params }: { params: Promise<{ locale: 
   if (!first.ok) return <NoAccess role={user.role} />;
   const saved = await listScenarios(user);
   return (
-    <div className="fade-in">
+    <div>
       <Link href="/portfolio" className="mb-3 inline-block text-sm text-gold underline underline-offset-4">{p("title")}</Link>
       <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
       <ScenarioWorkbench initial={first} sets={sets} saved={saved} canSave={can(user.role, "scenario.save")} currency={currency} fx={SAMPLE_FX_EGP_PER_USD} />

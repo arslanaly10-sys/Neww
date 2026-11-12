@@ -36,7 +36,7 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
   const when = (f: DocFlag) => (f.days === null ? "" : f.days >= 0 ? t("inDays", { n: f.days }) : t("agoDays", { n: -f.days }));
 
   return (
-    <div className="fade-in space-y-8">
+    <div className="space-y-8">
       <Link href="/asset" className="inline-block text-sm text-gold underline underline-offset-4">{(await getTranslations("asset"))("back")}</Link>
       <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 

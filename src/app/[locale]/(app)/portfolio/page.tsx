@@ -9,6 +9,7 @@ import { SAMPLE_FX_EGP_PER_USD } from "@/lib/assumptions";
 import { Card, PageHeader, Badge } from "@/components/ui";
 import { Fig, SampleBadge } from "@/components/fig";
 import { Stat } from "@/components/stat";
+import { Stagger } from "@/components/motion";
 import { NoAccess } from "@/components/no-access";
 import { ValueChart } from "@/components/charts";
 import { AllocationBars } from "@/components/allocation";
@@ -46,7 +47,7 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
   const mapAssets = rows.map((r) => ({ id: r.id, name: r.name, nameAr: r.nameAr, districtId: r.districtId, lat: Number(r.lat), lng: Number(r.lng), value: r.valueEgp }));
 
   return (
-    <div className="fade-in space-y-8">
+    <div className="space-y-8">
       <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <section aria-label={pk("title")} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 md:flex-row md:items-center md:justify-between">
@@ -54,7 +55,7 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
         <div className="flex flex-col items-start gap-3 md:items-end"><PackButtons /><Link href="/portfolio/scenarios" className="text-sm text-gold underline underline-offset-4">{sc("openScenarios")}</Link></div>
       </section>
 
-      <section aria-label={t("kpiValue")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <Stagger as="section" aria-label={t("kpiValue")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label={t("kpiValue")}>
           <Fig label={t("kpiValue")} value={money(m.value, currency, locale, { compact: true })} source={t("valueSrc", { n: m.count })}
             calc={`${money(m.value, "EGP", locale)}${currency === "USD" ? ` ÷ ${fx}` : ""}`} />
@@ -69,7 +70,7 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
         <Stat label={t("kpiGain")} hint={<bdi>{pct(m.gainPct, locale)}</bdi>}>
           <Fig label={t("kpiGain")} value={money(m.gain, currency, locale, { compact: true })} source={t("gainSrc")} calc={`${money(m.value, "EGP", locale)} − ${money(m.cost, "EGP", locale)}`} />
         </Stat>
-      </section>
+      </Stagger>
 
       <Card>
         <h2 className="mb-4 font-display text-2xl">{t("chartTitle")}</h2>

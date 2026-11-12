@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { Activity, Banknote, MessageCircle, Scale, Server } from "lucide-react";
 import { money, pct, type Currency } from "@/lib/format";
@@ -44,18 +45,20 @@ export function LiveFeed({ currency, fx, limit = 8, compact = false }: { currenc
         <span className="flex items-center gap-2"><Badge tone="gold">{t("feedSimulated")}</Badge><span className="text-xs text-muted" role="status">{live ? t("connected") : t("reconnecting")}</span></span>
       </div>
       <p className="mb-3 text-xs text-muted">{t("feedNote")}</p>
-      <ul aria-live="polite" aria-relevant="additions" className={compact ? "space-y-2" : "space-y-3"}>
+      <ul aria-live="polite" aria-relevant="additions" className={`relative ${compact ? "space-y-2" : "space-y-3"}`}>
         {events.length === 0 && <li className="text-sm text-muted">{t("feedEmpty")}</li>}
+        <AnimatePresence initial={false} mode="popLayout">
         {events.map((e) => {
           const I = ICON[e.kind];
           return (
-            <li key={e.seq} className="fade-in flex items-start gap-3 text-sm">
+            <motion.li key={e.seq} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-3 text-sm">
               <I aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-gold" />
               <span className="min-w-0 flex-1">{text(e)} <span className="text-xs text-muted">{t("feedSimulated")}</span></span>
               <bdi className="shrink-0 text-xs text-muted">{when(e.at)}</bdi>
-            </li>
+            </motion.li>
           );
         })}
+        </AnimatePresence>
       </ul>
     </Card>
   );

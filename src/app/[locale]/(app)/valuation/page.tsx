@@ -40,7 +40,7 @@ export default async function Valuation({ params, searchParams }: { params: Prom
   const tone = { in_review: "gold", confirmed: "ok", rejected: "danger", draft: "muted" } as const;
 
   return (
-    <div className="fade-in space-y-10">
+    <div className="space-y-10">
       <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <Workbench districts={ds.map((d) => ({ id: d.id, name: d.name, nameAr: d.nameAr }))} assets={options}

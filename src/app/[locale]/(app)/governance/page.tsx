@@ -45,7 +45,7 @@ export default async function Governance({ params, searchParams }: { params: Pro
     { text: t("check.backup"), ok: false },
   ];
   return (
-    <div className="fade-in">
+    <div>
       <PageHeader title={t("title")} lead={t("lead")} />
       <section>
         <h2 className="mb-3 font-display text-2xl">{t("matrix")}</h2>

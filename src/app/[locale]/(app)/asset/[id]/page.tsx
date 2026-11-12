@@ -61,7 +61,7 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
   void pf;
 
   return (
-    <div className="fade-in">
+    <div>
       <Link href="/asset" className="mb-3 inline-block text-sm text-gold underline underline-offset-4">{t("back")}</Link>
       <PageHeader title={ar ? a.nameAr : a.name} lead={`${ar ? a.district.nameAr : a.district.name} · ${ty(a.type as "villa")}${ar ? "" : ` · ${a.compound}`}`}>
         <span className="flex items-center gap-2"><span className="num text-sm text-muted">{a.id}</span><SampleBadge /></span>

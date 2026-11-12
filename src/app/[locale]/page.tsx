@@ -11,6 +11,7 @@ import { LangToggle } from "@/components/shell/controls";
 import { cn } from "@/lib/cn";
 import { DEMO_TODAY } from "@/lib/assumptions";
 import { dateFmt } from "@/lib/format";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -31,16 +32,20 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
         <LangToggle />
       </header>
       <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 pb-16 pt-6 md:pt-14">
-        <p className="mb-3 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}</p>
-        <h1 className="font-display text-4xl leading-tight md:text-6xl">{b("tagline")}</h1>
-        <p className="mt-4 max-w-xl text-lg text-muted">{b("valueLine")}. {b("aiLine")}.</p>
-        <h2 className="mb-1 mt-12 font-display text-2xl">{t("title")}</h2>
-        <p className="mb-6 max-w-xl text-muted">{t("sub")}</p>
-        <div className="grid gap-4 md:grid-cols-3">
+        <Reveal>
+          <p className="mb-3 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}</p>
+          <h1 className="font-display text-4xl leading-tight md:text-6xl">{b("tagline")}</h1>
+        </Reveal>
+        <Reveal delay={0.08}><p className="mt-4 max-w-xl text-lg text-muted">{b("valueLine")}. {b("aiLine")}.</p></Reveal>
+        <Reveal delay={0.16}>
+          <h2 className="mb-1 mt-12 font-display text-2xl">{t("title")}</h2>
+          <p className="mb-6 max-w-xl text-muted">{t("sub")}</p>
+        </Reveal>
+        <Stagger className="grid gap-4 md:grid-cols-3">
           {(["investor", "manager", "admin"] as const).map((role) => {
             const group = all.filter((u) => u.role === role);
             return (
-              <Card key={role} className="flex flex-col">
+              <StaggerItem key={role} className="flex"><Card className="flex flex-1 flex-col transition-[border-color,box-shadow] duration-200 hover:border-gold/50 hover:shadow-lg">
                 <h3 className="font-display text-xl text-gold">{r(role)}</h3>
                 <p className="mb-4 mt-1 flex-1 text-sm text-muted">{t(`${role}Desc` as "investorDesc")}</p>
                 <div className="flex flex-col gap-2">
@@ -52,10 +57,10 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
                     </form>
                   ))}
                 </div>
-              </Card>
+              </Card></StaggerItem>
             );
           })}
-        </div>
+        </Stagger>
         <p className="mt-8 text-xs text-muted">{s("asOf", { date: dateFmt(DEMO_TODAY, locale) })}. {s("footer")}</p>
       </main>
     </div>

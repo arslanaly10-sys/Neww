@@ -16,6 +16,7 @@ import "@fontsource/ibm-plex-sans-arabic/500.css";
 import "@fontsource/ibm-plex-sans-arabic/600.css";
 import "@fontsource/ibm-plex-sans-arabic/700.css";
 import "../globals.css";
+import { MotionProvider } from "@/components/motion";
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#090a0c" }, { media: "(prefers-color-scheme: light)", color: "#f6f2e9" }] };
 export const metadata: Metadata = {
@@ -36,7 +37,7 @@ export default async function RootLayout({ children, params }: { children: React
     <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"}>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-gold-fill focus:px-3 focus:py-2 focus:text-on-gold">{t("skip")}</a>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider><MotionProvider>{children}</MotionProvider></NextIntlClientProvider>
       </body>
     </html>
   );

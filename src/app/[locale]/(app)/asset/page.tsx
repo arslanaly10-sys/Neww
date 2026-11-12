@@ -16,7 +16,7 @@ export default async function AssetIndex({ params }: { params: Promise<{ locale:
   const rows = (await getPortfolio(user)).sort((a, b) => a.id.localeCompare(b.id));
   const ar = locale === "ar";
   return (
-    <div className="fade-in">
+    <div>
       <PageHeader title={t("title")} lead={t("lead")}><Link href="/asset/documents" className="text-sm text-gold underline underline-offset-4">{(await getTranslations("docs"))("title")}</Link></PageHeader>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r) => (

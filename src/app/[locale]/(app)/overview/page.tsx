@@ -16,6 +16,7 @@ import { attentionCount, getAlerts } from "@/lib/alerts-service";
 import { LiveFeed } from "@/components/alerts/live-feed";
 import { AttentionCard } from "@/components/alerts/attention-card";
 import { verifyChain } from "@/lib/audit-service";
+import { GrowBar, Stagger } from "@/components/motion";
 
 export default async function Overview({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -35,15 +36,15 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
     const g = await getTranslations("gov2");
     const al = await getTranslations("al");
     return (
-      <div className="fade-in">
+      <div>
         <PageHeader title={ta("title")} lead={ta("lead")}><SampleBadge /></PageHeader>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Stat label={ta("events")}><span className="num">{int(n, locale)}</span></Stat>
           <Stat label={ta("policies")}><span className="num">{int((pol.rows[0] as { n: number }).n, locale)}</span></Stat>
           <Stat label={ta("head")}><span className="num break-all font-sans text-base">{head?.hash.slice(0, 16)}…</span></Stat>
           <Stat label={g("audTitle")}><span className={chain.ok ? "text-ok" : "text-danger"}>{chain.ok ? g("chainOk") : g("chainBad", { seq: chain.firstBad!.seq })}</span></Stat>
           <Stat label={al("approvalsTitle")}><Link href="/overview/alerts" className="num underline decoration-gold/50 underline-offset-4">{int(att.approvals, locale)}</Link></Stat>
-        </div>
+        </Stagger>
         <div className="mt-6"><LiveFeed currency={currency} fx={SAMPLE_FX_EGP_PER_USD} limit={6} compact /></div>
         <p className="mt-8 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}</p>
       </div>
@@ -59,9 +60,9 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
   const [alerts, att] = await Promise.all([getAlerts(user), attentionCount(user)]);
 
   return (
-    <div className="fade-in">
+    <div>
       <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Stagger as="section" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Stat label={t("value")}>
           <Fig label={t("value")} value={money(m.value, currency, locale, { compact: true })} source={t("valueSrc", { n: m.count })}
             calc={`${money(m.value, "EGP", locale)}${currency === "USD" ? ` ÷ ${rate}` : ""}`} />
@@ -78,7 +79,7 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
         <Stat label={t("income")} hint={t("ofTotal", { total: int(m.count, locale) })}>
           <Fig label={t("income")} value={int(m.incomeUnits, locale)} source={t("incomeSrc")} />
         </Stat>
-      </section>
+      </Stagger>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <AttentionCard top={alerts.open.slice(0, 4)} alertTotal={alerts.open.length} approvals={att.approvals} currency={currency} fx={rate} />
@@ -89,14 +90,14 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
         <Card>
           <h2 className="mb-4 font-display text-xl">{t("allocation")}</h2>
           <ul className="space-y-3">
-            {m.allocation.map((a) => (
+            {m.allocation.map((a, i) => (
               <li key={a.id}>
                 <div className="mb-1 flex justify-between gap-3 text-sm">
                   <span>{locale === "ar" ? a.nameAr : a.name}</span>
                   <span className="num text-muted">{pct(a.value / m.value, locale)}</span>
                 </div>
                 <div className="h-2 rounded-full bg-surface-2" role="img" aria-label={`${locale === "ar" ? a.nameAr : a.name}: ${pct(a.value / m.value, locale)}`}>
-                  <div className="h-2 rounded-full bg-gold-fill" style={{ width: `${(a.value / maxAlloc) * 100}%` }} />
+                  <GrowBar className="h-2 rounded-full bg-gold-fill" width={`${(a.value / maxAlloc) * 100}%`} rtl={locale === "ar"} delay={0.15 + i * 0.04} />
                 </div>
               </li>
             ))}
