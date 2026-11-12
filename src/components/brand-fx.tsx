@@ -1,5 +1,5 @@
 "use client";
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import BlurText from "./react-bits/TextAnimations/BlurText/BlurText";
 import DotGrid from "./react-bits/Backgrounds/DotGrid/DotGrid";
 import ShinyText from "./react-bits/TextAnimations/ShinyText/ShinyText";
@@ -27,12 +27,37 @@ function usePalette() {
   return PALETTE[dark ? "dark" : "light"];
 }
 
-/** A quiet field of dots behind the sign-in hero; dots near the pointer warm to gold. Decorative only. */
+// Whether this browser can draw WebGL at all (checked once). The server assumes it can.
+let webgl: boolean | undefined;
+const hasWebGL = () => {
+  if (webgl === undefined) {
+    try { const c = document.createElement("canvas"); webgl = Boolean(c.getContext("webgl2") || c.getContext("webgl")); } catch { webgl = false; }
+  }
+  return webgl;
+};
+const noSubscribe = () => () => {};
+
+/**
+ * A quiet field of dots behind the sign-in hero; dots near the pointer warm to gold. Decorative only.
+ * Without WebGL (no support, or the context is lost) the same dots show as a still CSS pattern; globals.css shows it
+ * too when JavaScript is not running.
+ */
 export function HeroDots({ className }: { className?: string }) {
   const p = usePalette();
+  const gl = useSyncExternalStore(noSubscribe, hasWebGL, () => true);
+  const [lost, setLost] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const canvas = ref.current?.querySelector("canvas");
+    if (!canvas) return;
+    const onLost = () => setLost(true);
+    canvas.addEventListener("webglcontextlost", onLost);
+    return () => canvas.removeEventListener("webglcontextlost", onLost);
+  }, [gl]);
+  const live = gl && !lost;
   return (
-    <div aria-hidden="true" className={className}>
-      <DotGrid baseColor={p.line} activeColor={p.goldFill} dotSize={3} gap={26} proximity={140} fade={0.6} opacity={0.7} clickShock={false} />
+    <div ref={ref} aria-hidden="true" className={`hero-dots ${className ?? ""}`} data-still={live ? undefined : ""}>
+      {live && <DotGrid baseColor={p.line} activeColor={p.goldFill} dotSize={3} gap={26} proximity={140} fade={0.6} opacity={0.7} clickShock={false} />}
     </div>
   );
 }

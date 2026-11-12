@@ -43,7 +43,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
         </div>
         <Reveal delay={0.16}>
           <h2 className="mb-1 mt-12 font-display text-2xl">{t("title")}</h2>
-          <p className="mb-6 max-w-xl text-muted">{t("sub")}</p>
+          <p className="mb-6 max-w-xl text-base text-muted">{t("sub")}</p>
         </Reveal>
         <Stagger className="grid gap-4 md:grid-cols-3">
           {(["investor", "manager", "admin"] as const).map((role) => {
@@ -51,7 +51,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
             return (
               <StaggerItem key={role} className="flex"><GlowCard className="flex flex-1 flex-col rounded-lg! p-5!">
                 <h3 className="font-display text-xl text-gold">{r(role)}</h3>
-                <p className="mb-4 mt-1 flex-1 text-sm text-muted">{t(`${role}Desc` as "investorDesc")}</p>
+                <p className="mb-4 mt-1 flex-1 text-base text-muted">{t(`${role}Desc` as "investorDesc")}</p>
                 <div className="flex flex-col gap-2">
                   {group.map((u) => (
                     <form key={u.id} action={signIn.bind(null, u.id, locale)}>

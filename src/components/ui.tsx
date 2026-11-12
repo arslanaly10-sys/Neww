@@ -9,7 +9,7 @@ export const buttonStyles = cva(
     variants: {
       variant: {
         gold: "bg-gold-fill text-on-gold hover:brightness-110",
-        outline: "border border-line bg-transparent text-text hover:bg-surface-2",
+        outline: "border border-line bg-transparent text-text hover:border-gold/60 hover:bg-surface-2",
         ghost: "bg-transparent text-text hover:bg-surface-2",
       },
       // Phones get 44px tap targets; from md up the compact desktop heights return.
