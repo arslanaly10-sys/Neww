@@ -41,7 +41,7 @@ export default async function Valuation({ params, searchParams }: { params: Prom
 
   return (
     <div className="space-y-10">
-      <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <Workbench districts={ds.map((d) => ({ id: d.id, name: d.name, nameAr: d.nameAr }))} assets={options}
         initialAssetId={options.find((o) => o.id === asset)?.id ?? null} currency={currency} fx={fx} role={user.role} threshold={VALUATION_ASSUMPTIONS.adjustment.secondApproverAbovePct} />

@@ -6,6 +6,7 @@ import { can } from "@/lib/permissions";
 import { dateFmt, int, money, pct } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { Badge, Card, PageHeader } from "@/components/ui";
+import { GlowCard } from "@/components/brand-fx";
 import { Fig, SampleBadge } from "@/components/fig";
 import { NoAccess } from "@/components/no-access";
 import { SAMPLE_FX_EGP_PER_USD } from "@/lib/assumptions";
@@ -63,27 +64,27 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
   return (
     <div>
       <Link href="/asset" className="mb-3 inline-block text-sm text-gold underline underline-offset-4">{t("back")}</Link>
-      <PageHeader title={ar ? a.nameAr : a.name} lead={`${ar ? a.district.nameAr : a.district.name} · ${ty(a.type as "villa")}${ar ? "" : ` · ${a.compound}`}`}>
+      <PageHeader animated title={ar ? a.nameAr : a.name} lead={`${ar ? a.district.nameAr : a.district.name} · ${ty(a.type as "villa")}${ar ? "" : ` · ${a.compound}`}`}>
         <span className="flex items-center gap-2"><span className="num text-sm text-muted">{a.id}</span><SampleBadge /></span>
       </PageHeader>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <Card>
+        <GlowCard className="rounded-lg! p-5!">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("value")}</p>
           <p className="mt-2 font-display text-3xl">
             <Fig label={t("value")} value={money(a.valueEgp, currency, locale)} source={`${a.valueSource === "seed" ? "Seed record" : a.valueSource} · ${t("valueSet", { date: dateFmt(a.valueSetOn, locale) })}`}
               calc={currency === "USD" ? `${money(a.valueEgp, "EGP", locale)} ÷ ${SAMPLE_FX_EGP_PER_USD}` : undefined} assumptions="AS-VAL-1.0.0" />
           </p>
-        </Card>
-        <Card>
+        </GlowCard>
+        <GlowCard className="rounded-lg! p-5!">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("cost")}</p>
           <p className="mt-2 font-display text-3xl"><Fig label={t("cost")} value={money(a.costEgp, currency, locale)} source={t("acquired", { date: dateFmt(a.acquiredOn, locale) })} /></p>
-        </Card>
-        <Card>
+        </GlowCard>
+        <GlowCard className="rounded-lg! p-5!">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">{t("value")} − {t("cost")}</p>
           <p className="mt-2 font-display text-3xl"><Fig label="Gain" value={money(gain, currency, locale)} source={`${money(a.valueEgp, "EGP", locale)} − ${money(a.costEgp, "EGP", locale)}`} /></p>
           <p className="num mt-1 text-xs text-muted">{pct(gain / a.costEgp, locale)}</p>
-        </Card>
+        </GlowCard>
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">

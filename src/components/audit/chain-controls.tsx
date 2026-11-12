@@ -1,12 +1,13 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { ShieldAlert, ShieldCheck, RotateCcw } from "lucide-react";
+import { ShieldCheck, RotateCcw } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { resetDemoAction, restoreAction, tamperAction, verifyChainAction } from "@/app/stage5-actions";
 import type { ChainCheck } from "@/lib/audit-service";
 import { cn } from "@/lib/cn";
 import { Button, Card } from "../ui";
+import { ChainMark } from "../brand-fx";
 
 type Note = { tone: "ok" | "bad" | "info"; text: string; detail?: string };
 
@@ -45,7 +46,7 @@ export function ChainControls({ initial }: { initial: ChainCheck }) {
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="gold" onClick={verify} disabled={pending}><ShieldCheck aria-hidden="true" size={16} />{pending ? t("verifying") : t("verify")}</Button>
         <span className={cn("inline-flex items-center gap-1.5 text-sm font-semibold", check.ok ? "text-ok" : "text-danger")}>
-          {check.ok ? <ShieldCheck aria-hidden="true" size={16} /> : <ShieldAlert aria-hidden="true" size={16} />}
+          <ChainMark state={pending ? "running" : check.ok ? "ok" : "bad"} />
           {check.ok ? t("chainOk") : t("chainBad", { seq: check.firstBad!.seq })}
         </span>
       </div>

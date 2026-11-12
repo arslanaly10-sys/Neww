@@ -31,7 +31,7 @@ export default async function Market({ params }: { params: Promise<{ locale: str
 
   return (
     <div>
-      <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <Card className="mb-6 p-4 text-sm">
         <div className="flex flex-wrap items-center gap-2"><Badge tone="gold">{t("synthetic")}</Badge><span className="font-semibold">{ar ? idx.titleAr : idx.title}</span></div>

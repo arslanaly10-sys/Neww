@@ -46,7 +46,7 @@ export default async function Governance({ params, searchParams }: { params: Pro
   ];
   return (
     <div>
-      <PageHeader title={t("title")} lead={t("lead")} />
+      <PageHeader animated title={t("title")} lead={t("lead")} />
       <section>
         <h2 className="mb-3 font-display text-2xl">{t("matrix")}</h2>
         <ul className="divide-y divide-line rounded-lg border border-line md:hidden">

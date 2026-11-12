@@ -4,6 +4,7 @@ import BlurText from "./react-bits/TextAnimations/BlurText/BlurText";
 import DotGrid from "./react-bits/Backgrounds/DotGrid/DotGrid";
 import ShinyText from "./react-bits/TextAnimations/ShinyText/ShinyText";
 import SpotlightCard from "./react-bits/Components/SpotlightCard/SpotlightCard";
+import StatusMark from "./react-bits/Micro/StatusMark/StatusMark";
 
 /**
  * React Bits effects dressed in the ZMNHOOF palette. Some of these components only take literal colours (they draw
@@ -36,6 +37,10 @@ export function HeroDots({ className }: { className?: string }) {
   );
 }
 
+// Words stay fully opaque and only come into focus, so the text keeps its full contrast for the whole animation.
+const FOCUS_FROM = { filter: "blur(8px)", opacity: 1, y: 6 };
+const FOCUS_TO = [{ filter: "blur(0px)", opacity: 1, y: 0 }];
+
 /**
  * The page headline, blurred in word by word. A plain <h1> carries the text for screen readers and the page outline;
  * the animated copy is visual only (BlurText renders a <p>, which may not sit inside a heading).
@@ -45,7 +50,7 @@ export function BlurHeadline({ text, className }: { text: string; className?: st
     <>
       <h1 className="sr-only">{text}</h1>
       <div aria-hidden="true">
-        <BlurText text={text} className={className} animateBy="words" direction="bottom" delay={90} />
+        <BlurText text={text} className={className} animateBy="words" delay={70} stepDuration={0.45} animationFrom={FOCUS_FROM} animationTo={FOCUS_TO} />
       </div>
     </>
   );
@@ -69,5 +74,17 @@ export function GlowCard({ className, children }: { className?: string; children
     >
       {children}
     </SpotlightCard>
+  );
+}
+
+/**
+ * The audit chain's state as a drawn mark: it spins while a check runs, then draws a check or a failure mark.
+ * Purely visual; the words next to it say the same thing for everyone.
+ */
+export function ChainMark({ state }: { state: "running" | "ok" | "bad" }) {
+  return (
+    <span aria-hidden="true" className="inline-flex">
+      <StatusMark status={state === "running" ? "running" : state === "ok" ? "done" : "failed"} color="var(--muted)" doneColor="var(--ok)" errorColor="var(--danger)" size={18} />
+    </span>
   );
 }

@@ -38,7 +38,7 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
   return (
     <div className="space-y-8">
       <Link href="/asset" className="inline-block text-sm text-gold underline underline-offset-4">{(await getTranslations("asset"))("back")}</Link>
-      <PageHeader title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <section aria-labelledby="flags">
         <h2 id="flags" className="mb-3 font-display text-2xl">{t("flagsTitle")}</h2>
