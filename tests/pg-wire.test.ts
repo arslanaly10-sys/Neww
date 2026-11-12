@@ -18,7 +18,14 @@ beforeAll(async () => {
   process.env.DB_DRIVER = "pg";
   globalThis.__zosDb = undefined;
 }, 60000);
-afterAll(async () => { await server?.stop(); delete process.env.DATABASE_URL; });
+afterAll(async () => {
+  // Close the pg pool before stopping the server, or its idle connection dies mid-teardown as an unhandled error.
+  const db = (await globalThis.__zosDb?.catch(() => undefined)) as { $client?: { end?: () => Promise<void> } } | undefined;
+  await db?.$client?.end?.();
+  globalThis.__zosDb = undefined;
+  await server?.stop();
+  delete process.env.DATABASE_URL;
+});
 
 describe("PostgreSQL wire protocol (pg driver)", () => {
   it("provisions once, seeds deterministically and enforces row-level security", async () => {
