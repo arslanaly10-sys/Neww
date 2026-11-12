@@ -62,7 +62,7 @@ export function AlertsBoard({ open, snoozed, canSnooze, currency, fx, userNames 
             <div className="min-w-0 flex-1 text-sm">
               <p className="flex flex-wrap items-center gap-2"><Badge tone={TONE[a.severity]} className="normal-case">{t(`sev_${a.severity}` as "sev_high")}</Badge><span className="text-xs text-muted">{t(`kind_${a.kind}` as "kind_lease_renewal")}</span></p>
               <p className="mt-1">{text(a)}</p>
-              <p className="mt-1 text-xs"><Link href={`/asset/${a.assetId}`} className="text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
+              <p className="mt-1 text-xs"><Link href={`/asset/${a.assetId}`} className="tap text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
               {isSnoozed && a.snoozeReason && <p className="mt-2 rounded bg-surface-2 p-2 text-xs text-muted">{t("snoozedBy", { name: userNames[a.snoozedBy ?? ""]?.[locale === "ar" ? "nameAr" : "name"] ?? a.snoozedBy ?? "", reason: a.snoozeReason })}</p>}
               {active === a.key && (
                 <form className="mt-3 space-y-2" onSubmit={(e) => { e.preventDefault(); snooze(a.key); }}>

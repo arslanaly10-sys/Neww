@@ -69,7 +69,7 @@ export function CurrencyToggle({ current, rate, className }: { current: "EGP" | 
     <div role="group" aria-label={t("currency")} title={t("rate", { rate })} className={cn("inline-flex overflow-hidden rounded-md border border-line", className)}>
       {(["EGP", "USD"] as const).map((c) => (
         <button key={c} type="button" onClick={() => set(c)} aria-pressed={current === c} disabled={pending}
-          className={cn("min-h-9 px-3 text-[13px] font-semibold", current === c ? "bg-gold-fill text-on-gold" : "text-muted hover:bg-surface-2")}>
+          className={cn("min-h-11 px-3 text-[13px] font-semibold md:min-h-9", current === c ? "bg-gold-fill text-on-gold" : "text-muted hover:bg-surface-2")}>
           {c}
         </button>
       ))}

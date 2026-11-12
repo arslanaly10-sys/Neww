@@ -26,6 +26,13 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: ["/og.png"] },
 };
 
+/**
+ * Entrance animations render their hidden starting state into the HTML. This flag (data-js on <html>) is what lets
+ * that state apply: without JavaScript there is no flag and globals.css shows everything at rest. If the app has not
+ * started within 4 s (a slow or failed bundle), the flag is dropped again so the page never stays blank.
+ */
+const JS_FLAG = `(function(){var d=document.documentElement;d.setAttribute("data-js","");setTimeout(function(){if(!window.__zosReady)d.removeAttribute("data-js")},4000)})()`;
+
 export function generateStaticParams() { return routing.locales.map((locale) => ({ locale })); }
 
 export default async function RootLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
@@ -34,7 +41,10 @@ export default async function RootLayout({ children, params }: { children: React
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "nav" });
   return (
-    <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"}>
+    <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: JS_FLAG }} />
+      </head>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-gold-fill focus:px-3 focus:py-2 focus:text-on-gold">{t("skip")}</a>
         <NextIntlClientProvider><MotionProvider>{children}</MotionProvider></NextIntlClientProvider>

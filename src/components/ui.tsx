@@ -4,7 +4,7 @@ import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
 import { BlurHeadline } from "./brand-fx";
 
 export const buttonStyles = cva(
-  "inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -12,7 +12,8 @@ export const buttonStyles = cva(
         outline: "border border-line bg-transparent text-text hover:bg-surface-2",
         ghost: "bg-transparent text-text hover:bg-surface-2",
       },
-      size: { sm: "min-h-9 px-3 text-[13px]", md: "", icon: "min-h-10 w-10 px-0" },
+      // Phones get 44px tap targets; from md up the compact desktop heights return.
+      size: { sm: "min-h-11 px-3 text-[13px] md:min-h-9", md: "min-h-11 md:min-h-10", icon: "min-h-11 w-11 px-0 md:min-h-10 md:w-10" },
     },
     defaultVariants: { variant: "outline", size: "md" },
   },

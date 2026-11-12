@@ -19,7 +19,7 @@ export function HorusButton({ className }: { className?: string }) {
   const t = useTranslations("horus");
   const { setOpen } = useHorus();
   return (
-    <button type="button" onClick={() => setOpen(true)} className={`inline-flex min-h-9 items-center gap-2 rounded-md border border-line px-3 text-[13px] font-semibold text-text hover:bg-surface-2 ${className ?? ""}`} aria-haspopup="dialog">
+    <button type="button" onClick={() => setOpen(true)} className={`inline-flex min-h-11 items-center gap-2 md:min-h-9 rounded-md border border-line px-3 text-[13px] font-semibold text-text hover:bg-surface-2 ${className ?? ""}`} aria-haspopup="dialog">
       <HorusGlyph size={16} /><Sheen>{t("open")}</Sheen>
     </button>
   );
@@ -92,7 +92,7 @@ export function HorusPanel({ role }: { role: string }) {
                 <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-muted">{t("suggested")}</p>
                 <ul className="flex flex-col gap-2">
                   {suggestions.map((k) => (
-                    <li key={k}><button type="button" onClick={() => send(t(`q_${k}` as "q_value"))} className="min-h-10 w-full rounded-md border border-line bg-surface px-3 py-2 text-start text-sm hover:border-gold">{t(`q_${k}` as "q_value")}</button></li>
+                    <li key={k}><button type="button" onClick={() => send(t(`q_${k}` as "q_value"))} className="min-h-11 w-full rounded-md border border-line bg-surface md:min-h-10 px-3 py-2 text-start text-sm hover:border-gold">{t(`q_${k}` as "q_value")}</button></li>
                   ))}
                 </ul>
               </div>

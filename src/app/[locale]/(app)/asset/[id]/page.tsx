@@ -63,7 +63,7 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
 
   return (
     <div>
-      <Link href="/asset" className="mb-3 inline-block text-sm text-gold underline underline-offset-4">{t("back")}</Link>
+      <Link href="/asset" className="tap mb-3 inline-block text-sm text-gold underline underline-offset-4">{t("back")}</Link>
       <PageHeader animated title={ar ? a.nameAr : a.name} lead={`${ar ? a.district.nameAr : a.district.name} · ${ty(a.type as "villa")}${ar ? "" : ` · ${a.compound}`}`}>
         <span className="flex items-center gap-2"><span className="num text-sm text-muted">{a.id}</span><SampleBadge /></span>
       </PageHeader>
@@ -161,7 +161,7 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
       </div>
 
       <Card className="mt-6">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="font-display text-xl">{x("valuations")}</h2><Link href={`/valuation?asset=${a.id}`} className="text-sm text-gold underline underline-offset-4">{x("runValuation")}</Link></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="font-display text-xl">{x("valuations")}</h2><Link href={`/valuation?asset=${a.id}`} className="tap text-sm text-gold underline underline-offset-4">{x("runValuation")}</Link></div>
         {vals.length === 0 ? <p className="text-sm text-muted">{x("noValuations")}</p> : (
           <ul className="divide-y divide-line text-sm">
             {vals.map((v) => (
@@ -175,7 +175,7 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
       </Card>
 
       <Card className="mt-6">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="font-display text-xl">{t("docs")}</h2><Link href="/asset/documents" className="text-sm text-gold underline underline-offset-4">{(await getTranslations("docs"))("title")}</Link></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="font-display text-xl">{t("docs")}</h2><Link href="/asset/documents" className="tap text-sm text-gold underline underline-offset-4">{(await getTranslations("docs"))("title")}</Link></div>
         <ul className="divide-y divide-line text-sm">
           {docs.map((d) => (
             <li key={d.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">

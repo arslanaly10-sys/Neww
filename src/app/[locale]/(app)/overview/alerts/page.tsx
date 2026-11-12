@@ -24,7 +24,7 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
   return (
     <div className="space-y-10">
       <div>
-        <Link href="/overview" className="mb-3 inline-block text-sm text-gold underline underline-offset-4">{o("title")}</Link>
+        <Link href="/overview" className="tap mb-3 inline-block text-sm text-gold underline underline-offset-4">{o("title")}</Link>
         <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
       </div>
       <section aria-labelledby="ap">

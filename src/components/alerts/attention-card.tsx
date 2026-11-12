@@ -25,7 +25,7 @@ export function AttentionCard({ top, alertTotal, approvals, currency, fx }: { to
           ))}
         </ul>
       )}
-      <Link href="/overview/alerts" className="mt-4 inline-block text-sm text-gold underline underline-offset-4">{t("viewAll")}</Link>
+      <Link href="/overview/alerts" className="tap mt-4 inline-block text-sm text-gold underline underline-offset-4">{t("viewAll")}</Link>
     </Card>
   );
 }

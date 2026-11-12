@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { MotionConfig, motion, type Transition, type Variants } from "motion/react";
 
 /**
@@ -9,13 +10,15 @@ export const EASE_OUT = [0.22, 1, 0.36, 1] as const;
 export const ENTER: Transition = { duration: 0.32, ease: EASE_OUT };
 
 export function MotionProvider({ children }: { children: React.ReactNode }) {
+  // Tells the head script (JS_FLAG in the root layout) that the app is running, so it keeps animations switched on.
+  useEffect(() => { (window as Window & { __zosReady?: boolean }).__zosReady = true; }, []);
   return <MotionConfig reducedMotion="user" transition={ENTER}>{children}</MotionConfig>;
 }
 
 /** Fades and lifts its content in once, on mount. */
 export function Reveal({ children, className, delay = 0, y = 8 }: { children: React.ReactNode; className?: string; delay?: number; y?: number }) {
   return (
-    <motion.div className={className} initial={{ opacity: 0, y }} animate={{ opacity: 1, y: 0 }} transition={{ ...ENTER, delay }}>
+    <motion.div data-anim className={className} initial={{ opacity: 0, y }} animate={{ opacity: 1, y: 0 }} transition={{ ...ENTER, delay }}>
       {children}
     </motion.div>
   );
@@ -31,13 +34,14 @@ export function Stagger({ children, className, as = "div", "aria-label": label }
 }
 export function StaggerItem({ children, className, as = "div" }: { children: React.ReactNode; className?: string; as?: "div" | "li" }) {
   const M = motion[as];
-  return <M className={className} variants={item}>{children}</M>;
+  return <M data-anim className={className} variants={item}>{children}</M>;
 }
 
 /** A horizontal bar that grows from the start edge (left in English, right in Arabic) to its width. */
 export function GrowBar({ width, rtl, className, delay = 0 }: { width: string; rtl: boolean; className?: string; delay?: number }) {
   return (
     <motion.div
+      data-anim
       className={className}
       style={{ width, originX: rtl ? 1 : 0 }}
       initial={{ scaleX: 0 }}

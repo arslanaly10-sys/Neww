@@ -17,7 +17,7 @@ export function Fig({
     <Popover.Root>
       <Popover.Trigger
         aria-label={`${label}: ${value}. ${t("source")}`}
-        className="cursor-pointer rounded [unicode-bidi:isolate] underline decoration-gold/50 decoration-dotted underline-offset-4 hover:decoration-gold"
+        className="tap cursor-pointer rounded [unicode-bidi:isolate] underline decoration-gold/50 decoration-dotted underline-offset-4 hover:decoration-gold"
       >
         {value}
       </Popover.Trigger>

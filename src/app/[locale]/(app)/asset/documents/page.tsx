@@ -37,7 +37,7 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
 
   return (
     <div className="space-y-8">
-      <Link href="/asset" className="inline-block text-sm text-gold underline underline-offset-4">{(await getTranslations("asset"))("back")}</Link>
+      <Link href="/asset" className="tap inline-block text-sm text-gold underline underline-offset-4">{(await getTranslations("asset"))("back")}</Link>
       <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <section aria-labelledby="flags">
@@ -55,7 +55,7 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
                     <I aria-hidden="true" size={18} className={f.kind === "missing" || f.kind === "expired" ? "mt-0.5 shrink-0 text-danger" : "mt-0.5 shrink-0 text-gold"} />
                     <div className="min-w-0 flex-1">
                       <p>{text(f)}</p>
-                      <p className="mt-0.5 text-xs text-muted">{when(f)}{when(f) ? " · " : ""}<Link href={`/asset/${f.assetId}`} className="text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
+                      <p className="mt-0.5 text-xs text-muted">{when(f)}{when(f) ? " · " : ""}<Link href={`/asset/${f.assetId}`} className="tap text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
                     </div>
                     <Badge tone={tone[f.kind]} className="shrink-0 normal-case">{t(f.kind)}</Badge>
                   </Card>
