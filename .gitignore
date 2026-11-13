@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /public/maplibre/
+
+# Files uploaded to Horus on a local server
+/.data/

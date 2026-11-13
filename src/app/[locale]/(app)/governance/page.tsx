@@ -12,6 +12,7 @@ import { listAudit, verifyChain } from "@/lib/audit-service";
 import { can } from "@/lib/permissions";
 import { Link } from "@/i18n/navigation";
 import { dateFmt, listSep } from "@/lib/format";
+import { getLeadsAndOutbox } from "@/lib/outbox";
 
 export default async function Governance({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ q?: string; action?: string; p?: string }> }) {
   const { locale } = await params;
@@ -26,6 +27,9 @@ export default async function Governance({ params, searchParams }: { params: Pro
   const page = Math.max(1, Number(sp.p) || 1);
   const audit = isAdmin ? await listAudit(user, { q: sp.q, action: sp.action, limit: PAGE, offset: (page - 1) * PAGE }) : null;
   const ar = locale === "ar";
+  const inbox = await getLeadsAndOutbox(user);
+  const ob = await getTranslations("outbox");
+  const when = (d: Date) => d.toLocaleString(ar ? "ar-EG" : "en-GB", { dateStyle: "medium", timeStyle: "short", numberingSystem: "latn" });
   const r = await getTranslations("roles");
   const db = await getDb();
   const pol = await db.execute(sql`select count(*)::int as n from pg_policies where schemaname = 'public'`);
@@ -149,6 +153,43 @@ export default async function Governance({ params, searchParams }: { params: Pro
           </div>
         )}
       </section>
+      {inbox && (
+        <section className="mt-10" aria-labelledby="outbox">
+          <h2 id="outbox" className="font-display text-2xl">{ob("title")}</h2>
+          <p className="mb-3 max-w-md text-sm text-muted">{ob("lead")}</p>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card className="p-4">
+              <h3 className="font-semibold">{ob("leads", { n: inbox.leads.length })}</h3>
+              {inbox.leads.length === 0 ? <p className="mt-2 text-sm text-muted">{ob("leadsEmpty")}</p> : (
+                <ul className="mt-2 divide-y divide-line text-sm">
+                  {inbox.leads.map((l) => (
+                    <li key={l.id} className="py-2">
+                      <p className="font-semibold">{l.name}{l.company ? `${listSep(locale)}${l.company}` : ""}</p>
+                      <p className="text-muted"><bdi>{l.email}</bdi>{listSep(locale)}{when(l.createdAt)}</p>
+                      {l.message && <p className="mt-1">{l.message}</p>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+            <Card className="p-4">
+              <h3 className="font-semibold">{ob("mail", { n: inbox.outbox.length })}</h3>
+              {inbox.outbox.length === 0 ? <p className="mt-2 text-sm text-muted">{ob("mailEmpty")}</p> : (
+                <ul className="mt-2 divide-y divide-line text-sm">
+                  {inbox.outbox.map((m) => (
+                    <li key={m.id} className="py-2">
+                      <details>
+                        <summary className="cursor-pointer"><span className="font-semibold">{m.subject}</span><span className="block text-muted">{ob("to")} <bdi>{m.to}</bdi>{listSep(locale)}{when(m.createdAt)}</span></summary>
+                        <p className="mt-2 whitespace-pre-line text-muted">{m.body}</p>
+                      </details>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

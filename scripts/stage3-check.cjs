@@ -135,6 +135,8 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   const dlg = p.getByRole("dialog", { name: /Horus/ });
   await dlg.waitFor();
   log(await dlg.getByText("AI informs, you decide").isVisible(), "Horus panel shows the brand line");
+  log((await dlg.getByRole("button").filter({ hasText: /\?$|^Explain|^Draft/ }).count()) === 4, "four suggested questions shown first");
+  await dlg.getByRole("button", { name: /Show \d+ more questions/ }).click();
   log((await dlg.getByRole("button").filter({ hasText: /\?$|^Explain|^Draft/ }).count()) >= 12, "twelve suggested questions for a manager");
   await dlg.getByRole("button", { name: "What is the total portfolio value?" }).click();
   await dlg.getByText(/The portfolio holds 30 assets/).waitFor({ timeout: 15000 });
@@ -231,6 +233,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
     await p.goto(`${BASE}/${loc}/valuation#queue`); await settle(p); await noH(p, `${loc} review queue @390`);
     await p.getByRole("button", { name: loc === "en" ? "Ask Horus" : "اسأل حورس" }).first().click();
     const d = p.getByRole("dialog", { name: /Horus|حورس/ }); await d.waitFor();
+    await d.getByRole("button", { name: /Show \d+ more questions|عرض \d+ أسئلة أخرى/ }).click();
     await d.getByRole("button", { name: loc === "en" ? "Which assets are vacant?" : "ما الأصول الشاغرة؟" }).click();
     await d.locator("article").getByText(loc === "en" ? /assets are vacant/ : /من الأصول الشاغرة/).first().waitFor({ timeout: 15000 });
     await p.waitForTimeout(500);

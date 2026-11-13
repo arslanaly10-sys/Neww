@@ -1,7 +1,8 @@
 import "server-only";
 import { and, desc, eq, inArray, ne } from "drizzle-orm";
 import { withSession } from "@/db/client";
-import { documents, districts, investorUpdates, marketSeries, valuations } from "@/db/schema";
+import { documents, districts, horusFiles, investorUpdates, marketSeries, valuations } from "@/db/schema";
+import { getAlerts } from "../alerts-service";
 import { getPortfolio, type PortfolioRow } from "../access";
 import { getAggregateIncome } from "../portfolio-data";
 import { momentum3m, portfolioMetrics, sentiment } from "../metrics";
@@ -33,6 +34,10 @@ export const TOOLS = [
   { name: "explain_valuation", description: "Explain a valuation: the model estimate, each driver's effect, the range, confidence, the five comparable sales and any human adjustment with its reason. Defaults to the most recent valuation.", input_schema: { type: "object", properties: { valuationId: { type: "string", description: "e.g. V-0001" } }, additionalProperties: false } },
   { name: "recent_updates", description: "Latest published investor updates (title, date, text).", input_schema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 12 } }, additionalProperties: false } },
 ] as const;
+
+/** Tools that only make sense in some conversations are added by the gateway. */
+export const ALERTS_TOOL = { name: "open_alerts", description: "Open alerts the user can act on (lease renewals, missing documents, valuation drift, vacancy cost), each with its key, asset and severity. Use the key to propose snoozing an alert.", input_schema: { type: "object", properties: {}, additionalProperties: false } } as const;
+export const FILE_TOOL = { name: "read_file", description: "Read the text of a file the user attached to this conversation. Quote it; never guess at parts that are not in the text.", input_schema: { type: "object", properties: { fileId: { type: "string", description: "e.g. F-ab12cd" } }, required: ["fileId"], additionalProperties: false } } as const;
 
 export const TOOL_NAMES = TOOLS.map((t) => t.name) as string[];
 type Args = Record<string, unknown>;
@@ -151,6 +156,24 @@ const impl: Record<string, (c: HorusCtx, a: Args) => Promise<ToolOut>> = {
         comparablesImplied: r.compsImpliedEgp ? f(r.compsImpliedEgp) : null, driftVsComparables: r.driftVsCompsPct === null ? null : `${r.driftVsCompsPct}%`,
       },
     };
+  },
+
+  async open_alerts(c) {
+    const { open } = await getAlerts(asUser(c));
+    const sev = { high: 0, medium: 1, low: 2 } as const;
+    const rows = [...open].sort((a, b) => sev[a.severity] - sev[b.severity]).slice(0, 15);
+    return {
+      cites: rows.flatMap((x) => [`alert:${x.key}`, `asset:${x.assetId}`]),
+      data: { count: open.length, alerts: rows.map((x) => ({ key: x.key, kind: x.kind, severity: x.severity, assetId: x.assetId, asset: c.locale === "ar" ? x.assetNameAr : x.assetName, detail: x.detail })) },
+    };
+  },
+
+  async read_file(c, a) {
+    const id = String(a.fileId ?? "");
+    if (!(c.fileIds ?? []).includes(id)) return { cites: [], data: { error: "file_not_attached" } };
+    const [f] = await withSession(sess(c), (tx) => tx.select().from(horusFiles).where(eq(horusFiles.id, id)));
+    if (!f) return { cites: [], data: { error: "file_not_found" } };
+    return { cites: [`file:${f.id}`], data: { id: f.id, name: f.name, pages: f.pages, text: f.text.slice(0, 14000), truncated: f.text.length > 14000 } };
   },
 
   async recent_updates(c, a) {

@@ -4,14 +4,15 @@ import { runTool } from "./tools";
 import { DEMO_TODAY } from "../assumptions";
 import { dateFmt } from "../format";
 import { normaliseDigits } from "./validate";
-import type { Block, Draft, HorusAnswer, HorusCtx, Notice } from "./types";
+import { searchHelp } from "../help/articles";
+import type { Block, Draft, HorusAction, HorusAnswer, HorusCtx, Notice } from "./types";
 
 /**
  * Scripted fallback used when no API key is set, the rate limit is hit or the model call fails.
  * It calls the same deterministic tools as the live path and writes the answer from fixed templates in both languages.
  * It recognises twelve kinds of question; anything else gets an honest "I can't verify that".
  */
-export type Intent = "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
+export type Intent = "file" | "snooze" | "startval" | "email" | "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
 
 export const SUGGESTED: Intent[] = ["value", "gain", "yield", "units", "vacant", "expiring", "docs", "largest", "concentration", "market", "valuation", "draft"];
 
@@ -31,27 +32,38 @@ const KEYS: [Intent, RegExp][] = [
   ["value", /value|worth|how much|portfolio|قيمة|تبلغ|كم|المحفظة/i],
 ];
 const ASSET_RE = /\bA[- ]?(\d{1,3})\b/i;
+const SNOOZE_RE = /snooze|postpone|defer|أجّل|أجل|تأجيل/i;
+const STARTVAL_RE = /(run|start|new|begin|open)\b.{0,20}valuation|valuation (for|of)\b|value (asset )?a[- ]?\d|ابدأ.{0,10}تقييم|تقييم جديد|شغّل.{0,10}تقييم|قيّم/i;
+const EMAIL_RE = /e-?mail|mail to|بريد|إيميل|رسالة إلى/i;
+const FILE_RE = /file|attach|upload|this (document|pdf|lease)|summari[sz]e|الملف|مرفق|المرفق|لخّص|لخص|هذا المستند/i;
 
-export function classify(q: string): { intent: Intent | null; assetId?: string } {
+export function classify(q: string, hasFiles = false): { intent: Intent | null; assetId?: string } {
   const text = normaliseDigits(q);
   const m = text.match(ASSET_RE);
-  if (m) return { intent: "asset", assetId: `A-${m[1].padStart(3, "0")}` };
+  const assetId = m ? `A-${m[1].padStart(3, "0")}` : undefined;
+  if (hasFiles && FILE_RE.test(text)) return { intent: "file" };
+  if (SNOOZE_RE.test(text)) return { intent: "snooze" };
+  if (assetId && STARTVAL_RE.test(text)) return { intent: "startval", assetId };
+  if (EMAIL_RE.test(text)) return { intent: "email" };
+  if (assetId) return { intent: "asset", assetId };
   for (const [i, re] of KEYS) if (re.test(text)) return { intent: i };
-  return { intent: null };
+  return hasFiles ? { intent: "file" } : { intent: null };
 }
 
 type TData = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const list = (xs: string[], sep: string) => xs.join(sep);
 
-export async function scriptedAnswer(question: string, c: HorusCtx, notice: Notice): Promise<HorusAnswer> {
+export async function scriptedAnswer(question: string, c: HorusCtx, notice: Notice, onStep?: (tool: string) => void): Promise<HorusAnswer> {
   const t = await getTranslations({ locale: c.locale, namespace: "horus" });
   const st = await getTranslations({ locale: c.locale, namespace: "status" });
   const dk = await getTranslations({ locale: c.locale, namespace: "docKind" });
   const ds = await getTranslations({ locale: c.locale, namespace: "docStatus" });
   const ty = await getTranslations({ locale: c.locale, namespace: "types" });
+  const al = await getTranslations({ locale: c.locale, namespace: "al" });
   const sep = t("sep");
-  const { intent, assetId } = classify(question);
+  const { intent, assetId } = classify(question, Boolean(c.fileIds?.length));
   const blocks: Block[] = [];
+  const actions: HorusAction[] = [];
   let draft: Draft | null = null;
   const base = { question, mode: "scripted" as const, notice, dropped: 0, advice: false };
   const cannot = (): HorusAnswer => ({ ...base, blocks: [], cannotVerify: true, draft: null });
@@ -59,10 +71,54 @@ export async function scriptedAnswer(question: string, c: HorusCtx, notice: Noti
   if (!intent) return cannot();
   if (intent === "advice") return { ...base, blocks: [], cannotVerify: false, draft: null, advice: true };
 
-  const run = async (name: string, args: Record<string, unknown> = {}) => runTool(name, args, c);
+  const run = async (name: string, args: Record<string, unknown> = {}) => { onStep?.(name); return runTool(name, args, c); };
   const cites = (...o: { cites: string[] }[]) => [...new Set(o.flatMap((x) => x.cites))];
 
   switch (intent) {
+    case "file": {
+      for (const id of (c.fileIds ?? []).slice(0, 3)) {
+        const f = await run("read_file", { fileId: id }); const d = f.data as TData;
+        if (d.error) continue;
+        const text = String(d.text).replace(/\[page \d+\]/g, " ").replace(/\s+/g, " ").trim();
+        const dates = [...new Set(text.match(/\b\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}\b|\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}\b/gi) ?? [])].slice(0, 6);
+        const amounts = [...new Set(text.match(/(EGP|USD|E£|\$|جنيه)\s?\d[\d,]*\d(\.\d+)?|\d[\d,]{2,}\d(\.\d+)?\s?(EGP|USD|جنيه)/gi) ?? [])].slice(0, 6);
+        const opening = text.split(/(?<=[.!?؟])\s/).slice(0, 2).join(" ").slice(0, 360);
+        blocks.push({ text: t("s_file", { name: d.name, pages: d.pages, words: text.split(" ").length }), cites: f.cites });
+        if (opening) blocks.push({ text: t("s_file_opening", { text: opening }), cites: f.cites });
+        if (dates.length || amounts.length) blocks.push({ text: t("s_file_found", { dates: dates.length ? list(dates, sep) : t("none"), amounts: amounts.length ? list(amounts, sep) : t("none") }), cites: f.cites });
+      }
+      if (!blocks.length) return cannot();
+      blocks.push({ text: t("s_file_scripted"), cites: [`file:${c.fileIds![0]}`] });
+      break;
+    }
+    case "snooze": {
+      if (c.user.role !== "manager") return { ...base, blocks: [{ text: t("s_action_denied"), cites: [] }], cannotVerify: false, draft: null };
+      const s = await run("open_alerts"); const d = s.data as TData;
+      const top = d.alerts?.[0];
+      if (!top) { blocks.push({ text: t("s_snooze_none"), cites: ["calc:portfolio_summary"] }); break; }
+      blocks.push({ text: t("s_snooze", { n: d.count, asset: top.asset, id: top.assetId, kind: al(`kind_${top.kind}` as "kind_lease_renewal"), severity: al(`sev_${top.severity}` as "sev_high") }), cites: [`alert:${top.key}`, `asset:${top.assetId}`] });
+      actions.push({ kind: "snooze_alert", alertKey: top.key, label: top.asset, reason: t("s_snooze_reason") });
+      break;
+    }
+    case "startval": {
+      const s = await run("asset_detail", { assetId }); const d = s.data as TData;
+      if (d.error) return cannot();
+      blocks.push({ text: t("s_startval", { name: d.name, id: d.id, value: d.value.display }), cites: [`asset:${d.id}`] });
+      actions.push({ kind: "start_valuation", assetId: d.id, label: d.name });
+      break;
+    }
+    case "email": {
+      if (c.user.role !== "manager") return { ...base, blocks: [{ text: t("s_action_denied"), cites: [] }], cannotVerify: false, draft: null };
+      const [s, e] = await Promise.all([run("portfolio_summary"), run("expiring_leases", { withinDays: 120 })]);
+      const d = s.data as TData;
+      blocks.push({ text: t("s_email_intro"), cites: s.cites });
+      actions.push({
+        kind: "draft_email", to: "karim@sample.test",
+        subject: t("s_email_subject", { date: dateFmt(DEMO_TODAY, c.locale) }),
+        body: t("s_email_body", { count: d.assetCount, value: d.value.display, gain: d.unrealisedGain.display, expiring: (e.data as TData).count, name: c.user.name }),
+      });
+      break;
+    }
     case "value": {
       const s = await run("portfolio_summary"); const d = s.data as TData;
       blocks.push({ text: t("s_value", { count: d.assetCount, value: d.value.display, cost: d.cost.display }), cites: s.cites });
@@ -153,5 +209,19 @@ export async function scriptedAnswer(question: string, c: HorusCtx, notice: Noti
       break;
     }
   }
-  return { ...base, blocks, cannotVerify: blocks.length === 0, draft };
+  return { ...base, blocks, cannotVerify: blocks.length === 0 && actions.length === 0, draft, actions };
+}
+
+/** Help mode without a model: the best-matching help article, quoted, with links to the closest others. */
+export async function scriptedHelp(question: string, c: HorusCtx, notice: Notice, publicOnly = false): Promise<HorusAnswer> {
+  const lang = c.locale === "ar" ? "ar" : "en";
+  const hits = searchHelp(question, { publicOnly, limit: 3 });
+  const base = { question, mode: "scripted" as const, notice, dropped: 0, advice: false, draft: null };
+  if (!hits.length) return { ...base, blocks: [], cannotVerify: true, help: [] };
+  const top = hits[0].article;
+  return {
+    ...base, cannotVerify: false,
+    blocks: [{ text: top.body[lang], cites: [`help:${top.id}`] }],
+    help: hits.map((h) => ({ id: h.article.id, title: h.article.title[lang], href: h.article.href ?? null })),
+  };
 }

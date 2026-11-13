@@ -79,3 +79,27 @@ CREATE POLICY upd_read ON investor_updates FOR SELECT TO app_user
   USING (app_role() IN ('investor','manager') AND (status = 'published' OR app_role() = 'manager'));
 DROP POLICY IF EXISTS upd_write ON investor_updates;
 CREATE POLICY upd_write ON investor_updates FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+
+-- Horus conversations and uploaded files: each user reads and writes only their own rows.
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['horus_threads','horus_messages','horus_files']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS own_rows ON %I', t);
+    EXECUTE format($p$CREATE POLICY own_rows ON %I FOR ALL TO app_user USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id())$p$, t);
+  END LOOP;
+END $$;
+GRANT DELETE ON horus_threads, horus_messages TO app_user;
+
+-- Demo requests and the simulated outbox are written by the server itself (the public chatbot has no session).
+-- Signed-in users may only read them: managers and the administrator.
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS leads_read ON leads;
+CREATE POLICY leads_read ON leads FOR SELECT TO app_user USING (app_role() IN ('manager','admin'));
+ALTER TABLE outbox ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS outbox_read ON outbox;
+CREATE POLICY outbox_read ON outbox FOR SELECT TO app_user USING (app_role() IN ('manager','admin') OR created_by = app_user_id());
+DROP POLICY IF EXISTS outbox_write ON outbox;
+CREATE POLICY outbox_write ON outbox FOR INSERT TO app_user WITH CHECK (created_by = app_user_id());

@@ -267,3 +267,61 @@ export const packExports = pgTable("pack_exports", {
   lang: text("lang").notNull(),
   at: timestamp("at", { withTimezone: true }).notNull(),
 });
+
+/** Horus conversations. Each user sees only their own threads (row-level security). */
+export const horusThreads = pgTable("horus_threads", {
+  id: text("id").primaryKey(), // T-<random>
+  userId: text("user_id").notNull().references(() => users.id),
+  mode: text("mode").notNull(), // portfolio | help
+  title: text("title").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+}, (t) => [index("horus_threads_user").on(t.userId, t.updatedAt)]);
+
+/** One question and its answer per row, in order. The answer is the validated answer object shown to the user. */
+export const horusMessages = pgTable("horus_messages", {
+  id: text("id").primaryKey(),
+  threadId: text("thread_id").notNull().references(() => horusThreads.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => users.id),
+  question: text("question").notNull(),
+  answer: jsonb("answer").notNull(),
+  fileIds: jsonb("file_ids").notNull().default([]),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+}, (t) => [index("horus_messages_thread").on(t.threadId, t.createdAt)]);
+
+/** Files uploaded for Horus to read. The bytes live on local disk; the extracted text is kept here. */
+export const horusFiles = pgTable("horus_files", {
+  id: text("id").primaryKey(), // F-<random>
+  userId: text("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  mime: text("mime").notNull(),
+  size: integer("size").notNull(),
+  pages: integer("pages").notNull(),
+  sha256: text("sha256").notNull(),
+  text: text("text").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/** Demo requests from the public chatbot on the sign-in page. */
+export const leads = pgTable("leads", {
+  id: text("id").primaryKey(), // L-<random>
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  company: text("company").notNull().default(""),
+  message: text("message").notNull().default(""),
+  locale: text("locale").notNull(),
+  status: text("status").notNull(), // new | contacted
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/** Simulated email: everything the app would send is written here instead. Nothing leaves the server. */
+export const outbox = pgTable("outbox", {
+  id: text("id").primaryKey(), // M-<random>
+  kind: text("kind").notNull(), // lead_ack | lead_notify | horus_email | ...
+  to: text("to_addr").notNull(),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  refId: text("ref_id"),
+  createdBy: text("created_by").notNull(), // a user id, or "public"
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});

@@ -12,7 +12,7 @@ import { SideNav, TabBar } from "@/components/shell/nav";
 import { CurrencyToggle, LangToggle, RoleSwitcher } from "@/components/shell/controls";
 import { CommandBar } from "@/components/shell/command-bar";
 import { HorusProvider } from "@/components/horus/provider";
-import { HorusButton, HorusPanel } from "@/components/horus/panel";
+import { HorusBubble, HorusButton, HorusPanel } from "@/components/horus/panel";
 import { can } from "@/lib/permissions";
 import { attentionCount } from "@/lib/alerts-service";
 import { Link } from "@/i18n/navigation";
@@ -63,7 +63,7 @@ export default async function AppShell({ children, params }: { children: React.R
             <Bell aria-hidden="true" size={16} />
             {attention.total ? <span aria-hidden="true" className="num absolute -end-1.5 -top-1.5 min-w-4 rounded-full bg-gold-fill px-1 text-center text-[10px] font-bold leading-4 text-on-gold">{attention.total}</span> : null}
           </Link>
-          {can(user.role, "horus.use") && <HorusButton />}
+          {can(user.role, "horus.use") && <HorusButton className="hidden md:inline-flex" />}
           <CurrencyToggle current={currency} rate={SAMPLE_FX_EGP_PER_USD} />
           <RoleSwitcher users={demoUsers.map((u) => ({ id: u.id, name: u.name, nameAr: u.nameAr, role: u.role as "investor" }))} currentId={user.id} />
           <LangToggle />
@@ -72,7 +72,8 @@ export default async function AppShell({ children, params }: { children: React.R
         <footer className="border-t border-line px-4 py-4 text-xs text-muted md:px-8">{s("footer")}</footer>
       </div>
       <TabBar areas={areas} badges={badges} />
-      {can(user.role, "horus.use") && <HorusPanel role={user.role} />}
+      {can(user.role, "help.use") && <HorusPanel role={user.role} />}
+      {can(user.role, "help.use") && <HorusBubble helpOnly={!can(user.role, "horus.use")} />}
     </div>
     </HorusProvider>
   );

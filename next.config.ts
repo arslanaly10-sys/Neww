@@ -17,6 +17,8 @@ const csp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // Horus accepts files up to 8 MB (src/lib/horus/files.ts); leave room for the multipart overhead.
+  experimental: { serverActions: { bodySizeLimit: "9mb" } },
   serverExternalPackages: ["@electric-sql/pglite", "@react-pdf/renderer", "unpdf"],
   turbopack: { rules: { "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" } } },
   outputFileTracingIncludes: { "/**": ["./src/db/migrations/**", "./src/db/rls.sql", "./assets/fonts/**", "./public/samples/**"] },

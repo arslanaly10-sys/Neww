@@ -13,13 +13,16 @@ declare global {
 }
 
 const LOCK_KEY = 727001; // advisory lock: only one process provisions the database at a time
-const MARKER = "_zos_provisioned";
+// Bump the marker when the schema changes: a database provisioned by an older version is rebuilt from the seed.
+const MARKER = "_zos_provisioned_v2";
 
 async function readSql() {
-  const { readFile } = await import("node:fs/promises");
+  const { readFile, readdir } = await import("node:fs/promises");
   const path = await import("node:path");
   const root = process.cwd();
-  const ddl = (await readFile(path.join(root, "src/db/migrations/0000_init.sql"), "utf8")).split("--> statement-breakpoint");
+  const dir = path.join(root, "src/db/migrations");
+  const files = (await readdir(dir)).filter((f) => /^\d{4}_.*\.sql$/.test(f)).sort();
+  const ddl = (await Promise.all(files.map((f) => readFile(path.join(dir, f), "utf8")))).flatMap((s) => s.split("--> statement-breakpoint"));
   const rls = await readFile(path.join(root, "src/db/rls.sql"), "utf8");
   return { ddl, rls };
 }

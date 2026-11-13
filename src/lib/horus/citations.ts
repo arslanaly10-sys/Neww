@@ -10,6 +10,9 @@ import { momentum3m, sentiment } from "../metrics";
 import { CITE_RE } from "./types";
 import { runTool } from "./tools";
 import type { CurrentUser } from "../session";
+import { articleById } from "../help/articles";
+import { getHorusFile } from "./files";
+import { getAlerts } from "../alerts-service";
 
 export interface CiteRow { label: string; value: string }
 export interface CiteDetail { id: string; kind: string; title: string; rows: CiteRow[]; href: string | null; sample: boolean }
@@ -29,6 +32,25 @@ export async function resolveCitation(user: CurrentUser, id: string, locale: str
   const M = (n: number) => money(n, currency, locale, { fx: SAMPLE_FX_EGP_PER_USD });
   const D = (d: string | null) => (d ? dateFmt(d, locale) : "–");
   const row = (label: string, value: string | number | null | undefined): CiteRow => ({ label, value: value === null || value === undefined || value === "" ? "–" : String(value) });
+
+  if (kind === "help") {
+    const a = articleById(key);
+    if (!a) return null;
+    const lang = ar ? "ar" : "en";
+    return { id, kind, href: a.href ?? null, sample: false, title: a.title[lang], rows: [row(t("text"), a.body[lang])] };
+  }
+  if (kind === "file") {
+    const f = await getHorusFile(user, key);
+    if (!f) return null;
+    return { id, kind, href: null, sample: false, title: `${f.id}: ${f.name}`, rows: [row(t("pages"), f.pages), row(t("uploaded"), D(f.createdAt.toISOString().slice(0, 10))), row(t("sha256"), f.sha256.slice(0, 16)), row(t("excerpt"), f.text.replace(/\[page \d+\]/g, " ").replace(/\s+/g, " ").trim().slice(0, 400))] };
+  }
+  if (kind === "alert") {
+    const { open, snoozed } = await getAlerts(user);
+    const a = [...open, ...snoozed].find((x) => x.key === key);
+    if (!a) return null;
+    const al = await getTranslations({ locale, namespace: "al" });
+    return { id, kind, href: `/asset/${a.assetId}`, sample: true, title: `${al(`kind_${a.kind}` as "kind_lease_renewal")}: ${ar ? a.assetNameAr : a.assetName}`, rows: [row(t("asset"), a.assetId), row(t("severity"), al(`sev_${a.severity}` as "sev_high")), row(t("status"), a.status)] };
+  }
 
   // Calculations run their own session transactions, so they must not be nested inside another one.
   if (kind === "calc") {

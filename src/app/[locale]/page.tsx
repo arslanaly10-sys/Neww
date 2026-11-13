@@ -13,6 +13,7 @@ import { DEMO_TODAY } from "@/lib/assumptions";
 import { dateFmt } from "@/lib/format";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import { BlurHeadline, HeroDots } from "@/components/brand-fx";
+import { PublicChat } from "@/components/public-chat";
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -68,6 +69,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
         </Stagger>
         <p className="mt-8 text-xs text-muted">{s("asOf", { date: dateFmt(DEMO_TODAY, locale) })}. {s("footer")}</p>
       </main>
+      <PublicChat />
     </div>
   );
 }

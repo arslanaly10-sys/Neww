@@ -2,14 +2,14 @@
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import * as Dialog from "@radix-ui/react-dialog";
-import { BarChart3, Building2, Calculator, FileText, Handshake, LineChart, Megaphone, ReceiptText, X } from "lucide-react";
+import { BarChart3, Bell, Building2, Calculator, FileText, Handshake, LifeBuoy, LineChart, Megaphone, Paperclip, ReceiptText, X } from "lucide-react";
 import { getCitationAction } from "@/app/horus-actions";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "../ui";
 
-const ICON = { asset: Building2, lease: Handshake, valuation: ReceiptText, market: LineChart, doc: FileText, update: Megaphone, sale: BarChart3, calc: Calculator } as const;
+const ICON = { asset: Building2, lease: Handshake, valuation: ReceiptText, market: LineChart, doc: FileText, update: Megaphone, sale: BarChart3, calc: Calculator, file: Paperclip, help: LifeBuoy, alert: Bell } as const;
 type Kind = keyof typeof ICON;
-interface Detail { id: string; kind: string; title: string; rows: { label: string; value: string }[]; href: string | null }
+interface Detail { id: string; kind: string; title: string; rows: { label: string; value: string }[]; href: string | null; sample?: boolean }
 
 /** A citation chip: icon plus short code. Opens the exact row the claim came from, fetched under the viewer's own permissions. */
 export function CitationChip({ id }: { id: string }) {
@@ -18,10 +18,11 @@ export function CitationChip({ id }: { id: string }) {
   const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState<Detail | null | undefined>(undefined);
   const [pending, start] = useTransition();
-  const [kind, key] = id.split(":") as [Kind, string];
+  const kind = id.slice(0, id.indexOf(":")) as Kind;
+  const key = id.slice(id.indexOf(":") + 1);
   const Icon = ICON[kind] ?? FileText;
   const calcName = kind === "calc" ? (key.startsWith("risk_") ? `${t("c_risk")} ${key.slice(5)}` : (t.has(`c_${key}`) ? t(`c_${key}` as "c_risk") : key.replace(/_/g, " "))) : null;
-  const short = calcName ?? key;
+  const short = calcName ?? (kind === "alert" ? key.split(":").pop()! : key);
 
   const load = () => start(async () => { setDetail(await getCitationAction(id, locale)); });
   return (
@@ -37,7 +38,7 @@ export function CitationChip({ id }: { id: string }) {
             <div>
               <Dialog.Title className="font-display text-xl">{detail?.title ?? `${t(`k_${kind}` as "k_asset")} ${short}`}</Dialog.Title>
               <Dialog.Description className="sr-only">{t("sampleNote")}</Dialog.Description>
-              <Badge tone="gold" className="mt-1">{t("sampleNote")}</Badge>
+              {detail?.sample !== false && <Badge tone="gold" className="mt-1">{t("sampleNote")}</Badge>}
             </div>
             <Dialog.Close className="grid size-9 place-items-center rounded-md hover:bg-surface-2" aria-label={t("close")}><X aria-hidden="true" size={16} /></Dialog.Close>
           </div>
