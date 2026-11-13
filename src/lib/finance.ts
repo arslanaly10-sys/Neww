@@ -11,6 +11,7 @@ import { queueEmail } from "./outbox";
 import { DEMO_TODAY, SAMPLE_FX_EGP_PER_USD } from "./assumptions";
 import { budgetVsActual, CATEGORIES, forecast, isIncome, monthly, monthOf, quarterMonths, quarterOf, sum, suggestDistribution, addMonths, type Line } from "./finance-calc";
 import type { CurrentUser } from "./session";
+import { notify } from "./notify";
 
 /**
  * Cash flow and finance. The ledger (the seeded income and cost lines plus hand-entered ones), the budget and the
@@ -114,6 +115,7 @@ export async function proposeDistribution(user: CurrentUser, raw: unknown): Prom
     await tx.insert(approvals).values({ id: approvalId, kind: "distribution", refId: id, proposedBy: user.id, routeRole: "manager", status: "pending", note: p.data.note || null, createdAt: now });
   });
   const ev = await appendAudit({ actorId: user.id, actorRole: user.role, action: "distribution.propose", entity: "distribution", entityId: id, detail: { period: f.nextDistribution.period, amountEgp: p.data.amountEgp, basisNoiEgp: f.nextDistribution.noi, approval: approvalId } });
+  await notify({ to: { roles: ["manager"] }, kind: "approval_request", params: { id, what: "distribution" }, link: "/overview/alerts", actorId: user.id });
   return { ok: true, id, approvalId, auditSeq: ev.seq };
 }
 
@@ -130,5 +132,6 @@ export async function markDistributionPaid(user: CurrentUser, id: string): Promi
   if (!r.ok) return r;
   await queueEmail({ kind: "distribution_paid", to: "karim@sample.test", refId: r.x.id, subject: `Distribution for ${r.x.period} paid`, body: `Dear Karim,\n\nThe distribution for ${r.x.period}, EGP ${r.x.amountEgp.toLocaleString("en-US")}, was paid on ${DEMO_TODAY}.\n\nKind regards,\n${user.name}` }, user);
   const ev = await appendAudit({ actorId: user.id, actorRole: user.role, action: "distribution.pay", entity: "distribution", entityId: r.x.id, detail: { period: r.x.period, amountEgp: r.x.amountEgp, paidOn: DEMO_TODAY } });
+  await notify({ to: { roles: ["investor"] }, kind: "distribution_paid", params: { id: r.x.id, period: r.x.period, amount: r.x.amountEgp.toLocaleString("en-US") }, link: "/finance", actorId: user.id });
   return { ok: true, auditSeq: ev.seq };
 }

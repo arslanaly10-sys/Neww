@@ -5,6 +5,7 @@ import { DEMO_TODAY } from "../assumptions";
 import { appendAudit } from "../audit";
 import { can } from "../permissions";
 import type { CurrentUser } from "../session";
+import { notify } from "../notify";
 
 /** Save a Horus draft as an unpublished investor update and route it to a different manager for approval. */
 export async function saveDraftUpdate(user: CurrentUser, d: { title: string; body: string; cites: string[] }, locale: string): Promise<{ ok: true; id: string } | { ok: false; error: "forbidden" }> {
@@ -21,5 +22,6 @@ export async function saveDraftUpdate(user: CurrentUser, d: { title: string; bod
     await tx.insert(approvals).values({ id: next("AP", aids, 3), kind: "update_draft", refId: id, proposedBy: user.id, routeRole: "manager", status: "pending", createdAt: now });
   });
   await appendAudit({ actorId: user.id, actorRole: user.role, action: "update.draft", entity: "investor_update", entityId: id, detail: { language: locale, drafter: "horus", cites: d.cites.slice(0, 30), title: d.title } });
+  await notify({ to: { roles: ["manager"] }, kind: "approval_request", params: { id, what: "update" }, link: "/overview/alerts", actorId: user.id });
   return { ok: true, id };
 }

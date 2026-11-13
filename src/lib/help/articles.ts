@@ -129,6 +129,15 @@ export const ARTICLES: HelpArticle[] = [
     href: "/reports",
   },
   {
+    id: "notifications", public: false, terms: "notifications notify inbox unread email alerts settings preferences mute الإشعارات إشعار الوارد غير مقروء بريد إعدادات تفضيلات",
+    title: { en: "Notifications", ar: "الإشعارات" },
+    body: {
+      en: "The inbox icon in the top bar shows how many notifications you have not read. You are told when something waits for your approval, when a decision is made on what you proposed, when work is assigned to you or finished, when a distribution is paid, when a scheduled report is ready, and about new demo requests. Under Notifications, Settings, choose for each kind whether it appears in the app, is emailed to you, or both.",
+      ar: "تعرض أيقونة الوارد في الشريط العلوي عدد الإشعارات غير المقروءة. تُبلَّغ عندما ينتظر شيء موافقتك، وعند البت فيما اقترحته، وعند إسناد عمل إليك أو إنجازه، وعند دفع توزيع، وعندما يجهز تقرير مجدول، وبطلبات العرض الجديدة. ومن الإشعارات ثم الإعدادات، اختر لكل نوع أن يظهر في التطبيق أو يُرسل إليك بالبريد أو كليهما.",
+    },
+    href: "/notifications",
+  },
+  {
     id: "scenarios", public: false, terms: "scenarios stress test what if rates vacancy sliders sensitivity السيناريوهات اختبار ضغط ماذا لو أسعار شغور",
     title: { en: "Scenarios", ar: "السيناريوهات" },
     body: {

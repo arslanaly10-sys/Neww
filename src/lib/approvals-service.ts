@@ -7,6 +7,7 @@ import { appendAudit } from "./audit";
 import { DEMO_TODAY } from "./assumptions";
 import { decideValuation } from "./valuation-service";
 import type { CurrentUser } from "./session";
+import { notify } from "./notify";
 
 const sess = (u: CurrentUser) => ({ userId: u.id, role: u.role });
 export type ApprovalError = "forbidden" | "not_found" | "self_approval" | "not_pending" | "invalid";
@@ -88,5 +89,6 @@ export async function decideApproval(user: CurrentUser, id: string, decision: "a
     entity: item.kind === "update_draft" ? "investor_update" : item.kind === "distribution" ? "distribution" : "user", entityId: item.refId,
     detail: { approval: id, decision, proposedBy: item.proposedBy, ...(item.kind === "role_change" ? { recordedOnly: true } : {}), ...(n ? { note: n } : {}) },
   });
+  await notify({ to: { users: [item.proposedBy] }, kind: "approval_decided", params: { id: item.refId, outcome: status }, link: item.kind === "distribution" ? "/finance#distributions" : "/overview/alerts", actorId: user.id });
   return { ok: true, status, auditSeq: ev.seq };
 }

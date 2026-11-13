@@ -177,3 +177,13 @@ BEGIN
     EXECUTE format($p$CREATE POLICY mgr_only ON %I FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager')$p$, t);
   END LOOP;
 END $$;
+
+-- Notifications: each person reads and marks their own; they are written by the server for whoever they concern.
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ntf_read ON notifications;
+CREATE POLICY ntf_read ON notifications FOR SELECT TO app_user USING (user_id = app_user_id());
+DROP POLICY IF EXISTS ntf_mark ON notifications;
+CREATE POLICY ntf_mark ON notifications FOR UPDATE TO app_user USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+ALTER TABLE notification_prefs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS prefs_own ON notification_prefs;
+CREATE POLICY prefs_own ON notification_prefs FOR ALL TO app_user USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());

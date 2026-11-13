@@ -7,7 +7,18 @@ type Tree = { [k: string]: string | Tree };
 const flat = (o: Tree, p = ""): Record<string, string> =>
   Object.entries(o).reduce((acc, [k, v]) => (typeof v === "string" ? { ...acc, [`${p}${k}`]: v } : { ...acc, ...flat(v, `${p}${k}.`) }), {} as Record<string, string>);
 const E = flat(en as Tree), A = flat(ar as Tree);
-const placeholders = (s: string) => [...s.matchAll(/\{(\w+)/g)].map((m) => m[1]).sort();
+/** Top-level ICU arguments only: "{name}" and "{name, select, …}" count; the text inside a select's branches does not. */
+const placeholders = (s: string) => {
+  const out: string[] = [];
+  let depth = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === "{") {
+      if (depth === 0) { const m = /^\{(\w+)/.exec(s.slice(i)); if (m) out.push(m[1]); }
+      depth++;
+    } else if (s[i] === "}") depth = Math.max(0, depth - 1);
+  }
+  return out.sort();
+};
 
 describe("message catalogs", () => {
   it("have exactly the same keys in English and Arabic", () => {

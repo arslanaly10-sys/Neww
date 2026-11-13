@@ -13,6 +13,7 @@ import { monthsWindow } from "@/db/seed";
 export const TYPES = ["apartment", "villa", "office", "retail", "land", "mixed"] as const;
 export const FINISHES = ["core_shell", "semi_finished", "fully_finished", "luxury"] as const;
 import { REASON_CODES } from "./reason-codes";
+import { notify } from "./notify";
 export { REASON_CODES };
 
 export const inputSchema = z.object({
@@ -93,6 +94,7 @@ export async function submitValuation(user: CurrentUser, raw: unknown): Promise<
     actorId: user.id, actorRole: user.role, action: "valuation.propose", entity: "valuation", entityId: out,
     detail: { assetId: p.assetId, modelEstimateEgp: res.estimateEgp, finalValueEgp: final, adjustmentPct: Math.round(adjustmentPct * 1000) / 10, reasonCode: p.reasonCode, requiredApprovals: required },
   });
+  await notify({ to: { roles: ["manager"] }, kind: "approval_request", params: { id: out, what: "valuation" }, link: "/valuation#queue", actorId: user.id });
   return { ok: true, id: out, requiredApprovals: required, adjustmentPct };
 }
 
@@ -122,6 +124,11 @@ export async function listValuations(user: CurrentUser): Promise<QueueItem[]> {
 }
 
 /** Approve or reject. Only managers decide, never the proposer, and a second approver is a different person. */
+async function valuationProposer(id: string) {
+  const [v] = await (await getDb()).select({ by: valuations.proposedBy }).from(valuations).where(eq(valuations.id, id));
+  return v?.by ?? null;
+}
+
 export async function decideValuation(user: CurrentUser, id: string, decision: "approve" | "reject", note = ""): Promise<Result<{ status: string; approvals: number; required: number; auditSeq: number }>> {
   if (!can(user.role, "valuation.confirm")) return { ok: false, error: "forbidden" };
   const now = new Date();
@@ -161,5 +168,9 @@ export async function decideValuation(user: CurrentUser, id: string, decision: "
     actorId: user.id, actorRole: user.role, action: decision === "reject" ? "valuation.reject" : out.status === "confirmed" ? "valuation.confirm" : "valuation.approve",
     entity: "valuation", entityId: id, detail: { status: out.status, approvals: out.approvals, required: out.required, assetId: out.assetId, finalValueEgp: out.finalValueEgp, ...(n ? { note: n } : {}) },
   });
+  if (out.status === "confirmed" || out.status === "rejected") {
+    const proposer = await valuationProposer(id);
+    if (proposer) await notify({ to: { users: [proposer] }, kind: "approval_decided", params: { id, outcome: out.status === "confirmed" ? "approved" : "rejected" }, link: "/valuation#history", actorId: user.id });
+  }
   return { ok: true, status: out.status, approvals: out.approvals, required: out.required, auditSeq: ev.seq };
 }

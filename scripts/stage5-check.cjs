@@ -8,7 +8,7 @@ const seenLeak = new Set();
 async function leak(p) {
   // Visible text only; identifiers shown on purpose (audit action codes, hashes) sit in .num or pre elements and are skipped.
   const t = await p.evaluate(() => { const out = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { if (!n.parentElement || n.parentElement.closest(".num, pre, code, script, style, [hidden]")) continue; out.push(n.textContent); } return out.join(" "); });
-  const m = t.match(RAWKEY);
+  const m = t.replace(/\S+@\S+/g, "").match(RAWKEY); // email addresses (name@sample.test) are not message keys
   const u = p.url();
   if (m && !seenLeak.has(u)) { seenLeak.add(u); log(false, `raw message key visible on ${u}: ${m[0]}`); }
 }

@@ -12,6 +12,8 @@ import { SideNav, TabBar } from "@/components/shell/nav";
 import { CurrencyToggle, LangToggle, RoleSwitcher } from "@/components/shell/controls";
 import { CommandBar } from "@/components/shell/command-bar";
 import { AccountSheet } from "@/components/shell/account-sheet";
+import { NotificationsMenu } from "@/components/notify/menu";
+import { unreadCount } from "@/lib/notify";
 import { HorusProvider } from "@/components/horus/provider";
 import { HorusBubble, HorusButton, HorusPanel } from "@/components/horus/panel";
 import { can } from "@/lib/permissions";
@@ -69,6 +71,7 @@ export default async function AppShell({ children, params }: { children: React.R
           <div className="me-auto md:hidden"><Wordmark className="text-base" /></div>
           <CommandBar index={{ areas, assets: index.assets, districts: allDistricts, docs: index.docs, currency, canAsk: can(user.role, "horus.use"), canValue: can(user.role, "valuation.run"), canPack: can(user.role, "pack.generate") }} className="w-11 justify-center px-0 md:w-80 md:max-w-sm md:flex-1 md:justify-start md:px-3" />
           <span className="hidden flex-1 md:block" />
+          <NotificationsMenu initialUnread={await unreadCount(user)} />
           <Link href="/overview/alerts" aria-label={attention.total ? al("badge", { n: attention.total }) : al("bell")} className="relative grid size-11 place-items-center md:size-9 rounded-md border border-line hover:bg-surface-2">
             <Bell aria-hidden="true" size={16} />
             {attention.total ? <span aria-hidden="true" className="num absolute -end-1.5 -top-1.5 min-w-4 rounded-full bg-gold-fill px-1 text-center text-[10px] font-bold leading-4 text-on-gold">{attention.total}</span> : null}

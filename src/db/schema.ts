@@ -479,3 +479,24 @@ export const reportRuns = pgTable("report_runs", {
   generatedBy: text("generated_by").notNull(), // a user id, or "scheduler"
   at: timestamp("at", { withTimezone: true }).notNull(),
 });
+
+/** A notification for one person. The text is built from the kind and its parameters in the reader's language. */
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(), // N-<random>
+  userId: text("user_id").notNull().references(() => users.id),
+  kind: text("kind").notNull(),
+  category: text("category").notNull(), // approvals | work | finance | leasing | reports | sales
+  params: jsonb("params").notNull().default({}),
+  link: text("link"),
+  actorId: text("actor_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  readAt: timestamp("read_at", { withTimezone: true }),
+}, (t) => [index("notifications_user").on(t.userId, t.createdAt)]);
+
+/** Per person and category: whether to notify in the app and by email. Missing rows mean the defaults. */
+export const notificationPrefs = pgTable("notification_prefs", {
+  userId: text("user_id").notNull().references(() => users.id),
+  category: text("category").notNull(),
+  inApp: integer("in_app").notNull(),
+  email: integer("email").notNull(),
+}, (t) => [primaryKey({ columns: [t.userId, t.category] })]);

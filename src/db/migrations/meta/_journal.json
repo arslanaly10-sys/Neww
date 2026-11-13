@@ -43,6 +43,13 @@
       "when": 1794581274530,
       "tag": "0005_stage11_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794582659922,
+      "tag": "0006_stage12_notifications",
+      "breakpoints": true
     }
   ]
 }

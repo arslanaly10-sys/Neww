@@ -9,6 +9,7 @@ import { can } from "./permissions";
 import { addLedgerEntry } from "./finance";
 import { DEMO_TODAY } from "./assumptions";
 import type { CurrentUser } from "./session";
+import { notify } from "./notify";
 
 /**
  * Maintenance and tasks. Everyone who can see assets sees the work on them; investors may report a maintenance
@@ -115,6 +116,8 @@ export async function createWork(user: CurrentUser, raw: unknown): Promise<{ ok:
     await tx.insert(workOrderEvents).values(event(id, user.id, "created", "", { priority: v.priority }));
   });
   const ev = await appendAudit({ actorId: user.id, actorRole: user.role, action: "work.create", entity: "work_order", entityId: id, detail: { kind: v.kind, assetId: v.assetId || null, priority: v.priority, category: v.category } });
+  if (!manager) await notify({ to: { roles: ["manager"] }, kind: "work_reported", params: { id, title: v.title }, link: `/maintenance/${id}`, actorId: user.id });
+  if (v.assigneeId) await notify({ to: { users: [v.assigneeId] }, kind: "work_assigned", params: { id, title: v.title }, link: `/maintenance/${id}`, actorId: user.id });
   return { ok: true, id, auditSeq: ev.seq };
 }
 
@@ -155,6 +158,7 @@ export async function updateWork(user: CurrentUser, id: string, raw: unknown): P
     await tx.insert(workOrderEvents).values(evs);
   });
   const ev = await appendAudit({ actorId: user.id, actorRole: user.role, action: "work.update", entity: "work_order", entityId: id, detail: { changes: evs.map((e) => ({ kind: e.kind, ...e.detail })) } });
+  if (assignee && assignee !== cur.assigneeId) await notify({ to: { users: [assignee] }, kind: "work_assigned", params: { id, title: cur.title }, link: `/maintenance/${id}`, actorId: user.id });
   return { ok: true, changed: evs.map((e) => e.kind), auditSeq: ev.seq };
 }
 
@@ -180,6 +184,7 @@ export async function completeWork(user: CurrentUser, id: string, raw: unknown):
     await tx.insert(workOrderEvents).values(event(id, user.id, "completed", p.data.note, { actualEgp: cost, ledgerEntryId }));
   });
   const ev = await appendAudit({ actorId: user.id, actorRole: user.role, action: "work.complete", entity: "work_order", entityId: id, detail: { actualEgp: cost, ledgerEntryId, estimateEgp: cur.estimateEgp } });
+  await notify({ to: { users: [cur.reportedBy] }, kind: "work_completed", params: { id, title: cur.title }, link: `/maintenance/${id}`, actorId: user.id });
   return { ok: true, ledgerEntryId, auditSeq: ev.seq };
 }
 

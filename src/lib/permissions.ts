@@ -37,14 +37,14 @@ export const PERMISSIONS = {
 export type Permission = keyof typeof PERMISSIONS;
 export const can = (role: Role, p: Permission) => PERMISSIONS[p][role];
 
-export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "finance", "valuation", "reports", "governance"] as const;
+export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "finance", "valuation", "reports", "notifications", "governance"] as const;
 export type Area = (typeof AREAS)[number];
 /** The sidebar's sections, in order. Every area belongs to exactly one. */
 export const AREA_GROUPS: { id: "portfolio" | "operations" | "money" | "records"; areas: Area[] }[] = [
   { id: "portfolio", areas: ["overview", "portfolio", "asset", "market"] },
   { id: "operations", areas: ["leases", "maintenance"] },
   { id: "money", areas: ["finance", "valuation"] },
-  { id: "records", areas: ["reports", "governance"] },
+  { id: "records", areas: ["reports", "notifications", "governance"] },
 ];
 export const AREA_ACCESS: Record<Area, Role[]> = {
   overview: ["investor", "manager", "admin"],
@@ -53,6 +53,7 @@ export const AREA_ACCESS: Record<Area, Role[]> = {
   leases: ["investor", "manager"],
   maintenance: ["investor", "manager"],
   reports: ["investor", "manager", "admin"],
+  notifications: ["investor", "manager", "admin"],
   finance: ["investor", "manager"],
   valuation: ["investor", "manager"],
   market: ["investor", "manager", "admin"],

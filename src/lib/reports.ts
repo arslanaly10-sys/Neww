@@ -14,6 +14,7 @@ import { DEMO_TODAY } from "./assumptions";
 import { buildDataset, DATASETS, toXlsx, type DatasetId, type Lang } from "./exports";
 import { generateStatement } from "./statements";
 import type { CurrentUser } from "./session";
+import { notify } from "./notify";
 
 /**
  * Scheduled and on-demand reports. A schedule has an audience, which decides whose permissions build the file:
@@ -77,6 +78,7 @@ async function runSchedule(scheduleId: string, by: CurrentUser | "scheduler") {
   const next = by === "scheduler" ? nextRun(s.nextRunOn > DEMO_TODAY ? s.nextRunOn : DEMO_TODAY, s.frequency, s.dayOfMonth) : s.nextRunOn;
   await db.update(reportSchedules).set({ lastRunAt: new Date(), nextRunOn: next }).where(eq(reportSchedules.id, s.id));
   await appendAudit({ actorId: by === "scheduler" ? "system" : by.id, actorRole: by === "scheduler" ? "system" : by.role, action: "report.run", entity: "report_schedule", entityId: s.id, detail: { run: run.id, sha256: run.sha256, recipients: (s.recipients as string[]).length, kind: s.kind, nextRunOn: next } });
+  await notify({ to: { users: [s.createdBy] }, kind: "report_ready", params: { name: s.name, file: file.fileName }, link: "/reports#scheduled", actorId: by === "scheduler" ? null : by.id });
   return { runId: run.id, nextRunOn: next, recipients: (s.recipients as string[]).length };
 }
 

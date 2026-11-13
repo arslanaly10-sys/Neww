@@ -6,6 +6,7 @@ import { leads } from "@/db/schema";
 import { appendAudit } from "./audit";
 import { queueEmail } from "./outbox";
 import { rateLimited } from "./horus/gateway";
+import { notify } from "./notify";
 
 /** A demo request from the public chatbot. Stored, acknowledged and passed to the team through the simulated outbox. */
 export const LeadInput = z.object({
@@ -38,5 +39,6 @@ export async function submitLead(raw: unknown, locale: "en" | "ar", ip: string):
     body: `Name: ${d.name}\nEmail: ${d.email}\nCompany: ${d.company || "-"}\nLanguage: ${locale}\n\n${d.message || "(no message)"}`,
   }, "public");
   await appendAudit({ actorId: "public", actorRole: "public", action: "lead.create", entity: "lead", entityId: id, detail: { company: d.company, locale } });
+  await notify({ to: { roles: ["manager", "admin"] }, kind: "lead_new", params: { name: d.name, company: d.company || "-" }, link: "/governance#outbox" });
   return { ok: true, id };
 }
