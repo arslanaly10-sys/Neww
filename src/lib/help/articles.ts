@@ -111,6 +111,15 @@ export const ARTICLES: HelpArticle[] = [
     href: "/finance",
   },
   {
+    id: "maintenance", public: false, terms: "maintenance repair work order task board report problem leak broken contractor assign due overdue الصيانة إصلاح أمر عمل مهمة لوحة بلاغ مشكلة تسريب عطل مقاول إسناد متأخر",
+    title: { en: "Maintenance and tasks", ar: "الصيانة والمهام" },
+    body: {
+      en: "Maintenance shows every repair and team task on a board: to do, in progress, on hold and done. Anyone who can see an asset can report a problem from the board or the asset's page. Managers set the priority, assign it, give it a due date and an estimate, and move it along; overdue work is outlined in red. Marking a repair done with its actual cost writes that cost to the finance ledger. Every work order keeps a timeline of changes and notes.",
+      ar: "تعرض صفحة الصيانة كل إصلاح ومهمة للفريق على لوحة: للتنفيذ وقيد التنفيذ ومعلقة ومنجزة. يمكن لكل من يرى الأصل أن يبلغ عن مشكلة من اللوحة أو من صفحة الأصل. ويحدد المديرون الأولوية ويسندون المهمة ويضعون تاريخ استحقاق وتكلفة تقديرية وينقلونها بين المراحل؛ والأعمال المتأخرة محاطة بالأحمر. وتحديد الإصلاح كمنجز بتكلفته الفعلية يسجل التكلفة في دفتر الأستاذ المالي. ولكل أمر عمل سجل زمني للتغييرات والملاحظات.",
+    },
+    href: "/maintenance",
+  },
+  {
     id: "scenarios", public: false, terms: "scenarios stress test what if rates vacancy sliders sensitivity السيناريوهات اختبار ضغط ماذا لو أسعار شغور",
     title: { en: "Scenarios", ar: "السيناريوهات" },
     body: {

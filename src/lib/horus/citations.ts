@@ -13,6 +13,7 @@ import type { CurrentUser } from "../session";
 import { articleById } from "../help/articles";
 import { getHorusFile } from "./files";
 import { getAlerts } from "../alerts-service";
+import { listWork } from "../work";
 
 export interface CiteRow { label: string; value: string }
 export interface CiteDetail { id: string; kind: string; title: string; rows: CiteRow[]; href: string | null; sample: boolean }
@@ -43,6 +44,12 @@ export async function resolveCitation(user: CurrentUser, id: string, locale: str
     const f = await getHorusFile(user, key);
     if (!f) return null;
     return { id, kind, href: null, sample: false, title: `${f.id}: ${f.name}`, rows: [row(t("pages"), f.pages), row(t("uploaded"), D(f.createdAt.toISOString().slice(0, 10))), row(t("sha256"), f.sha256.slice(0, 16)), row(t("excerpt"), f.text.replace(/\[page \d+\]/g, " ").replace(/\s+/g, " ").trim().slice(0, 400))] };
+  }
+  if (kind === "work") {
+    const w = (await listWork(user))?.items.find((x) => x.id === key);
+    if (!w) return null;
+    const wt = await getTranslations({ locale, namespace: "work" });
+    return { id, kind, href: `/maintenance/${w.id}`, sample: true, title: `${w.id}: ${w.title}`, rows: [row(t("asset"), w.assetId ?? "–"), row(wt("status"), wt(`s_${w.status}` as "s_open")), row(wt("priority"), wt(`p_${w.priority}` as "p_normal")), row(wt("due"), D(w.dueOn)), row(wt("assignee"), (ar ? w.assigneeNameAr : w.assigneeName) ?? wt("unassigned"))] };
   }
   if (kind === "alert") {
     const { open, snoozed } = await getAlerts(user);

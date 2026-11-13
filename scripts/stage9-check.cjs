@@ -44,7 +44,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
 
   // Ledger: filter and add a line
   await p.getByRole("tab", { name: "Ledger" }).click();
-  await p.getByRole("link", { name: "Maintenance", exact: true }).click();
+  await p.getByRole("list", { name: "Show one category" }).getByRole("link", { name: "Maintenance", exact: true }).click();
   await p.waitForURL("**/finance?cat=maintenance#ledger"); await settle(p);
   const kinds = await p.getByRole("list", { name: "Ledger" }).locator("li span.font-semibold").allInnerTexts();
   log(kinds.length > 0 && kinds.every((k) => k === "Maintenance"), `the Maintenance filter shows only maintenance lines (${kinds.length})`);

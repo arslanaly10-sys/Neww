@@ -1,5 +1,5 @@
-export type CiteKind = "asset" | "lease" | "valuation" | "market" | "doc" | "update" | "sale" | "calc" | "file" | "help" | "alert";
-export const CITE_RE = /^(asset|lease|valuation|market|doc|update|sale|calc|file|help|alert):[A-Za-z0-9_.:-]+$/;
+export type CiteKind = "asset" | "lease" | "valuation" | "market" | "doc" | "update" | "sale" | "calc" | "file" | "help" | "alert" | "work";
+export const CITE_RE = /^(asset|lease|valuation|market|doc|update|sale|calc|file|help|alert|work):[A-Za-z0-9_.:-]+$/;
 
 export type HorusMode = "portfolio" | "help";
 

@@ -2,12 +2,12 @@
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import * as Dialog from "@radix-ui/react-dialog";
-import { BarChart3, Bell, Building2, Calculator, FileText, Handshake, LifeBuoy, LineChart, Megaphone, Paperclip, ReceiptText, X } from "lucide-react";
+import { BarChart3, Bell, Wrench, Building2, Calculator, FileText, Handshake, LifeBuoy, LineChart, Megaphone, Paperclip, ReceiptText, X } from "lucide-react";
 import { getCitationAction } from "@/app/horus-actions";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "../ui";
 
-const ICON = { asset: Building2, lease: Handshake, valuation: ReceiptText, market: LineChart, doc: FileText, update: Megaphone, sale: BarChart3, calc: Calculator, file: Paperclip, help: LifeBuoy, alert: Bell } as const;
+const ICON = { asset: Building2, lease: Handshake, valuation: ReceiptText, market: LineChart, doc: FileText, update: Megaphone, sale: BarChart3, calc: Calculator, file: Paperclip, help: LifeBuoy, alert: Bell, work: Wrench } as const;
 type Kind = keyof typeof ICON;
 interface Detail { id: string; kind: string; title: string; rows: { label: string; value: string }[]; href: string | null; sample?: boolean }
 

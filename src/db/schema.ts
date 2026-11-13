@@ -406,3 +406,36 @@ export const distributions = pgTable("distributions", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   paidOn: date("paid_on"),
 });
+
+/** Maintenance requests and team tasks. One row per piece of work, with its current state. */
+export const workOrders = pgTable("work_orders", {
+  id: text("id").primaryKey(), // WO-001
+  kind: text("kind").notNull(), // maintenance | task
+  assetId: text("asset_id").references(() => assets.id), // null for a portfolio-level task
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  category: text("category").notNull(), // plumbing | electrical | hvac | lift | structural | cleaning | admin | other
+  priority: text("priority").notNull(), // urgent | high | normal | low
+  status: text("status").notNull(), // open | in_progress | on_hold | done | cancelled
+  assigneeId: text("assignee_id").references(() => users.id),
+  vendor: text("vendor").notNull().default(""),
+  dueOn: date("due_on"),
+  estimateEgp: bigint("estimate_egp", { mode: "number" }),
+  actualEgp: bigint("actual_egp", { mode: "number" }),
+  ledgerEntryId: text("ledger_entry_id"), // the cost line written when it was completed
+  reportedBy: text("reported_by").notNull().references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+  completedOn: date("completed_on"),
+}, (t) => [index("work_orders_status").on(t.status), index("work_orders_asset").on(t.assetId)]);
+
+/** The timeline of a work order: creation, status changes, assignment, notes and costs. Append-only. */
+export const workOrderEvents = pgTable("work_order_events", {
+  id: text("id").primaryKey(),
+  workOrderId: text("work_order_id").notNull().references(() => workOrders.id),
+  kind: text("kind").notNull(), // created | status | assigned | due | estimate | note | completed
+  text: text("text").notNull().default(""),
+  detail: jsonb("detail").notNull().default({}),
+  actorId: text("actor_id").notNull().references(() => users.id),
+  at: timestamp("at", { withTimezone: true }).notNull(),
+}, (t) => [index("work_order_events_wo").on(t.workOrderId, t.at)]);

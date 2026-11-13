@@ -10,6 +10,8 @@ export const PERMISSIONS = {
   "valuation.send_for_review": { investor: true, manager: true, admin: false },
   "valuation.confirm": { investor: false, manager: true, admin: false },
   "horus.use": { investor: true, manager: true, admin: false },
+  "work.report": { investor: true, manager: true, admin: false },
+  "work.manage": { investor: false, manager: true, admin: false },
   "finance.manage": { investor: false, manager: true, admin: false },
   "rent.manage": { investor: false, manager: true, admin: false },
   "help.use": { investor: true, manager: true, admin: true },
@@ -33,13 +35,14 @@ export const PERMISSIONS = {
 export type Permission = keyof typeof PERMISSIONS;
 export const can = (role: Role, p: Permission) => PERMISSIONS[p][role];
 
-export const AREAS = ["overview", "portfolio", "asset", "leases", "finance", "valuation", "market", "governance"] as const;
+export const AREAS = ["overview", "portfolio", "asset", "leases", "maintenance", "finance", "valuation", "market", "governance"] as const;
 export type Area = (typeof AREAS)[number];
 export const AREA_ACCESS: Record<Area, Role[]> = {
   overview: ["investor", "manager", "admin"],
   portfolio: ["investor", "manager"],
   asset: ["investor", "manager"],
   leases: ["investor", "manager"],
+  maintenance: ["investor", "manager"],
   finance: ["investor", "manager"],
   valuation: ["investor", "manager"],
   market: ["investor", "manager", "admin"],

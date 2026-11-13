@@ -5,6 +5,7 @@ import { documents, districts, horusFiles, investorUpdates, marketSeries, valuat
 import { getAlerts } from "../alerts-service";
 import { getLeasing } from "../leasing";
 import { getFinance } from "../finance";
+import { boardOrder, listWork } from "../work";
 import { getPortfolio, type PortfolioRow } from "../access";
 import { getAggregateIncome } from "../portfolio-data";
 import { momentum3m, portfolioMetrics, sentiment } from "../metrics";
@@ -36,6 +37,7 @@ export const TOOLS = [
   { name: "explain_valuation", description: "Explain a valuation: the model estimate, each driver's effect, the range, confidence, the five comparable sales and any human adjustment with its reason. Defaults to the most recent valuation.", input_schema: { type: "object", properties: { valuationId: { type: "string", description: "e.g. V-0001" } }, additionalProperties: false } },
   { name: "rent_arrears", description: "Rent collection (managers only): this month's collection rate, overdue rent by age (0-30, 31-60, 61-90, over 90 days) and the tenants who owe the most, with the lease and days overdue.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "finance_summary", description: "Finance. For managers: income, costs and net operating income over the last 12 months, the 12-month forecast, the largest budget variances this year and the suggested next distribution. For investors: the distributions paid to them.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "work_orders", description: "Maintenance requests and team tasks: how many are open, overdue and urgent, and the most pressing ones with their asset, assignee and due date.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "recent_updates", description: "Latest published investor updates (title, date, text).", input_schema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 12 } }, additionalProperties: false } },
 ] as const;
 
@@ -212,6 +214,20 @@ const impl: Record<string, (c: HorusCtx, a: Args) => Promise<ToolOut>> = {
         largestBudgetShortfall: worst ? { category: worst.category, shortBy: f(Math.abs(worst.variance)), pct: worst.pct === null ? null : pct(Math.abs(worst.pct), c.locale, 0) } : null,
         nextDistribution: { period: fin.nextDistribution.period, quarterNoi: f(fin.nextDistribution.noi), suggested: f(fin.nextDistribution.suggested), alreadyProposed: !fin.nextDistribution.canPropose },
         distributions: dist,
+      },
+    };
+  },
+
+  async work_orders(c) {
+    const w = await listWork(asUser(c));
+    if (!w) return { cites: [], data: { error: "forbidden" } };
+    const active = w.items.filter((x) => ["open", "in_progress", "on_hold"].includes(x.status)).sort(boardOrder);
+    const top = active.slice(0, 6);
+    return {
+      cites: ["calc:work_orders", ...top.map((x) => `work:${x.id}`)],
+      data: {
+        open: active.length, overdue: active.filter((x) => x.overdue).length, urgent: active.filter((x) => x.priority === "urgent").length, unassigned: active.filter((x) => !x.assigneeId).length,
+        mostPressing: top.map((x) => ({ id: x.id, title: x.title, asset: x.assetId ? (c.locale === "ar" ? x.assetNameAr : x.assetName) : null, priority: x.priority, status: x.status, overdue: x.overdue, due: x.dueOn ? dateFmt(x.dueOn, c.locale) : null, assignee: x.assigneeId ? (c.locale === "ar" ? x.assigneeNameAr : x.assigneeName) : null })),
       },
     };
   },

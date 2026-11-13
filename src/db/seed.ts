@@ -10,6 +10,7 @@ import { baseHash, resultHash, runScenario } from "@/lib/scenario";
 import { loadScenarioBase } from "@/lib/scenario-data";
 import { seedLeasing } from "./seed-leasing";
 import { seedFinance } from "./seed-finance";
+import { seedWork } from "./seed-work";
 import { estimateWithDrivers, makeMarket, marketFactorFromRatio, runValuation, type SaleRow } from "@/lib/valuation";
 
 /** Deterministic PRNG so the demo looks identical on every boot. */
@@ -324,6 +325,7 @@ export async function seed(db: DB) {
   await db.insert(t.auditEvents).values(auditRows);
   await seedLeasing(db);
   await seedFinance(db);
+  await seedWork(db);
   void now;
   await db.execute(sql`analyze`);
 }

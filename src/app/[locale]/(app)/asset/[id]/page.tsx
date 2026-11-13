@@ -14,6 +14,9 @@ import { assessRisk } from "@/lib/risk";
 import { portfolioMetrics } from "@/lib/metrics";
 import { IncomeChart, ValueChart } from "@/components/charts";
 import { EyeOff } from "lucide-react";
+import { listWork } from "@/lib/work";
+import { NewWork } from "@/components/work/controls";
+import { DEMO_TODAY as TODAY } from "@/lib/assumptions";
 
 /** Keep a number and its percent sign together, left to right, inside Arabic or English sentences. */
 const ltr = (s: string) => `\u2066${s}\u2069`;
@@ -66,6 +69,9 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
   const clauses = (l?.clauses ?? {}) as Record<string, string>;
   void pf;
 
+  const work = await listWork(user);
+  const wk = await getTranslations("work");
+  const assetWork = (work?.items ?? []).filter((w) => w.assetId === a.id && w.status !== "cancelled").sort((x1, x2) => Number(x1.status === "done") - Number(x2.status === "done") || x2.createdAt.localeCompare(x1.createdAt)).slice(0, 6);
   return (
     <div>
       <Link href="/asset" className="tap mb-3 inline-block text-sm text-gold underline underline-offset-4">{t("back")}</Link>
@@ -190,6 +196,24 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
           ))}
         </ul>
       </Card>
+      {work && (
+        <Card>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-display text-xl">{wk("assetSection")}</h2>
+            <NewWork assets={work.assets.filter((x2) => x2.id === a.id)} managers={work.managers} canManage={work.money} defaultAssetId={a.id} today={TODAY} />
+          </div>
+          {assetWork.length === 0 ? <p className="text-sm text-muted">{wk("assetNone")}</p> : (
+            <ul className="divide-y divide-line text-sm">
+              {assetWork.map((w) => (
+                <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <Link href={`/maintenance/${w.id}`} className="underline decoration-line underline-offset-4 hover:decoration-gold"><span className="num text-gold">{w.id}</span> {w.title}</Link>
+                  <span className={w.overdue ? "text-xs font-semibold text-danger" : "text-xs text-muted"}>{w.overdue ? wk("overdue") : wk(`s_${w.status}`)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
     </div>
   );
 }

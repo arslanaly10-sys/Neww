@@ -143,3 +143,20 @@ DROP POLICY IF EXISTS dist_read ON distributions;
 CREATE POLICY dist_read ON distributions FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
 DROP POLICY IF EXISTS dist_write ON distributions;
 CREATE POLICY dist_write ON distributions FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+
+-- Work orders: investors and managers read them; investors may report a maintenance request and add notes;
+-- only managers change a work order. Costs are removed for investors in src/lib/work.ts.
+ALTER TABLE work_orders ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS wo_read ON work_orders;
+CREATE POLICY wo_read ON work_orders FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+DROP POLICY IF EXISTS wo_report ON work_orders;
+CREATE POLICY wo_report ON work_orders FOR INSERT TO app_user
+  WITH CHECK (app_role() = 'manager' OR (app_role() = 'investor' AND reported_by = app_user_id() AND status = 'open' AND kind = 'maintenance'));
+DROP POLICY IF EXISTS wo_update ON work_orders;
+CREATE POLICY wo_update ON work_orders FOR UPDATE TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+ALTER TABLE work_order_events ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS woe_read ON work_order_events;
+CREATE POLICY woe_read ON work_order_events FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+DROP POLICY IF EXISTS woe_write ON work_order_events;
+CREATE POLICY woe_write ON work_order_events FOR INSERT TO app_user WITH CHECK (app_role() IN ('investor','manager') AND actor_id = app_user_id());
+REVOKE UPDATE, DELETE ON work_order_events FROM app_user;
