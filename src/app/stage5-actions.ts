@@ -10,7 +10,7 @@ import { can } from "@/lib/permissions";
 async function who() { const u = await getCurrentUser(); if (!u) throw new Error("Not signed in"); return u; }
 export async function snoozeAlertAction(key: string, reason: string) { return snoozeAlert(await who(), String(key), String(reason)); }
 export async function reopenAlertAction(key: string) { return reopenAlert(await who(), String(key)); }
-export async function decideApprovalAction(id: string, decision: "approve" | "reject") { return decideApproval(await who(), String(id), decision); }
+export async function decideApprovalAction(id: string, decision: "approve" | "reject", note = "") { return decideApproval(await who(), String(id), decision, String(note ?? "")); }
 export async function verifyChainAction() {
   const u = await who();
   if (!can(u.role, "audit.verify")) return { ok: false as const, error: "forbidden" as const };

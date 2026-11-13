@@ -8,6 +8,9 @@ import { SampleBadge } from "@/components/fig";
 import { NoAccess } from "@/components/no-access";
 import { ScenarioWorkbench } from "@/components/scenario/workbench";
 import { Link } from "@/i18n/navigation";
+import { titleFrom } from "@/lib/meta";
+
+export const generateMetadata = titleFrom("scn");
 
 export default async function Scenarios({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -51,7 +51,7 @@ export async function listApprovals(user: CurrentUser): Promise<ApprovalItem[]> 
 }
 
 /** Decide any approval. Valuations go through the valuation service, which owns their two-approver rule. */
-export async function decideApproval(user: CurrentUser, id: string, decision: "approve" | "reject"): Promise<{ ok: true; status: string; detail?: string } | { ok: false; error: ApprovalError }> {
+export async function decideApproval(user: CurrentUser, id: string, decision: "approve" | "reject", note = ""): Promise<{ ok: true; status: string; detail?: string; auditSeq: number } | { ok: false; error: ApprovalError }> {
   if (!can(user.role, "approvals.decide")) return { ok: false, error: "forbidden" };
   if (decision !== "approve" && decision !== "reject") return { ok: false, error: "invalid" };
   const item = (await listApprovals(user)).find((x) => x.id === id);
@@ -61,9 +61,9 @@ export async function decideApproval(user: CurrentUser, id: string, decision: "a
   if (item.proposedBy === user.id) return { ok: false, error: "self_approval" };
 
   if (item.kind === "valuation") {
-    const r = await decideValuation(user, item.refId, decision);
+    const r = await decideValuation(user, item.refId, decision, note);
     if (!r.ok) return { ok: false, error: r.error === "self_approval" ? "self_approval" : r.error === "forbidden" ? "forbidden" : r.error === "not_in_review" ? "not_pending" : "not_found" };
-    return { ok: true, status: r.status, detail: `${r.approvals}/${r.required}` };
+    return { ok: true, status: r.status, detail: `${r.approvals}/${r.required}`, auditSeq: r.auditSeq };
   }
 
   const now = new Date();
@@ -74,11 +74,12 @@ export async function decideApproval(user: CurrentUser, id: string, decision: "a
       await tx.update(investorUpdates).set(decision === "approve" ? { status: "published", postedOn: DEMO_TODAY } : { status: "rejected" }).where(eq(investorUpdates.id, item.refId));
     }
   });
-  await appendAudit({
+  const n = String(note ?? "").trim().slice(0, 500);
+  const ev = await appendAudit({
     actorId: user.id, actorRole: user.role,
     action: item.kind === "update_draft" ? (decision === "approve" ? "update.publish" : "update.reject") : "role.change.decide",
     entity: item.kind === "update_draft" ? "investor_update" : "user", entityId: item.refId,
-    detail: { approval: id, decision, proposedBy: item.proposedBy, ...(item.kind === "role_change" ? { recordedOnly: true } : {}) },
+    detail: { approval: id, decision, proposedBy: item.proposedBy, ...(item.kind === "role_change" ? { recordedOnly: true } : {}), ...(n ? { note: n } : {}) },
   });
-  return { ok: true, status };
+  return { ok: true, status, auditSeq: ev.seq };
 }

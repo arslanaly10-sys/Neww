@@ -1,30 +1,43 @@
 "use client";
-import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Check, X } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
-import { decideApprovalAction } from "@/app/stage5-actions";
 import type { ApprovalItem } from "@/lib/approvals-service";
 import { dateFmt, money, type Currency, listSep } from "@/lib/format";
-import { Badge, Button, Card } from "../ui";
+import { Badge, Card } from "../ui";
+import { DecisionControl, type DecisionFact } from "../decision";
 
 export function ApprovalsQueue({ items, currency, fx }: { items: ApprovalItem[]; currency: Currency; fx: number }) {
   const t = useTranslations("al");
   const r = useTranslations("roles");
   const locale = useLocale();
   const ar = locale === "ar";
-  const router = useRouter();
-  const [msg, setMsg] = useState<Record<string, string>>({});
-  const [pending, start] = useTransition();
+  const dc = useTranslations("decide");
   const pendingItems = items.filter((i) => i.status === "pending");
   const history = items.filter((i) => i.status !== "pending").slice(0, 6);
 
-  const decide = (id: string, d: "approve" | "reject") => start(async () => {
-    const res = await decideApprovalAction(id, d);
-    if (!res.ok) { setMsg((p) => ({ ...p, [id]: t(`err_${res.error}` as "err_forbidden") })); return; }
-    setMsg((p) => ({ ...p, [id]: d === "reject" ? t("rejectedMsg") : res.status === "confirmed" ? t("confirmedMsg") : res.status === "in_review" ? t("partialMsg", { detail: res.detail ?? "" }) : t("approvedMsg") }));
-    router.refresh();
-  });
+  const M = (n: number) => money(n, currency, locale, { fx });
+  /** What the decision sheet restates, per kind of approval. */
+  const decision = (i: ApprovalItem): { facts: DecisionFact[]; effect: string; title: string; reason: string | null } => {
+    const s = i.summary;
+    const who = { label: dc("fProposedBy"), value: ar ? i.proposerNameAr : i.proposerName };
+    if (i.kind === "valuation") {
+      const left = Number(s.required) - Number(s.approved);
+      const asset = String((ar ? s.assetAr : s.asset) ?? "–");
+      return {
+        title: `${i.refId}, ${asset}`, reason: s.reason ? String(s.reason) : null,
+        effect: left <= 1 ? dc("effectConfirmAsset") : dc("effectPartial", { n: left - 1 }),
+        facts: [
+          { label: dc("fAsset"), value: asset },
+          { label: dc("fModel"), value: M(Number(s.modelEstimateEgp)) },
+          { label: dc("fFinal"), value: M(Number(s.finalValueEgp ?? s.modelEstimateEgp)), strong: true },
+          { label: dc("fAdjustment"), value: `${Number(s.adjustmentPct) > 0 ? "+" : ""}${s.adjustmentPct}%` },
+          { label: dc("fApprovals"), value: dc("approvalsValue", { n: Number(s.approved), m: Number(s.required) }) },
+          who,
+        ],
+      };
+    }
+    if (i.kind === "update_draft") return { title: String((ar ? s.titleAr : s.title) ?? i.refId), reason: null, effect: dc("effectPublish"), facts: [{ label: dc("fUpdate"), value: String((ar ? s.titleAr : s.title) ?? i.refId) }, who] };
+    return { title: String((ar ? s.targetAr : s.target) ?? i.refId), reason: i.note ?? null, effect: dc("effectRole"), facts: [{ label: dc("fPerson"), value: String((ar ? s.targetAr : s.target) ?? i.refId) }, who] };
+  };
 
   const summary = (i: ApprovalItem) => {
     const s = i.summary;
@@ -44,17 +57,12 @@ export function ApprovalsQueue({ items, currency, fx }: { items: ApprovalItem[];
             {i.kind === "update_draft" && Boolean(i.summary.body) && <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">{String((ar ? i.summary.titleAr : i.summary.title) ?? "")}</summary><p className="mt-1 whitespace-pre-line rounded bg-surface-2 p-2">{String((ar ? i.summary.bodyAr : i.summary.body) ?? "")}</p></details>}
             <p className="mt-1 text-xs text-muted">{t("proposedBy", { name: ar ? i.proposerNameAr : i.proposerName })}{listSep(locale)}{t("routedTo", { role: r(i.routeRole as "manager") })}{listSep(locale)}<bdi>{dateFmt(i.createdAt.slice(0, 10), locale)}</bdi></p>
           </div>
-          {i.status === "pending" && (
-            <div className="flex flex-col items-start gap-2">
-              <div className="flex gap-2">
-                <Button size="sm" variant="gold" disabled={!i.canDecide || pending} aria-describedby={i.blocked ? `bl-${i.id}` : undefined} onClick={() => decide(i.id, "approve")}><Check aria-hidden="true" size={14} />{t("approve")}</Button>
-                <Button size="sm" disabled={!i.canDecide || pending} aria-describedby={i.blocked ? `bl-${i.id}` : undefined} onClick={() => decide(i.id, "reject")}><X aria-hidden="true" size={14} />{t("reject")}</Button>
-              </div>
-              {i.blocked && <p id={`bl-${i.id}`} className="max-w-xs text-xs text-muted">{i.blocked === "self" ? t("blockedSelf") : t("blockedRole", { role: r(i.routeRole as "manager") })}</p>}
-            </div>
-          )}
+          {i.status === "pending" && (() => {
+            const d = decision(i);
+            return <DecisionControl kind="approval" id={i.id} title={d.title} facts={d.facts} effect={d.effect} reason={d.reason}
+              blockedReason={i.canDecide ? null : i.blocked === "self" ? t("blockedSelf") : t("blockedRole", { role: r(i.routeRole as "manager") })} />;
+          })()}
         </div>
-        {msg[i.id] && <p role="status" className="mt-2 text-xs text-gold">{msg[i.id]}</p>}
       </Card>
     </li>
   );

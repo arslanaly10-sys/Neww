@@ -9,9 +9,13 @@ import { Badge, Card, PageHeader } from "@/components/ui";
 import { SampleBadge } from "@/components/fig";
 import { NoAccess } from "@/components/no-access";
 import { Reader } from "@/components/docs/reader";
+import { titleFrom } from "@/lib/meta";
 
-export default async function Documents({ params }: { params: Promise<{ locale: string }> }) {
+export const generateMetadata = titleFrom("docs");
+
+export default async function Documents({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ flag?: string }> }) {
   const { locale } = await params;
+  const { flag } = await searchParams;
   setRequestLocale(locale);
   const { user, denied } = await pageContext("asset");
   if (denied) return <NoAccess role={user.role} />;
@@ -20,6 +24,9 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
   const ar = locale === "ar";
   const { flags, counts } = await getDocumentFlags(user);
   const order: DocFlag["kind"][] = ["missing", "expired", "lease_ending", "doc_expiring", "pending"];
+  const active = order.includes(flag as DocFlag["kind"]) ? (flag as DocFlag["kind"]) : null;
+  const shown = active ? flags.filter((f) => f.kind === active) : flags;
+  const chip = (on: boolean) => `inline-flex min-h-10 items-center gap-2 rounded-full border px-3 text-sm ${on ? "border-gold bg-gold-fill text-on-gold" : "border-line hover:bg-surface-2"}`;
   const tone = { missing: "danger", expired: "danger", lease_ending: "gold", doc_expiring: "gold", pending: "muted" } as const;
   const Icon = { missing: FileWarning, expired: AlertTriangle, lease_ending: CalendarClock, doc_expiring: CalendarClock, pending: FileWarning } as const;
 
@@ -43,11 +50,12 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
       <section aria-labelledby="flags">
         <h2 id="flags" className="mb-3 font-display text-2xl">{t("flagsTitle")}</h2>
         <ul className="mb-4 flex flex-wrap gap-2">
-          {order.map((k) => <li key={k}><Badge tone={tone[k]} className="">{t(k)}: <bdi>{counts[k]}</bdi></Badge></li>)}
+          <li><Link href="/asset/documents#flags" aria-current={!active ? "true" : undefined} className={chip(!active)}>{t("filterAll")} <span className="num text-xs font-semibold">{flags.length}</span></Link></li>
+          {order.filter((k) => counts[k] > 0).map((k) => <li key={k}><Link href={`/asset/documents?flag=${k}#flags`} aria-current={active === k ? "true" : undefined} className={chip(active === k)}>{t(k)} <span className="num text-xs font-semibold">{counts[k]}</span></Link></li>)}
         </ul>
-        {flags.length === 0 ? <Card className="text-sm text-muted">{t("noFlags")}</Card> : (
+        {shown.length === 0 ? <Card className="text-sm text-muted">{t("noFlags")}</Card> : (
           <ul className="grid gap-2 md:grid-cols-2">
-            {flags.map((f, i) => {
+            {shown.map((f, i) => {
               const I = Icon[f.kind];
               return (
                 <li key={`${f.kind}-${f.docId}-${i}`}>
@@ -57,7 +65,7 @@ export default async function Documents({ params }: { params: Promise<{ locale: 
                       <p>{text(f)}</p>
                       <p className="mt-0.5 text-xs text-muted">{when(f)}{when(f) ? listSep(locale) : ""}<Link href={`/asset/${f.assetId}`} className="tap text-gold underline underline-offset-4">{t("openAsset")}</Link></p>
                     </div>
-                    <Badge tone={tone[f.kind]} className="shrink-0">{t(f.kind)}</Badge>
+                    <Badge tone={tone[f.kind]} className="shrink-0">{t(`short_${f.kind}` as "short_missing")}</Badge>
                   </Card>
                 </li>
               );

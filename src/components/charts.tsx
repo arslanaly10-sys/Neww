@@ -42,7 +42,7 @@ export function ValueChart({ data, currency, fx, label, costLabel }: { data: His
     else return;
     e.preventDefault();
   };
-  const min = Math.min(...rows.map((r) => r.value).filter(Boolean)), max = Math.max(...rows.map((r) => r.cost), ...rows.map((r) => r.value));
+  const min = Math.min(...rows.map((r) => r.value).filter(Boolean), ...rows.map((r) => r.cost).filter(Boolean)), max = Math.max(...rows.map((r) => r.cost), ...rows.map((r) => r.value));
 
   return (
     <div>

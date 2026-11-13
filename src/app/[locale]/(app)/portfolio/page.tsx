@@ -17,6 +17,9 @@ import { HoldingsTable } from "@/components/holdings-table";
 import { PortfolioMap } from "@/components/portfolio-map";
 import { PackButtons } from "@/components/pack/pack-buttons";
 import { Link } from "@/i18n/navigation";
+import { titleFrom } from "@/lib/meta";
+
+export const generateMetadata = titleFrom("pf");
 
 export default async function Portfolio({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -46,6 +49,15 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
   });
   const mapAssets = rows.map((r) => ({ id: r.id, name: r.name, nameAr: r.nameAr, districtId: r.districtId, lat: Number(r.lat), lng: Number(r.lng), value: r.valueEgp }));
 
+  const update = (u: (typeof updates)[number]) => (
+    <li key={u.id}>
+      <Card className="p-4">
+        <p className="flex flex-wrap items-center gap-2 text-xs text-muted"><bdi>{dateFmt(u.postedOn, locale)}</bdi>{u.status === "draft" && <Badge tone="gold">{t("draft")}</Badge>}</p>
+        <h3 className="mt-1 font-semibold">{ar ? u.titleAr : u.title}</h3>
+        <p className="mt-1 text-sm text-muted">{ar ? u.bodyAr : u.body}</p>
+      </Card>
+    </li>
+  );
   return (
     <div className="space-y-8">
       <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
@@ -73,6 +85,11 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
       </Stagger>
 
       <Card>
+        <h2 className="mb-4 font-display text-xl">{t("mapTitle")}</h2>
+        <PortfolioMap districts={mapDistricts} assets={mapAssets} currency={currency} fx={fx} />
+      </Card>
+
+      <Card>
         <h2 className="mb-4 font-display text-2xl">{t("chartTitle")}</h2>
         <ValueChart data={history.map((h) => ({ month: h.month, value: h.value, cost: h.cost }))} currency={currency} fx={fx} label={t("valueLabel")} costLabel={t("costLabel")} />
         <p className="mt-3 text-xs text-muted">{t("chartNote")}</p>
@@ -85,14 +102,9 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
         </Card>
         <Card>
           <h2 className="mb-4 font-display text-xl">{t("allocDistrict")}</h2>
-          <AllocationBars total={m.value} locale={locale} items={m.allocation.map((x) => ({ id: x.id, label: ar ? x.nameAr : x.name, value: x.value }))} />
+          <AllocationBars total={m.value} locale={locale} items={m.allocation.map((x) => ({ id: x.id, label: ar ? x.nameAr : x.name, value: x.value }))} limit={5} moreLabel={(n) => t("moreDistricts", { n })} />
         </Card>
       </section>
-
-      <Card>
-        <h2 className="mb-4 font-display text-xl">{t("mapTitle")}</h2>
-        <PortfolioMap districts={mapDistricts} assets={mapAssets} currency={currency} fx={fx} />
-      </Card>
 
       <section>
         <h2 className="mb-3 font-display text-2xl">{t("holdings")}</h2>
@@ -101,17 +113,13 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
 
       <section aria-labelledby="upd">
         <h2 id="upd" className="mb-3 font-display text-2xl">{t("updates")}</h2>
-        <ul className="space-y-3">
-          {updates.map((u) => (
-            <li key={u.id}>
-              <Card className="p-4">
-                <p className="flex flex-wrap items-center gap-2 text-xs text-muted"><bdi>{dateFmt(u.postedOn, locale)}</bdi>{u.status === "draft" && <Badge tone="gold">{t("draft")}</Badge>}</p>
-                <h3 className="mt-1 font-semibold">{ar ? u.titleAr : u.title}</h3>
-                <p className="mt-1 text-sm text-muted">{ar ? u.bodyAr : u.body}</p>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        <ul className="space-y-3">{updates.slice(0, 3).map(update)}</ul>
+        {updates.length > 3 && (
+          <details className="mt-3">
+            <summary className="tap cursor-pointer text-sm text-gold underline underline-offset-4">{t("moreUpdates", { n: updates.length - 3 })}</summary>
+            <ul className="mt-3 space-y-3">{updates.slice(3).map(update)}</ul>
+          </details>
+        )}
         <p className="mt-3 text-xs text-muted">{t("draftNote")}</p>
       </section>
     </div>

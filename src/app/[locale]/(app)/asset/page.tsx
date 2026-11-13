@@ -5,6 +5,9 @@ import { money, listSep } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { Card, PageHeader } from "@/components/ui";
 import { NoAccess } from "@/components/no-access";
+import { titleFrom } from "@/lib/meta";
+
+export const generateMetadata = titleFrom("asset");
 
 export default async function AssetIndex({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

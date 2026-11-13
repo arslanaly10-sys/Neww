@@ -7,7 +7,7 @@ import { getPortfolio } from "@/lib/access";
 import { portfolioMetrics } from "@/lib/metrics";
 import { dateFmt, int, money, pct } from "@/lib/format";
 import { Fig, SampleBadge } from "@/components/fig";
-import { Stat } from "@/components/stat";
+import { KPI5, Stat } from "@/components/stat";
 import { Card, PageHeader } from "@/components/ui";
 import { HorusGlyph } from "@/components/brand";
 import { Link } from "@/i18n/navigation";
@@ -17,6 +17,9 @@ import { LiveFeed } from "@/components/alerts/live-feed";
 import { AttentionCard } from "@/components/alerts/attention-card";
 import { verifyChain } from "@/lib/audit-service";
 import { GrowBar, Stagger } from "@/components/motion";
+import { titleFrom } from "@/lib/meta";
+
+export const generateMetadata = titleFrom("overview");
 
 export default async function Overview({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -38,7 +41,7 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
     return (
       <div>
         <PageHeader animated title={ta("title")} lead={ta("lead")}><SampleBadge /></PageHeader>
-        <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Stagger className={KPI5}>
           <Stat label={ta("events")}><span className="num">{int(n, locale)}</span></Stat>
           <Stat label={ta("policies")}><span className="num">{int((pol.rows[0] as { n: number }).n, locale)}</span></Stat>
           <Stat label={ta("head")}><span className="num break-all font-sans text-base">{head?.hash.slice(0, 16)}…</span></Stat>
@@ -62,7 +65,7 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
   return (
     <div>
       <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
-      <Stagger as="section" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Stagger as="section" className={KPI5}>
         <Stat label={t("value")}>
           <Fig label={t("value")} value={money(m.value, currency, locale, { compact: true })} source={t("valueSrc", { n: m.count })}
             calc={`${money(m.value, "EGP", locale)}${currency === "USD" ? ` ÷ ${rate}` : ""}`} />
@@ -82,7 +85,7 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
       </Stagger>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <AttentionCard top={alerts.open.slice(0, 4)} alertTotal={alerts.open.length} approvals={att.approvals} currency={currency} fx={rate} />
+        <AttentionCard top={alerts.open.slice(0, 4)} all={alerts.open} alertTotal={alerts.open.length} approvals={att.approvals} currency={currency} fx={rate} />
         <LiveFeed currency={currency} fx={rate} limit={5} compact />
       </div>
 

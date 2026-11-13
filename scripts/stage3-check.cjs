@@ -71,6 +71,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   const vid = sentText.match(/V-\d{4}/)[0];
   log(true, `proposed ${vid}: ${sentText}`);
   await p.waitForTimeout(800);
+  await p.getByRole("tab", { name: /Review queue/ }).click();
   const card = p.locator("li", { hasText: vid }).first();
   log(await card.getByRole("button", { name: "Approve" }).isDisabled(), "own proposal: approve is disabled");
   log(await card.getByText(/you cannot confirm it/i).isVisible(), "own proposal: reason is shown on screen");
@@ -86,7 +87,11 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   log(await seededSelf.getByRole("button", { name: "Approve" }).isDisabled(), "manager 2 cannot approve the valuation they proposed (V-0017)");
   const theirs = p.locator("li", { hasText: vid }).first();
   await theirs.getByRole("button", { name: "Approve" }).click();
-  await p.getByText("Confirmed. The portfolio value has been updated.").waitFor();
+  const sheet = p.getByRole("dialog", { name: new RegExp(`Approve ${vid}`) });
+  log(await sheet.getByText(/the asset's value, the portfolio totals/).isVisible(), "approval sheet says what approving will change");
+  await p.screenshot({ path: `${OUT}/en-approve-sheet.png` });
+  await sheet.getByRole("button", { name: "Approve" }).click();
+  await p.getByText(new RegExp(`${vid} is approved\\. Recorded as audit event #\\d+`)).waitFor();
   log(true, `manager 2 confirmed ${vid}`);
   await p.goto(`${BASE}/en/asset/A-003`); await settle(p);
   const afterValue = (await p.locator("main").innerText()).match(/EGP [\d,]+/)[0];
@@ -97,9 +102,10 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   const big = p.locator("li", { hasText: "V-0016" }).first();
   log(await big.getByText("0 of 2 approvals").isVisible(), "large adjustment shows it needs two approvals");
   await big.getByRole("button", { name: "Approve" }).click();
-  await p.getByText(/Approved\. 1 of 2 approvals so far/).waitFor();
+  await p.getByRole("dialog", { name: /Approve V-0016/ }).getByRole("button", { name: "Approve" }).click();
+  await p.getByText(/V-0016 is recorded as audit event #\d+\. It now waits for another manager/).waitFor();
   log(true, "first approval recorded, still in review");
-  await p.waitForTimeout(600);
+  await p.reload(); await settle(p);
   log(await p.locator("li", { hasText: "V-0016" }).first().getByRole("button", { name: "Approve" }).isDisabled(), "same manager cannot approve twice");
   await c.close();
 
@@ -148,12 +154,14 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   await p.screenshot({ path: `${OUT}/en-horus-citation.png` });
   log(await p.getByText("Deterministic function").isVisible(), "chip opens the calculation behind the number");
   await p.keyboard.press("Escape");
+  await p.getByText("Deterministic function").waitFor({ state: "hidden" });
   await dlg.locator("#horus-q").fill("Which leases end soon?"); await p.keyboard.press("Enter");
   await dlg.getByText(/leases end within 120 days/).waitFor({ timeout: 15000 });
   await dlg.locator('button[aria-label^="Lease"]').first().click();
   await p.getByText("Annual indexation").waitFor();
   log(true, "lease chip opens the exact lease row");
   await p.keyboard.press("Escape");
+  await p.getByText("Annual indexation").waitFor({ state: "hidden" }); // let the citation sheet close before typing
   await dlg.locator("#horus-q").fill("what is the meaning of life"); await p.keyboard.press("Enter");
   await dlg.getByText("I can't verify that from your portfolio data.").waitFor({ timeout: 15000 });
   log(true, "unanswerable question: 'I can't verify'");

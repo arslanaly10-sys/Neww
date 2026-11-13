@@ -11,6 +11,9 @@ import { SampleBadge } from "@/components/fig";
 import { AlertsBoard } from "@/components/alerts/board";
 import { ApprovalsQueue } from "@/components/alerts/approvals-queue";
 import { LiveFeed } from "@/components/alerts/live-feed";
+import { titleFrom } from "@/lib/meta";
+
+export const generateMetadata = titleFrom("al");
 
 export default async function AlertsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

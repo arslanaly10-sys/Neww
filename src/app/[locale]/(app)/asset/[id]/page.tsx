@@ -18,6 +18,12 @@ import { EyeOff } from "lucide-react";
 /** Keep a number and its percent sign together, left to right, inside Arabic or English sentences. */
 const ltr = (s: string) => `\u2066${s}\u2069`;
 
+/** The asset id as the tab title; the name needs the viewer's permissions, so the page itself shows it. */
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return { title: /^A-\d{3}$/.test(id) ? id : "Asset" };
+}
+
 export default async function AssetPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
@@ -94,7 +100,7 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
             <div><dt className="text-muted">{t("floor")}</dt><dd className="num">{a.floor === null ? "–" : a.floor === 0 ? t("ground") : a.floor}</dd></div>
             <div><dt className="text-muted">{t("finish")}</dt><dd>{fi(a.finish as "luxury")}</dd></div>
             <div><dt className="text-muted">{t("built")}</dt><dd className="num">{a.yearBuilt ?? "–"}</dd></div>
-            <div className="col-span-2"><dt className="text-muted">{st(a.occupancy as "let")}</dt><dd>{a.vacantSince ? t("vacantSince", { date: dateFmt(a.vacantSince, locale) }) : "–"}</dd></div>
+            <div className="col-span-2"><dt className="text-muted">{t("occupancyLabel")}</dt><dd>{a.vacantSince ? t("vacantSince", { date: dateFmt(a.vacantSince, locale) }) : a.lease ? t("letUntil", { lease: a.lease.id, date: dateFmt(a.lease.endDate, locale) }) : st(a.occupancy as "let")}</dd></div>
           </dl>
         </Card>
         <Card>

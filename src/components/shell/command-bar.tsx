@@ -58,7 +58,7 @@ export function CommandBar({ index, className }: { index: CmdIndex; className?: 
       <button type="button" onClick={() => setOpen(true)} aria-label={t("open")} aria-keyshortcuts="Control+K Meta+K"
         className={cn("flex min-h-11 items-center gap-2 md:min-h-10 rounded-md border border-line bg-surface px-3 text-sm text-muted hover:text-text active:bg-surface-2", className)}>
         <Search aria-hidden="true" size={16} />
-        <span className="flex-1 truncate text-start">{shell("search")}</span>
+        <span className="hidden flex-1 truncate text-start md:inline">{shell("search")}</span>
         <kbd dir="ltr" className="hidden rounded border border-line px-1.5 text-xs sm:inline">Ctrl K</kbd>
       </button>
       <Command.Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQuery(""); }} label={t("placeholder")}

@@ -122,7 +122,7 @@ export function ScenarioWorkbench({ initial, sets, saved, canSave, currency, fx:
                 <XAxis dataKey="n" tick={{ fill: "var(--muted)", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "var(--line)" }} />
                 <YAxis domain={[0, hi]} tick={{ fill: "var(--muted)", fontSize: 11 }} tickLine={false} axisLine={false} width={58} tickFormatter={(v: number) => money(v, currency, "en", { fx: sampleFx, compact: true }).replace(/(EGP|USD) /, "")} />
                 <Bar dataKey="v" radius={[4, 4, 0, 0]} isAnimationActive={false}>
-                  {chart.map((x, i) => <Cell key={x.n} fill={i === 0 ? "var(--muted)" : i === 2 ? "var(--gold-fill)" : "var(--teal)"} />)}
+                  {chart.map((x, i) => <Cell key={x.n} fill={i === 0 ? "var(--muted)" : i === 2 ? "var(--gold-fill)" : i === 1 ? "var(--danger)" : "var(--ok)"} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -287,7 +287,9 @@ function Register({ sets, A, canSave, onPublished }: { sets: SetInfo[]; A: RunOu
             </li>
           ))}
         </ul>
-        <h3 className="mb-2 mt-6 font-display text-lg">{t("publishTitle")}</h3>
+        <details className="mt-6">
+        <summary className="tap cursor-pointer font-display text-lg">{t("publishTitle")}</summary>
+        <div className="mt-3">
         {!canSave ? <p className="text-sm text-muted">{t("managerOnly")}</p> : (
           <form className="grid gap-3 sm:grid-cols-3" onSubmit={(e) => {
             e.preventDefault(); setMsg(null);
@@ -304,6 +306,8 @@ function Register({ sets, A, canSave, onPublished }: { sets: SetInfo[]; A: RunOu
             <div className="sm:col-span-3"><Button type="submit" variant="gold" disabled={pending}>{pending ? t("working") : t("publish")}</Button></div>
           </form>
         )}
+        </div>
+        </details>
         {msg && <p role={msg.ok ? "status" : "alert"} className={cn("mt-3 text-sm", msg.ok ? "text-ok" : "text-danger")}>{msg.text}</p>}
       </Card>
       <Card>

@@ -116,7 +116,7 @@ describe("approvals queue", () => {
     expect(await decideApproval(admin, "AP-003", "approve")).toEqual({ ok: false, error: "not_found" });
     const db = await getDb();
     expect((await db.select().from(investorUpdates).where(eq(investorUpdates.id, "U-012")))[0].status).toBe("draft");
-    expect(await decideApproval(m2, "AP-003", "approve")).toEqual({ ok: true, status: "approved" });
+    expect(await decideApproval(m2, "AP-003", "approve")).toEqual({ ok: true, status: "approved", auditSeq: expect.any(Number) });
     expect((await db.select().from(investorUpdates).where(eq(investorUpdates.id, "U-012")))[0].status).toBe("published");
     expect(await decideApproval(m2, "AP-003", "approve")).toEqual({ ok: false, error: "not_pending" });
     expect((await db.select().from(auditEvents)).some((e) => e.action === "update.publish" && e.entityId === "U-012")).toBe(true);
@@ -131,7 +131,7 @@ describe("approvals queue", () => {
     expect(await decideApproval(m2, "AP-004", "approve")).toEqual({ ok: false, error: "forbidden" });
     const db = await getDb();
     const before = (await db.select().from(users).where(eq(users.id, "u-investor")))[0].role;
-    expect(await decideApproval(admin, "AP-004", "approve")).toEqual({ ok: true, status: "approved" });
+    expect(await decideApproval(admin, "AP-004", "approve")).toEqual({ ok: true, status: "approved", auditSeq: expect.any(Number) });
     expect((await db.select().from(users).where(eq(users.id, "u-investor")))[0].role).toBe(before);
     const ev = (await db.select().from(auditEvents)).filter((e) => e.action === "role.change.decide");
     expect(ev[ev.length - 1].detail).toMatchObject({ decision: "approve", recordedOnly: true });

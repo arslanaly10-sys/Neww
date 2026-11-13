@@ -49,7 +49,7 @@ const RAWKEY = /\b(governance|overview|portfolio|asset|assetx|valuation|val|mark
 
   await p.goto(`${BASE}/en/overview/alerts`); await settle(p);
   log(await p.getByRole("heading", { name: "Alerts and approvals", level: 1 }).isVisible(), "alerts and approvals page loads");
-  for (const k of ["Lease renewal", "Document", "Valuation drift", "Vacancy cost"]) log((await p.getByText(k, { exact: true }).count()) > 0, `alert kind present: ${k}`);
+  for (const k of ["Lease renewals", "Missing documents", "Valuation drift", "Vacancy cost"]) log((await p.getByRole("heading", { name: new RegExp(`^${k}`) }).count()) > 0, `alert group present: ${k}`);
   log(await p.getByText(/has been vacant for \d+ days, costing about EGP/).first().isVisible(), "vacancy cost alert states the cost");
   await p.screenshot({ path: `${OUT}/en-alerts-manager.png`, fullPage: true });
 
@@ -88,7 +88,8 @@ const RAWKEY = /\b(governance|overview|portfolio|asset|assetx|valuation|val|mark
   log(await own.getByRole("button", { name: "Approve" }).isDisabled() && await own.getByText("You proposed this").isVisible(), "manager 2 cannot approve their own valuation");
   const draft = p.locator("li", { hasText: "AP-003" }).first();
   await draft.getByRole("button", { name: "Approve" }).click();
-  await draft.getByText("Approved.").waitFor();
+  await p.getByRole("dialog").getByRole("button", { name: "Approve" }).click();
+  await draft.getByText(/AP-003 is approved\. Recorded as audit event #\d+/).waitFor();
   log(true, "manager 2 approved manager 1's draft");
   await p.goto(`${BASE}/en/portfolio`); await settle(p);
   log(await p.getByText("Draft: year-end investor letter").isVisible() && (await p.getByText("Draft", { exact: true }).count()) === 0, "the approved update is published (no Draft badge)");
@@ -101,8 +102,9 @@ const RAWKEY = /\b(governance|overview|portfolio|asset|assetx|valuation|val|mark
   ({ c, p } = await open({ width: 1360, height: 900 }));
   await signIn(p, "en", "investor");
   await p.goto(`${BASE}/en/overview/alerts`); await settle(p);
-  log(await p.getByText("Vacancy cost", { exact: true }).count() === 0 && await p.getByText("Valuation drift", { exact: true }).count() === 0, "investor: no vacancy-cost or valuation-drift alerts");
-  log(await p.getByText("Lease renewal", { exact: true }).count() > 0 && await p.getByText("Document", { exact: true }).count() > 0, "investor: lease and document alerts only");
+  const grp = (k) => p.getByRole("heading", { name: new RegExp(`^${k}`) }).count();
+  log(await grp("Vacancy cost") === 0 && await grp("Valuation drift") === 0, "investor: no vacancy-cost or valuation-drift alerts");
+  log(await grp("Lease renewals") > 0 && await grp("Missing documents") > 0, "investor: lease and document alerts only");
   log(await p.getByRole("button", { name: "Snooze" }).count() === 0, "investor: no snooze buttons");
   log(await p.getByText("Only asset managers can snooze alerts.").isVisible(), "investor: told why");
   await p.screenshot({ path: `${OUT}/en-alerts-investor.png`, fullPage: true });
@@ -122,7 +124,8 @@ const RAWKEY = /\b(governance|overview|portfolio|asset|assetx|valuation|val|mark
   log(await ap4.getByRole("button", { name: "Approve" }).isEnabled(), "admin can decide the role-change request");
   log(await ap4.getByText(/No role actually changes/).isVisible(), "the demo nature of the role change is stated");
   await ap4.getByRole("button", { name: "Approve" }).click();
-  await ap4.getByText("Approved.").waitFor();
+  await p.getByRole("dialog").getByRole("button", { name: "Approve" }).click();
+  await ap4.getByText(/AP-004 is approved\. Recorded as audit event #\d+/).waitFor();
   log(true, "role change decided and recorded");
 
   await p.goto(`${BASE}/en/governance`); await settle(p);

@@ -8,6 +8,9 @@ import { dateFmt, pct } from "@/lib/format";
 import { Badge, Card, PageHeader } from "@/components/ui";
 import { Sparkline } from "@/components/sparkline";
 import { SampleBadge } from "@/components/fig";
+import { titleFrom } from "@/lib/meta";
+
+export const generateMetadata = titleFrom("market");
 
 export default async function Market({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

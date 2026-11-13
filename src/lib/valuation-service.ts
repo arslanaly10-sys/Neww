@@ -122,7 +122,7 @@ export async function listValuations(user: CurrentUser): Promise<QueueItem[]> {
 }
 
 /** Approve or reject. Only managers decide, never the proposer, and a second approver is a different person. */
-export async function decideValuation(user: CurrentUser, id: string, decision: "approve" | "reject"): Promise<Result<{ status: string; approvals: number; required: number }>> {
+export async function decideValuation(user: CurrentUser, id: string, decision: "approve" | "reject", note = ""): Promise<Result<{ status: string; approvals: number; required: number; auditSeq: number }>> {
   if (!can(user.role, "valuation.confirm")) return { ok: false, error: "forbidden" };
   const now = new Date();
   const out = await withSession(sess(user), async (tx): Promise<Result<{ status: string; approvals: number; required: number; assetId: string | null; finalValueEgp: number | null }>> => {
@@ -156,9 +156,10 @@ export async function decideValuation(user: CurrentUser, id: string, decision: "
     return { ok: true, status: "confirmed", approvals: next.length, required: v.requiredApprovals, assetId: v.assetId, finalValueEgp: v.finalValueEgp };
   });
   if (!out.ok) return out;
-  await appendAudit({
+  const n = String(note ?? "").trim().slice(0, 500);
+  const ev = await appendAudit({
     actorId: user.id, actorRole: user.role, action: decision === "reject" ? "valuation.reject" : out.status === "confirmed" ? "valuation.confirm" : "valuation.approve",
-    entity: "valuation", entityId: id, detail: { status: out.status, approvals: out.approvals, required: out.required, assetId: out.assetId, finalValueEgp: out.finalValueEgp },
+    entity: "valuation", entityId: id, detail: { status: out.status, approvals: out.approvals, required: out.required, assetId: out.assetId, finalValueEgp: out.finalValueEgp, ...(n ? { note: n } : {}) },
   });
-  return { ok: true, status: out.status, approvals: out.approvals, required: out.required };
+  return { ok: true, status: out.status, approvals: out.approvals, required: out.required, auditSeq: ev.seq };
 }

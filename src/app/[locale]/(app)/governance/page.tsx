@@ -13,6 +13,9 @@ import { can } from "@/lib/permissions";
 import { Link } from "@/i18n/navigation";
 import { dateFmt, listSep } from "@/lib/format";
 import { getLeadsAndOutbox } from "@/lib/outbox";
+import { titleFrom } from "@/lib/meta";
+
+export const generateMetadata = titleFrom("governance");
 
 export default async function Governance({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ q?: string; action?: string; p?: string }> }) {
   const { locale } = await params;
@@ -48,9 +51,71 @@ export default async function Governance({ params, searchParams }: { params: Pro
     { text: t("check.csp"), ok: false },
     { text: t("check.backup"), ok: false },
   ];
+  const auditSection = (
+      <section className={isAdmin ? "mb-10" : "mt-10"} aria-labelledby="audit">
+        <h2 id="audit" className="font-display text-2xl">{g("audTitle")}</h2>
+        <p className="mb-4 mt-1 max-w-md text-sm text-muted">{g("audLead")}</p>
+        {!isAdmin || !audit ? <Card className="text-sm text-muted">{g("audAdminOnly")}</Card> : (
+          <div className="space-y-6">
+            {!sp.q && !sp.action && page === 1 && (
+              <ol aria-label={g("stripLabel")} className="flex gap-1.5 overflow-x-auto pb-1">
+                {[...audit.rows].slice(0, 6).reverse().map((e, i, arr) => {
+                  const broken = !chain.ok && chain.firstBad?.seq === e.seq;
+                  return (
+                    <li key={e.seq} className="flex shrink-0 items-center gap-1.5">
+                      <span className={`flex flex-col rounded-md border px-2.5 py-1.5 text-xs ${broken ? "border-danger bg-danger/10" : "border-line bg-surface"}`}>
+                        <span className="num font-semibold text-gold">#{e.seq}</span>
+                        <span className="num font-mono text-muted">{e.hash.slice(0, 8)}</span>
+                        {broken && <span className="font-semibold text-danger">{g("stripBroken")}</span>}
+                      </span>
+                      {i < arr.length - 1 && <span aria-hidden="true" className={`h-px w-4 ${broken ? "bg-danger" : "bg-gold"}`} />}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+            <ChainControls initial={chain} />
+            <form method="get" className="flex flex-wrap items-end gap-2">
+              <div><label htmlFor="aq" className="mb-1 block text-xs font-semibold text-muted">{g("search")}</label><input id="aq" name="q" defaultValue={sp.q ?? ""} className="min-h-10 w-56 rounded-md border border-line bg-surface px-3 text-sm" /></div>
+              <div><label htmlFor="aa" className="mb-1 block text-xs font-semibold text-muted">{g("colAction")}</label>
+                <select id="aa" name="action" defaultValue={sp.action ?? ""} className="min-h-10 rounded-md border border-line bg-surface px-2 text-sm"><option value="">{g("allActions")}</option>{audit.actions.map((a) => <option key={a} value={a}>{g.has(`act_${a.replace(/\./g, "_")}`) ? g(`act_${a.replace(/\./g, "_")}` as "act_session_start") : a}</option>)}</select></div>
+              <button type="submit" className="min-h-10 rounded-md border border-line px-4 text-sm font-semibold hover:bg-surface-2">{g("apply")}</button>
+            </form>
+            <ul className="space-y-2">
+              {audit.rows.map((e) => {
+                const label = g.has(`act_${e.action.replace(/\./g, "_")}`) ? g(`act_${e.action.replace(/\./g, "_")}` as "act_session_start") : e.action;
+                const broken = !chain.ok && chain.firstBad?.seq === e.seq;
+                return (
+                  <li key={e.seq}>
+                    <Card className={`p-3 text-sm ${broken ? "border-danger" : ""}`}>
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <p><span className="num font-semibold text-gold">#{e.seq}</span> <span className="font-semibold">{label}</span> <span className="num text-xs text-muted">{e.action}</span></p>
+                        <bdi className="text-xs text-muted">{dateFmt(e.at.slice(0, 10), locale)} {e.at.slice(11, 16)}</bdi>
+                      </div>
+                      <p className="mt-0.5 text-xs text-muted">{e.actorId === "system" ? g("system") : ar ? e.actorNameAr : e.actorName}{listSep(locale)}<span className="num">{e.entity} {e.entityId}</span>{listSep(locale)}<span className="num font-mono">{e.hash.slice(0, 12)}…</span></p>
+                      <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">{g("detail")}</summary>
+                        <pre dir="ltr" className="mt-1 overflow-x-auto rounded bg-surface-2 p-2 font-mono text-xs">{JSON.stringify(e.detail, null, 1)}</pre>
+                        <p dir="ltr" className="mt-1 break-all font-mono text-xs">{g("prevHash")}: {e.prevHash}</p><p dir="ltr" className="break-all font-mono text-xs">{g("fullHash")}: {e.hash}</p></details>
+                    </Card>
+                  </li>
+                );
+              })}
+            </ul>
+            <nav className="flex items-center justify-between gap-3 text-sm" aria-label={g("audTitle")}>
+              <span className="text-muted">{g("showing", { from: audit.total === 0 ? 0 : (page - 1) * PAGE + 1, to: Math.min(page * PAGE, audit.total), n: audit.total })}</span>
+              <span className="flex gap-2">
+                {page > 1 && <Link className="rounded-md border border-line px-3 py-2 hover:bg-surface-2" href={{ pathname: "/governance", query: { ...(sp.q ? { q: sp.q } : {}), ...(sp.action ? { action: sp.action } : {}), p: page - 1 } }}>{g("prev")}</Link>}
+                {page * PAGE < audit.total && <Link className="rounded-md border border-line px-3 py-2 hover:bg-surface-2" href={{ pathname: "/governance", query: { ...(sp.q ? { q: sp.q } : {}), ...(sp.action ? { action: sp.action } : {}), p: page + 1 } }}>{g("next")}</Link>}
+              </span>
+            </nav>
+          </div>
+        )}
+      </section>
+  );
   return (
     <div>
       <PageHeader animated title={t("title")} lead={t("lead")} />
+      {isAdmin && auditSection}
       <section>
         <h2 className="mb-3 font-display text-2xl">{t("matrix")}</h2>
         <ul className="divide-y divide-line rounded-lg border border-line md:hidden">
@@ -111,48 +176,7 @@ export default async function Governance({ params, searchParams }: { params: Pro
         </ul>
       </section>
       <section className="mt-10"><VerifyPack /></section>
-      <section className="mt-10" aria-labelledby="audit">
-        <h2 id="audit" className="font-display text-2xl">{g("audTitle")}</h2>
-        <p className="mb-4 mt-1 max-w-md text-sm text-muted">{g("audLead")}</p>
-        {!isAdmin || !audit ? <Card className="text-sm text-muted">{g("audAdminOnly")}</Card> : (
-          <div className="space-y-6">
-            <ChainControls initial={chain} />
-            <form method="get" className="flex flex-wrap items-end gap-2">
-              <div><label htmlFor="aq" className="mb-1 block text-xs font-semibold text-muted">{g("search")}</label><input id="aq" name="q" defaultValue={sp.q ?? ""} className="min-h-10 w-56 rounded-md border border-line bg-surface px-3 text-sm" /></div>
-              <div><label htmlFor="aa" className="mb-1 block text-xs font-semibold text-muted">{g("colAction")}</label>
-                <select id="aa" name="action" defaultValue={sp.action ?? ""} className="min-h-10 rounded-md border border-line bg-surface px-2 text-sm"><option value="">{g("allActions")}</option>{audit.actions.map((a) => <option key={a} value={a}>{g.has(`act_${a.replace(/\./g, "_")}`) ? g(`act_${a.replace(/\./g, "_")}` as "act_session_start") : a}</option>)}</select></div>
-              <button type="submit" className="min-h-10 rounded-md border border-line px-4 text-sm font-semibold hover:bg-surface-2">{g("apply")}</button>
-            </form>
-            <ul className="space-y-2">
-              {audit.rows.map((e) => {
-                const label = g.has(`act_${e.action.replace(/\./g, "_")}`) ? g(`act_${e.action.replace(/\./g, "_")}` as "act_session_start") : e.action;
-                const broken = !chain.ok && chain.firstBad?.seq === e.seq;
-                return (
-                  <li key={e.seq}>
-                    <Card className={`p-3 text-sm ${broken ? "border-danger" : ""}`}>
-                      <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <p><span className="num font-semibold text-gold">#{e.seq}</span> <span className="font-semibold">{label}</span> <span className="num text-xs text-muted">{e.action}</span></p>
-                        <bdi className="text-xs text-muted">{dateFmt(e.at.slice(0, 10), locale)} {e.at.slice(11, 16)}</bdi>
-                      </div>
-                      <p className="mt-0.5 text-xs text-muted">{e.actorId === "system" ? g("system") : ar ? e.actorNameAr : e.actorName}{listSep(locale)}<span className="num">{e.entity} {e.entityId}</span>{listSep(locale)}<span className="num font-mono">{e.hash.slice(0, 12)}…</span></p>
-                      <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">{g("detail")}</summary>
-                        <pre dir="ltr" className="mt-1 overflow-x-auto rounded bg-surface-2 p-2 font-mono text-xs">{JSON.stringify(e.detail, null, 1)}</pre>
-                        <p dir="ltr" className="mt-1 break-all font-mono text-xs">{g("prevHash")}: {e.prevHash}</p><p dir="ltr" className="break-all font-mono text-xs">{g("fullHash")}: {e.hash}</p></details>
-                    </Card>
-                  </li>
-                );
-              })}
-            </ul>
-            <nav className="flex items-center justify-between gap-3 text-sm" aria-label={g("audTitle")}>
-              <span className="text-muted">{g("showing", { from: audit.total === 0 ? 0 : (page - 1) * PAGE + 1, to: Math.min(page * PAGE, audit.total), n: audit.total })}</span>
-              <span className="flex gap-2">
-                {page > 1 && <Link className="rounded-md border border-line px-3 py-2 hover:bg-surface-2" href={{ pathname: "/governance", query: { ...(sp.q ? { q: sp.q } : {}), ...(sp.action ? { action: sp.action } : {}), p: page - 1 } }}>{g("prev")}</Link>}
-                {page * PAGE < audit.total && <Link className="rounded-md border border-line px-3 py-2 hover:bg-surface-2" href={{ pathname: "/governance", query: { ...(sp.q ? { q: sp.q } : {}), ...(sp.action ? { action: sp.action } : {}), p: page + 1 } }}>{g("next")}</Link>}
-              </span>
-            </nav>
-          </div>
-        )}
-      </section>
+      {!isAdmin && auditSection}
       {inbox && (
         <section className="mt-10" aria-labelledby="outbox">
           <h2 id="outbox" className="font-display text-2xl">{ob("title")}</h2>

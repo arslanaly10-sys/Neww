@@ -38,7 +38,9 @@
     "currency": "Currency",
     "signOut": "Sign out",
     "rate": "Rate: 1 USD = {rate} EGP (sample assumption)",
-    "demoUser": "Sample user"
+    "demoUser": "Sample user",
+    "account": "Account and settings",
+    "close": "Close"
   },
   "login": {
     "title": "Sign in to the demo",
@@ -119,7 +121,9 @@
     "finish": "Finish",
     "built": "Built",
     "vacantSince": "Vacant since {date}",
-    "ground": "Ground"
+    "ground": "Ground",
+    "occupancyLabel": "Occupancy",
+    "letUntil": "Let, lease {lease} until {date}"
   },
   "valuation": {
     "title": "Valuation",
@@ -313,7 +317,9 @@
     "draft": "Draft",
     "draftNote": "Drafts are visible to asset managers only.",
     "noUpdates": "No updates yet.",
-    "related": "About"
+    "related": "About",
+    "moreDistricts": "Show {n} more districts",
+    "moreUpdates": "Show {n} earlier updates"
   },
   "assetx": {
     "valueVsCost": "Value against cost",
@@ -496,7 +502,11 @@
     "kind": "Kind",
     "hash": "Content hash",
     "registerNote": "Each set is stored with a SHA-256 hash of its content. A valuation or scenario records the set it used, so it can be reproduced.",
-    "dx_floor_na": "Floor does not apply to villas and land, so this step has no effect."
+    "dx_floor_na": "Floor does not apply to villas and land, so this step has no effect.",
+    "tabRun": "Run a valuation",
+    "tabQueue": "Review queue",
+    "tabHistory": "History",
+    "tabRegister": "Assumptions"
   },
   "horus": {
     "title": "Horus",
@@ -967,7 +977,13 @@
     "f_owner": "Owner",
     "f_unit": "Unit",
     "f_registeredOn": "Registration date",
-    "unrecognised": "Not recognised"
+    "unrecognised": "Not recognised",
+    "filterAll": "All",
+    "short_missing": "Missing",
+    "short_expired": "Expired",
+    "short_pending": "Pending",
+    "short_lease_ending": "Lease ending",
+    "short_doc_expiring": "Expiring"
   },
   "packui": {
     "title": "Investor pack",
@@ -1077,7 +1093,19 @@
     "f_system_chain_checkpoint": "Audit chain checkpoint recomputed.",
     "f_system_cache_refresh": "Session cache refreshed.",
     "f_system_backup_ok": "Nightly backup check passed.",
-    "simAlert": "Valuation change (simulated)"
+    "simAlert": "Valuation change (simulated)",
+    "group_lease_renewal": "Lease renewals",
+    "group_missing_document": "Missing documents",
+    "group_valuation_drift": "Valuation drift",
+    "group_vacancy_cost": "Vacancy cost",
+    "groupCount": "{n} open, {high} high",
+    "snoozeAll": "Snooze all {n}",
+    "snoozeReasonN": "Reason for snoozing all {n} (at least 10 characters)",
+    "snoozedN": "Alerts snoozed: {n}. Each is recorded in the audit chain.",
+    "filterLabel": "Show alerts of one kind",
+    "filterAll": "All",
+    "mostUrgent": "Most urgent",
+    "highN": "{n} high"
   },
   "gov2": {
     "audTitle": "Audit log",
@@ -1149,7 +1177,9 @@
     "act_horus_help": "Help question",
     "act_horus_file_upload": "File attached to Horus",
     "act_horus_action_confirm": "Horus action confirmed",
-    "act_lead_create": "Demo request received"
+    "act_lead_create": "Demo request received",
+    "stripLabel": "The latest events, each linked to the one before by its hash",
+    "stripBroken": "Broken link"
   },
   "pub": {
     "bubble": "Questions? Ask us",
@@ -1194,5 +1224,46 @@
     "mail": "Outbox ({n})",
     "mailEmpty": "The outbox is empty.",
     "to": "To"
+  },
+  "decide": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveTitle": "Approve {title}?",
+    "rejectTitle": "Reject {title}?",
+    "rejectEffect": "Rejecting returns it to the proposer and changes no values. Say why, so they can act on it.",
+    "effectConfirm": "This is the final approval: the valuation is confirmed and the decision is written to the audit chain.",
+    "effectConfirmAsset": "This is the final approval: the asset's value, the portfolio totals and the next investor pack change, and the decision is written to the audit chain.",
+    "effectPartial": "Your approval is recorded. Approvals still needed after yours: {n}. No value changes until then.",
+    "effectPublish": "Approving publishes this update to investors and records the decision in the audit chain.",
+    "effectRole": "Approving records the role change in the audit chain. In this demo it does not change the person's access.",
+    "fAsset": "Asset",
+    "fModel": "Model estimate",
+    "fFinal": "Final value",
+    "fAdjustment": "Human adjustment",
+    "fApprovals": "Approvals so far",
+    "approvalsValue": "{n} of {m}",
+    "fProposedBy": "Proposed by",
+    "fUpdate": "Update",
+    "fPerson": "Person",
+    "proposerReason": "Proposer's reason:",
+    "noteApprove": "Note for the record (optional)",
+    "noteReject": "Reason for rejecting (required)",
+    "reasonRequired": "Give a reason for rejecting.",
+    "confirmApprove": "Approve",
+    "confirmReject": "Reject",
+    "cancel": "Cancel",
+    "audited": "Your name, the time and your note are written to the audit chain.",
+    "doneConfirmed": "{id} is approved. Recorded as audit event #{seq}.",
+    "donePartial": "Your approval of {id} is recorded as audit event #{seq}. It now waits for another manager.",
+    "doneRejected": "{id} is rejected. Recorded as audit event #{seq}.",
+    "to": "to",
+    "err_forbidden": "Your role cannot decide this.",
+    "err_invalid": "That decision is not valid.",
+    "err_not_found": "This item no longer exists.",
+    "err_not_pending": "Someone has already decided this.",
+    "err_not_in_review": "Someone has already decided this.",
+    "err_self_approval": "You proposed this, so a different person must decide it.",
+    "err_already_approved": "You have already approved this.",
+    "close": "Close"
   }
 }

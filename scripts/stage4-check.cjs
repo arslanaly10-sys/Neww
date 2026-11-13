@@ -92,7 +92,8 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   log((await p.getByRole("spinbutton", { name: "Pound per US dollar" }).inputValue()) === "60", "loading SC-001 sets the sliders (pound at 60)");
   await p.screenshot({ path: `${OUT}/en-scenarios-saved.png`, fullPage: true });
 
-  // publish a new version
+  // publish a new version (the form sits in a disclosure, closed by default)
+  await p.getByText("Publish a new version", { exact: true }).click();
   await p.getByLabel(/Reason for the change/).fill("Stiffer rate pass-through after review.");
   await p.getByLabel(/Cap-rate pass-through/).fill("0.25");
   await p.getByRole("button", { name: "Publish version" }).click();
@@ -120,14 +121,17 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   // documents: flags yes, reader no
   await p.goto(`${BASE}/en/asset/documents`); await settle(p);
   log(await p.getByText("Reading a document shows rents").isVisible(), "investor: reader replaced by an explanation");
-  log(await p.getByText(/Missing: 3/).first().isVisible(), "investor still sees the document flags");
+  log(await p.getByRole("link", { name: /^Missing 3$/ }).isVisible(), "investor still sees the document flags");
   await c.close();
 
   // ======================= Documents: manager =======================
   ({ c, p } = await open({ width: 1360, height: 900 }));
   await signIn(p, "en", "manager1");
   await p.goto(`${BASE}/en/asset/documents`); await settle(p);
-  log(await p.getByText("Missing: 3").first().isVisible() && await p.getByText("Expired: 2").first().isVisible() && await p.getByText("Pending: 2").first().isVisible(), "flags: 3 missing, 2 expired, 2 pending");
+  log(await p.getByRole("link", { name: /^Missing 3$/ }).isVisible() && await p.getByRole("link", { name: /^Expired 2$/ }).isVisible() && await p.getByRole("link", { name: /^Pending 2$/ }).isVisible(), "flags: 3 missing, 2 expired, 2 pending");
+  await p.getByRole("link", { name: /^Missing 3$/ }).click(); await p.waitForURL("**/asset/documents?flag=missing*"); await settle(p);
+  log((await p.locator("section[aria-labelledby=flags] ul.grid > li").count()) === 3, "the Missing chip filters the list to the 3 missing documents");
+  await p.goto(`${BASE}/en/asset/documents`); await settle(p);
   log((await p.getByText(/Lease at .* ends/).count()) >= 6, "flags: leases ending within 120 days listed");
   await p.screenshot({ path: `${OUT}/en-documents-flags.png`, fullPage: true });
 

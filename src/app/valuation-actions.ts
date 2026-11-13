@@ -9,7 +9,7 @@ async function who() {
 }
 export async function runValuationAction(input: unknown) { return computeValuation(await who(), input); }
 export async function submitValuationAction(payload: unknown) { return submitValuation(await who(), payload); }
-export async function decideValuationAction(id: string, decision: "approve" | "reject") {
+export async function decideValuationAction(id: string, decision: "approve" | "reject", note = "") {
   if (decision !== "approve" && decision !== "reject") throw new Error("Bad decision");
-  return decideValuation(await who(), id, decision);
+  return decideValuation(await who(), id, decision, String(note ?? ""));
 }

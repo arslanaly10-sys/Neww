@@ -49,6 +49,7 @@ const GL = ["--no-sandbox", "--use-gl=swiftshader", "--enable-unsafe-swiftshader
   // chart scrubbing: mouse
   const chart = p.getByRole("group", { name: /Portfolio value\./ });
   const readout = () => p.locator('[aria-live="polite"]').first().innerText();
+  await chart.scrollIntoViewIfNeeded();
   const before = await readout();
   const box = await chart.boundingBox();
   await p.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2);
@@ -132,6 +133,7 @@ const GL = ["--no-sandbox", "--use-gl=swiftshader", "--enable-unsafe-swiftshader
   }
   await p.goto(`${BASE}/ar/portfolio`); await settle(p);
   const arChart = p.getByRole("group", { name: /قيمة المحفظة/ });
+  await arChart.scrollIntoViewIfNeeded();
   const ab = await arChart.boundingBox();
   const a0 = await p.locator('[aria-live="polite"]').first().innerText();
   await p.mouse.move(ab.x + ab.width * 0.3, ab.y + ab.height / 2); await p.waitForTimeout(300);

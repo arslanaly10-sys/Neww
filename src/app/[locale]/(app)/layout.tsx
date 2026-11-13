@@ -11,6 +11,7 @@ import { Wordmark } from "@/components/brand";
 import { SideNav, TabBar } from "@/components/shell/nav";
 import { CurrencyToggle, LangToggle, RoleSwitcher } from "@/components/shell/controls";
 import { CommandBar } from "@/components/shell/command-bar";
+import { AccountSheet } from "@/components/shell/account-sheet";
 import { HorusProvider } from "@/components/horus/provider";
 import { HorusBubble, HorusButton, HorusPanel } from "@/components/horus/panel";
 import { can } from "@/lib/permissions";
@@ -41,6 +42,15 @@ export default async function AppShell({ children, params }: { children: React.R
       docs: d.filter((x) => x.kind === "lease" || x.kind === "title_deed").map((x) => ({ ...x, assetName: names.get(x.assetId)?.name ?? "", assetNameAr: names.get(x.assetId)?.nameAr ?? "" })),
     };
   });
+  const sh = await getTranslations("shell");
+  // Currency only matters to roles that see money; the administrator never does.
+  const controls = (
+    <>
+      {can(user.role, "portfolio.view") && <CurrencyToggle current={currency} rate={SAMPLE_FX_EGP_PER_USD} />}
+      <RoleSwitcher users={demoUsers.map((u) => ({ id: u.id, name: u.name, nameAr: u.nameAr, role: u.role as "investor" }))} currentId={user.id} />
+      <LangToggle />
+    </>
+  );
   const allDistricts = await db.select({ id: districts.id, name: districts.name, nameAr: districts.nameAr }).from(districts).orderBy(districts.name);
 
   return (
@@ -55,18 +65,17 @@ export default async function AppShell({ children, params }: { children: React.R
       </aside>
       <div className="flex min-w-0 flex-col pb-20 md:pb-0">
         <div role="note" className="bg-gold-fill px-4 py-1.5 text-center text-xs font-semibold text-on-gold">{s("ribbon")}</div>
-        <div className="sticky top-0 z-20 flex flex-wrap items-center gap-2 border-b border-line bg-bg/95 px-4 py-2 backdrop-blur md:flex-nowrap">
+        <div className="sticky top-0 z-20 flex items-center gap-2 border-b border-line bg-bg/95 px-4 py-2 backdrop-blur">
           <div className="me-auto md:hidden"><Wordmark className="text-base" /></div>
-          <CommandBar index={{ areas, assets: index.assets, districts: allDistricts, docs: index.docs, currency, canAsk: can(user.role, "horus.use"), canValue: can(user.role, "valuation.run"), canPack: can(user.role, "pack.generate") }} className="order-last w-full md:order-none md:w-80 md:max-w-sm md:flex-1" />
+          <CommandBar index={{ areas, assets: index.assets, districts: allDistricts, docs: index.docs, currency, canAsk: can(user.role, "horus.use"), canValue: can(user.role, "valuation.run"), canPack: can(user.role, "pack.generate") }} className="w-11 justify-center px-0 md:w-80 md:max-w-sm md:flex-1 md:justify-start md:px-3" />
           <span className="hidden flex-1 md:block" />
           <Link href="/overview/alerts" aria-label={attention.total ? al("badge", { n: attention.total }) : al("bell")} className="relative grid size-11 place-items-center md:size-9 rounded-md border border-line hover:bg-surface-2">
             <Bell aria-hidden="true" size={16} />
             {attention.total ? <span aria-hidden="true" className="num absolute -end-1.5 -top-1.5 min-w-4 rounded-full bg-gold-fill px-1 text-center text-[10px] font-bold leading-4 text-on-gold">{attention.total}</span> : null}
           </Link>
           {can(user.role, "horus.use") && <HorusButton className="hidden md:inline-flex" />}
-          <CurrencyToggle current={currency} rate={SAMPLE_FX_EGP_PER_USD} />
-          <RoleSwitcher users={demoUsers.map((u) => ({ id: u.id, name: u.name, nameAr: u.nameAr, role: u.role as "investor" }))} currentId={user.id} />
-          <LangToggle />
+          <div className="hidden items-center gap-2 md:flex">{controls}</div>
+          <AccountSheet label={sh("account")}>{controls}</AccountSheet>
         </div>
         <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8 md:py-9">{children}</main>
         <footer className="border-t border-line px-4 py-4 text-xs text-muted md:px-8">{s("footer")}</footer>
