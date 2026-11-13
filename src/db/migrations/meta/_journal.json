@@ -15,6 +15,13 @@
       "when": 1794562640471,
       "tag": "0001_stage6_ai",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794571866072,
+      "tag": "0002_stage8_leasing",
+      "breakpoints": true
     }
   ]
 }

@@ -93,6 +93,15 @@ export const ARTICLES: HelpArticle[] = [
     href: "/asset/documents",
   },
   {
+    id: "leases", public: false, terms: "leases tenants rent arrears overdue collection payment record reminder renewal renew offer العقود المستأجرون الإيجار متأخرات تحصيل دفعة تذكير تجديد عرض",
+    title: { en: "Tenants, rent and renewals", ar: "المستأجرون والإيجار والتجديدات" },
+    body: {
+      en: "Leases shows every tenant, their leases and whether their rent is up to date. Managers see Rent collection: this month's collection rate, overdue rent by age, and each unpaid invoice, where they record a payment or send a reminder (at most one a week). Renewals lists leases ending within 180 days by stage, from not started to agreed or leaving; managers record the offer, the proposed rent and the new end date. Investors see tenants, dates and stages, never amounts.",
+      ar: "تعرض صفحة العقود كل مستأجر وعقوده وما إذا كان إيجاره مسددًا. يرى المديرون تحصيل الإيجار: نسبة تحصيل هذا الشهر، والإيجار المتأخر حسب العمر، وكل فاتورة غير مسددة، حيث يسجلون دفعة أو يرسلون تذكيرًا (مرة في الأسبوع على الأكثر). وتعرض التجديدات العقود التي تنتهي خلال 180 يومًا حسب المرحلة، من لم يبدأ إلى تم الاتفاق أو المغادرة؛ ويسجل المديرون العرض والإيجار المقترح وتاريخ الانتهاء الجديد. يرى المستثمرون المستأجرين والتواريخ والمراحل دون أي مبالغ.",
+    },
+    href: "/leases",
+  },
+  {
     id: "scenarios", public: false, terms: "scenarios stress test what if rates vacancy sliders sensitivity السيناريوهات اختبار ضغط ماذا لو أسعار شغور",
     title: { en: "Scenarios", ar: "السيناريوهات" },
     body: {

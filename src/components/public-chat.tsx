@@ -104,7 +104,7 @@ export function PublicChat() {
           )}
 
           {view === "lead" && (
-            <form action={submit} className="flex-1 space-y-3 overflow-y-auto px-4 py-4" noValidate>
+            <form onSubmit={(e) => { e.preventDefault(); submit(new FormData(e.currentTarget)); }} className="flex-1 space-y-3 overflow-y-auto px-4 py-4" noValidate>
               <p className="text-sm text-muted">{t("leadIntro")}</p>
               {(["name", "email", "company"] as const).map((f) => (
                 <div key={f}>

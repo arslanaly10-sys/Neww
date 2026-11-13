@@ -325,3 +325,50 @@ export const outbox = pgTable("outbox", {
   createdBy: text("created_by").notNull(), // a user id, or "public"
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
 });
+
+/** Contact details per tenant (sample addresses on example domains). Managers only. */
+export const tenantContacts = pgTable("tenant_contacts", {
+  tenantId: text("tenant_id").primaryKey().references(() => tenants.id),
+  contactName: text("contact_name").notNull(),
+  contactNameAr: text("contact_name_ar").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+});
+
+/** One rent invoice per lease per month. Amounts are in the lease currency; amountEgp converts at the sample rate. */
+export const rentInvoices = pgTable("rent_invoices", {
+  id: text("id").primaryKey(), // RI-L014-2026-11
+  leaseId: text("lease_id").notNull().references(() => leases.id),
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  period: date("period").notNull(), // first day of the month billed
+  dueOn: date("due_on").notNull(),
+  amount: bigint("amount", { mode: "number" }).notNull(),
+  currency: text("currency").notNull(),
+  amountEgp: bigint("amount_egp", { mode: "number" }).notNull(),
+  paidEgp: bigint("paid_egp", { mode: "number" }).notNull().default(0),
+  status: text("status").notNull(), // open | partial | paid
+  lastReminderOn: date("last_reminder_on"),
+}, (t) => [index("rent_invoices_lease").on(t.leaseId, t.period), index("rent_invoices_status").on(t.status)]);
+
+/** Payments received against invoices. Append-only in the app. */
+export const rentPayments = pgTable("rent_payments", {
+  id: text("id").primaryKey(), // RP-<random> or RP-seed-…
+  invoiceId: text("invoice_id").notNull().references(() => rentInvoices.id),
+  amountEgp: bigint("amount_egp", { mode: "number" }).notNull(),
+  paidOn: date("paid_on").notNull(),
+  method: text("method").notNull(), // transfer | cheque | cash
+  recordedBy: text("recorded_by").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/** Where each lease's renewal stands. One row per lease that is being worked on. */
+export const leaseRenewals = pgTable("lease_renewals", {
+  leaseId: text("lease_id").primaryKey().references(() => leases.id),
+  status: text("status").notNull(), // not_started | offered | negotiating | agreed | leaving
+  proposedRent: bigint("proposed_rent", { mode: "number" }), // in the lease currency
+  proposedEnd: date("proposed_end"),
+  note: text("note").notNull().default(""),
+  updatedBy: text("updated_by").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+});

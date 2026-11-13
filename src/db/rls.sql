@@ -103,3 +103,24 @@ DROP POLICY IF EXISTS outbox_read ON outbox;
 CREATE POLICY outbox_read ON outbox FOR SELECT TO app_user USING (app_role() IN ('manager','admin') OR created_by = app_user_id());
 DROP POLICY IF EXISTS outbox_write ON outbox;
 CREATE POLICY outbox_write ON outbox FOR INSERT TO app_user WITH CHECK (created_by = app_user_id());
+
+-- Leasing: rent invoices, payments and tenant contacts are manager-only (rent is never shown to investors).
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['rent_invoices','rent_payments','tenant_contacts']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS mgr_only ON %I', t);
+    EXECUTE format($p$CREATE POLICY mgr_only ON %I FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager')$p$, t);
+  END LOOP;
+END $$;
+REVOKE UPDATE, DELETE ON rent_payments FROM app_user;
+
+-- Renewal status is visible to investors and managers; only managers change it. Proposed rent is masked for
+-- investors in src/lib/leasing.ts (row-level security is row-level, as for leases).
+ALTER TABLE lease_renewals ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ren_read ON lease_renewals;
+CREATE POLICY ren_read ON lease_renewals FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+DROP POLICY IF EXISTS ren_write ON lease_renewals;
+CREATE POLICY ren_write ON lease_renewals FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');

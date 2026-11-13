@@ -248,7 +248,7 @@ export function HorusPanel({ role }: { role: string }) {
           </div>
           )}
 
-          <form className="border-t border-line p-3" onSubmit={(e) => { e.preventDefault(); void send(text); }}>
+          <form className="border-t border-line p-3" onSubmit={(e) => { e.preventDefault(); void send((e.currentTarget.elements.namedItem("q") as HTMLTextAreaElement).value); }}>
             {mode === "portfolio" && (files.length > 0 || uploadMsg) && (
               <div className="mb-2 flex flex-wrap items-center gap-1.5">
                 {files.map((f) => (
@@ -269,8 +269,8 @@ export function HorusPanel({ role }: { role: string }) {
                 </>
               )}
               <label htmlFor="horus-q" className="sr-only">{mode === "help" ? t("helpPlaceholder") : t("placeholder")}</label>
-              <textarea id="horus-q" rows={2} maxLength={600} value={text} onChange={(e) => setText(e.target.value)} placeholder={mode === "help" ? t("helpPlaceholder") : t("placeholder")}
-                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(text); } }}
+              <textarea id="horus-q" name="q" rows={2} maxLength={600} value={text} onChange={(e) => setText(e.target.value)} placeholder={mode === "help" ? t("helpPlaceholder") : t("placeholder")}
+                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send(e.currentTarget.value); } }}
                 className="min-h-12 flex-1 resize-none rounded-md border border-line bg-surface px-3 py-2 text-sm" />
               <Button type="submit" variant="gold" size="icon" disabled={busy || !text.trim()} aria-label={t("ask")}><Send aria-hidden="true" size={16} className="rtl:-scale-x-100" /></Button>
             </div>

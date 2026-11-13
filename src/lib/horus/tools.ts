@@ -3,6 +3,7 @@ import { and, desc, eq, inArray, ne } from "drizzle-orm";
 import { withSession } from "@/db/client";
 import { documents, districts, horusFiles, investorUpdates, marketSeries, valuations } from "@/db/schema";
 import { getAlerts } from "../alerts-service";
+import { getLeasing } from "../leasing";
 import { getPortfolio, type PortfolioRow } from "../access";
 import { getAggregateIncome } from "../portfolio-data";
 import { momentum3m, portfolioMetrics, sentiment } from "../metrics";
@@ -32,6 +33,7 @@ export const TOOLS = [
   { name: "district_market", description: "Sample market index, three-month momentum and sentiment label for one district or all districts, with the source and publication note.", input_schema: { type: "object", properties: { districtId: { type: "string" } }, additionalProperties: false } },
   { name: "concentration", description: "Share of portfolio value by district.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "explain_valuation", description: "Explain a valuation: the model estimate, each driver's effect, the range, confidence, the five comparable sales and any human adjustment with its reason. Defaults to the most recent valuation.", input_schema: { type: "object", properties: { valuationId: { type: "string", description: "e.g. V-0001" } }, additionalProperties: false } },
+  { name: "rent_arrears", description: "Rent collection (managers only): this month's collection rate, overdue rent by age (0-30, 31-60, 61-90, over 90 days) and the tenants who owe the most, with the lease and days overdue.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "recent_updates", description: "Latest published investor updates (title, date, text).", input_schema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 12 } }, additionalProperties: false } },
 ] as const;
 
@@ -174,6 +176,22 @@ const impl: Record<string, (c: HorusCtx, a: Args) => Promise<ToolOut>> = {
     const [f] = await withSession(sess(c), (tx) => tx.select().from(horusFiles).where(eq(horusFiles.id, id)));
     if (!f) return { cites: [], data: { error: "file_not_found" } };
     return { cites: [`file:${f.id}`], data: { id: f.id, name: f.name, pages: f.pages, text: f.text.slice(0, 14000), truncated: f.text.length > 14000 } };
+  },
+
+  async rent_arrears(c) {
+    if (!can(c.user.role, "rent.manage")) return { cites: [], data: { error: "forbidden" } };
+    const d = await getLeasing(asUser(c));
+    if (!d?.rent) return { cites: [], data: { error: "forbidden" } };
+    const f = money$(c);
+    const owing = d.tenants.filter((x) => (x.arrearsEgp ?? 0) > 0).sort((a, b) => (b.arrearsEgp ?? 0) - (a.arrearsEgp ?? 0)).slice(0, 8);
+    return {
+      cites: ["calc:rent_arrears", ...owing.flatMap((x) => x.leases.map((l) => `lease:${l.id}`))],
+      data: {
+        collectionThisMonth: d.rent.month.rate === null ? null : pct(d.rent.month.rate, c.locale, 0), collected: f(d.rent.month.collected), billed: f(d.rent.month.billed),
+        totalOverdue: f(d.rent.aging.total), byAge: { "0-30 days": f(d.rent.aging.buckets.d0_30), "31-60 days": f(d.rent.aging.buckets.d31_60), "61-90 days": f(d.rent.aging.buckets.d61_90), "over 90 days": f(d.rent.aging.buckets.d90p) },
+        tenantsOwing: owing.map((x) => ({ tenant: c.locale === "ar" ? x.nameAr : x.name, leases: x.leases.map((l) => l.id), owed: f(x.arrearsEgp ?? 0), oldestDaysOverdue: x.oldestOverdueDays })),
+      },
+    };
   },
 
   async recent_updates(c, a) {

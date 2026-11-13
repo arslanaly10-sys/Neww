@@ -155,20 +155,20 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   log(await p.getByText("Deterministic function").isVisible(), "chip opens the calculation behind the number");
   await p.keyboard.press("Escape");
   await p.getByText("Deterministic function").waitFor({ state: "hidden" });
-  await dlg.locator("#horus-q").fill("Which leases end soon?"); await p.keyboard.press("Enter");
+  await dlg.locator("#horus-q").fill("Which leases end soon?"); await dlg.locator("#horus-q").press("Enter");
   await dlg.getByText(/leases end within 120 days/).waitFor({ timeout: 15000 });
   await dlg.locator('button[aria-label^="Lease"]').first().click();
   await p.getByText("Annual indexation").waitFor();
   log(true, "lease chip opens the exact lease row");
   await p.keyboard.press("Escape");
   await p.getByText("Annual indexation").waitFor({ state: "hidden" }); // let the citation sheet close before typing
-  await dlg.locator("#horus-q").fill("what is the meaning of life"); await p.keyboard.press("Enter");
+  await dlg.locator("#horus-q").fill("what is the meaning of life"); await dlg.locator("#horus-q").press("Enter");
   await dlg.getByText("I can't verify that from your portfolio data.").waitFor({ timeout: 15000 });
   log(true, "unanswerable question: 'I can't verify'");
-  await dlg.locator("#horus-q").fill("Should I sell my Zamalek flat?"); await p.keyboard.press("Enter");
+  await dlg.locator("#horus-q").fill("Should I sell my Zamalek flat?"); await dlg.locator("#horus-q").press("Enter");
   await dlg.getByText(/does not give investment advice/).waitFor({ timeout: 15000 });
   log(true, "advice question is declined with 'AI informs, you decide'");
-  await dlg.locator("#horus-q").fill("Draft the investor update"); await p.keyboard.press("Enter");
+  await dlg.locator("#horus-q").fill("Draft the investor update"); await dlg.locator("#horus-q").press("Enter");
   await dlg.getByText("Draft investor update").waitFor({ timeout: 15000 });
   await dlg.getByRole("button", { name: "Save as draft" }).click();
   await dlg.getByText(/Saved as draft U-\d{3}/).waitFor();
@@ -210,7 +210,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   log(await adlg.getByText("الذكاء الاصطناعي غير متصل: إجابة مبرمجة").isVisible(), "AR scripted notice");
   const side = await adlg.evaluate((el) => (el.getBoundingClientRect().left < window.innerWidth / 2 ? "left" : "right"));
   log(side === "left", `AR Horus panel opens on the reading-end (left) side (${side})`);
-  await adlg.locator("#horus-q").fill("اشرح آخر تقييم"); await p.keyboard.press("Enter");
+  await adlg.locator("#horus-q").fill("اشرح آخر تقييم"); await adlg.locator("#horus-q").press("Enter");
   await adlg.getByText(/التقييم V-/).first().waitFor({ timeout: 15000 });
   await p.screenshot({ path: `${OUT}/ar-horus-dark.png` });
   await adlg.locator('button[aria-label^="تقييم"]').first().click();

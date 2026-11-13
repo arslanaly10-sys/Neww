@@ -8,6 +8,7 @@ import {
 import { GENESIS_HASH, auditHash, canonical, sha256, type AuditCore } from "@/lib/hash";
 import { baseHash, resultHash, runScenario } from "@/lib/scenario";
 import { loadScenarioBase } from "@/lib/scenario-data";
+import { seedLeasing } from "./seed-leasing";
 import { estimateWithDrivers, makeMarket, marketFactorFromRatio, runValuation, type SaleRow } from "@/lib/valuation";
 
 /** Deterministic PRNG so the demo looks identical on every boot. */
@@ -320,6 +321,7 @@ export async function seed(db: DB) {
     return row;
   });
   await db.insert(t.auditEvents).values(auditRows);
+  await seedLeasing(db);
   void now;
   await db.execute(sql`analyze`);
 }

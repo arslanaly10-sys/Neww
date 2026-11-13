@@ -85,7 +85,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
   log(true, "portfolio answer shown");
 
   // Follow-up in the same conversation, then an action to confirm.
-  await d.locator("#horus-q").fill("Snooze the most urgent alert"); await p.keyboard.press("Enter");
+  await d.locator("#horus-q").fill("Snooze the most urgent alert"); await d.locator("#horus-q").press("Enter");
   await d.getByText("Ready for you to confirm").first().waitFor({ timeout: 15000 });
   const bellBefore = Number((await p.locator('a[href$="/overview/alerts"][aria-label]').first().innerText()).replace(/\D/g, "") || 0);
   await p.screenshot({ path: `${OUT}/en-horus-action.png` });
@@ -97,7 +97,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
   log(bellAfter === bellBefore - 1, `bell count drops after the snooze (${bellBefore} to ${bellAfter})`);
 
   // Email draft goes to the outbox.
-  await d.locator("#horus-q").fill("Draft an email to the investor"); await p.keyboard.press("Enter");
+  await d.locator("#horus-q").fill("Draft an email to the investor"); await d.locator("#horus-q").press("Enter");
   await d.getByRole("button", { name: "Send to outbox" }).waitFor({ timeout: 15000 });
   await d.getByRole("button", { name: "Send to outbox" }).click();
   await d.getByText(/Placed in the outbox as M-/).waitFor();
@@ -119,7 +119,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
   fs.writeFileSync(tmp, "Lease agreement between Sample Landlord and Nile Tenant.\nThe term starts 2026-01-01. Monthly rent EGP 85,000, paid quarterly.\n");
   await d.locator('input[type="file"]').setInputFiles(tmp);
   await d.getByText(/zos-stage6-lease\.txt is attached/).waitFor({ timeout: 15000 });
-  await d.locator("#horus-q").fill("Summarise this file"); await p.keyboard.press("Enter");
+  await d.locator("#horus-q").fill("Summarise this file"); await d.locator("#horus-q").press("Enter");
   await d.getByText(/has 1 pages/).waitFor({ timeout: 15000 });
   await d.getByText(/Amounts found: EGP 85,000\./).waitFor({ timeout: 10000 });
   log(true, "Horus reads the attached file and quotes it");
@@ -136,7 +136,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
 
   // Start a valuation from Horus.
   await d.getByRole("radio", { name: "Portfolio" }).click();
-  await d.locator("#horus-q").fill("Start a valuation for A-003"); await p.keyboard.press("Enter");
+  await d.locator("#horus-q").fill("Start a valuation for A-003"); await d.locator("#horus-q").press("Enter");
   await d.getByRole("button", { name: "Open the valuation" }).click();
   await p.waitForURL("**/valuation?asset=A-003");
   log(true, "start-a-valuation action opens the pre-filled valuation");

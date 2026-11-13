@@ -12,7 +12,7 @@ import type { Block, Draft, HorusAction, HorusAnswer, HorusCtx, Notice } from ".
  * It calls the same deterministic tools as the live path and writes the answer from fixed templates in both languages.
  * It recognises twelve kinds of question; anything else gets an honest "I can't verify that".
  */
-export type Intent = "file" | "snooze" | "startval" | "email" | "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
+export type Intent = "arrears" | "file" | "snooze" | "startval" | "email" | "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
 
 export const SUGGESTED: Intent[] = ["value", "gain", "yield", "units", "vacant", "expiring", "docs", "largest", "concentration", "market", "valuation", "draft"];
 
@@ -35,6 +35,7 @@ const ASSET_RE = /\bA[- ]?(\d{1,3})\b/i;
 const SNOOZE_RE = /snooze|postpone|defer|أجّل|أجل|تأجيل/i;
 const STARTVAL_RE = /(run|start|new|begin|open)\b.{0,20}valuation|valuation (for|of)\b|value (asset )?a[- ]?\d|ابدأ.{0,10}تقييم|تقييم جديد|شغّل.{0,10}تقييم|قيّم/i;
 const EMAIL_RE = /e-?mail|mail to|بريد|إيميل|رسالة إلى/i;
+const ARREARS_RE = /arrears|overdue|unpaid|behind on rent|owe|late (rent|payment)|rent collect|collection rate|متأخر|متأخرات|غير مدفوع|تحصيل/i;
 const FILE_RE = /file|attach|upload|this (document|pdf|lease)|summari[sz]e|الملف|مرفق|المرفق|لخّص|لخص|هذا المستند/i;
 
 export function classify(q: string, hasFiles = false): { intent: Intent | null; assetId?: string } {
@@ -43,6 +44,7 @@ export function classify(q: string, hasFiles = false): { intent: Intent | null; 
   const assetId = m ? `A-${m[1].padStart(3, "0")}` : undefined;
   if (hasFiles && FILE_RE.test(text)) return { intent: "file" };
   if (SNOOZE_RE.test(text)) return { intent: "snooze" };
+  if (ARREARS_RE.test(text)) return { intent: "arrears" };
   if (assetId && STARTVAL_RE.test(text)) return { intent: "startval", assetId };
   if (EMAIL_RE.test(text)) return { intent: "email" };
   if (assetId) return { intent: "asset", assetId };
@@ -75,6 +77,17 @@ export async function scriptedAnswer(question: string, c: HorusCtx, notice: Noti
   const cites = (...o: { cites: string[] }[]) => [...new Set(o.flatMap((x) => x.cites))];
 
   switch (intent) {
+    case "arrears": {
+      if (c.user.role !== "manager") return { ...base, blocks: [{ text: t("s_arrears_denied"), cites: [] }], cannotVerify: false, draft: null };
+      const s = await run("rent_arrears"); const d = s.data as TData;
+      if (d.error) return cannot();
+      blocks.push({ text: t("s_arrears", { rate: d.collectionThisMonth ?? "–", collected: d.collected.display, billed: d.billed.display, total: d.totalOverdue.display }), cites: ["calc:rent_arrears"] });
+      blocks.push(d.tenantsOwing.length === 0 ? { text: t("s_arrears_none"), cites: ["calc:rent_arrears"] } : {
+        text: t("s_arrears_who", { list: list(d.tenantsOwing.slice(0, 4).map((x: TData) => t("s_arrears_item", { tenant: x.tenant, owed: x.owed.display, days: x.oldestDaysOverdue, leases: x.leases.join(", ") })), sep) }),
+        cites: d.tenantsOwing.slice(0, 4).flatMap((x: TData) => x.leases.map((id: string) => `lease:${id}`)),
+      });
+      break;
+    }
     case "file": {
       for (const id of (c.fileIds ?? []).slice(0, 3)) {
         const f = await run("read_file", { fileId: id }); const d = f.data as TData;
