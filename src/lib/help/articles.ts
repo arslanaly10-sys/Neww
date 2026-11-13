@@ -147,6 +147,15 @@ export const ARTICLES: HelpArticle[] = [
     href: "/calendar",
   },
   {
+    id: "deals", public: false, terms: "deals deal pipeline acquisition acquire buy sell sale disposal offer negotiation due diligence funnel kanban board market check comparable الصفقات صفقة مسار شراء بيع استحواذ عرض تفاوض فحص القمع",
+    title: { en: "The deals pipeline", ar: "مسار الصفقات" },
+    body: {
+      en: "Deals, under Money, tracks what the portfolio may buy and what it may sell. Each deal moves through sourcing, screening, due diligence, offer made and negotiation to won or lost; managers drag a card to another column or use its stage menu, and losing a deal asks for the reason. Each stage carries a chance of closing, so the pipeline shows a weighted value. Every deal with an area is checked against the median price per square metre of sample comparable sales in its district. Expected closing dates appear on the calendar. Investors see only the deals a manager shares with them, without the notes or the counterparty.",
+      ar: "يتابع قسم الصفقات، ضمن المال، ما قد تشتريه المحفظة وما قد تبيعه. تمر كل صفقة بالبحث والفرز والفحص النافي للجهالة وتقديم العرض والتفاوض حتى تُكسب أو تُخسر؛ يسحب المدير البطاقة إلى عمود آخر أو يستخدم قائمة مرحلتها، وخسارة صفقة تطلب ذكر السبب. لكل مرحلة احتمال إغلاق، فيعرض المسار قيمة مرجحة. وتُقارن كل صفقة لها مساحة بوسيط سعر المتر في المبيعات المماثلة التجريبية في حيها. وتظهر مواعيد الإغلاق المتوقعة في التقويم. ولا يرى المستثمرون إلا الصفقات التي يشاركها المدير معهم، دون الملاحظات أو الطرف الآخر.",
+    },
+    href: "/deals",
+  },
+  {
     id: "scenarios", public: false, terms: "scenarios stress test what if rates vacancy sliders sensitivity السيناريوهات اختبار ضغط ماذا لو أسعار شغور",
     title: { en: "Scenarios", ar: "السيناريوهات" },
     body: {

@@ -3,7 +3,7 @@ import { asc, eq } from "drizzle-orm";
 import { createTranslator } from "next-intl";
 import { z } from "zod";
 import { getDb, withSession } from "@/db/client";
-import { assets, calendarEvents, distributions, leases, rentInvoices, reportSchedules, tenants, users, workOrders } from "@/db/schema";
+import { assets, calendarEvents, deals, distributions, leases, rentInvoices, reportSchedules, tenants, users, workOrders } from "@/db/schema";
 import en from "../../messages/en.json";
 import ar from "../../messages/ar.json";
 import { appendAudit } from "./audit";
@@ -22,15 +22,15 @@ import type { CurrentUser } from "./session";
  */
 export const EVENT_KINDS = ["meeting", "inspection", "viewing", "deadline", "other"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
-export const SOURCES = ["events", "leases", "rent", "work", "finance", "reports"] as const;
+export const SOURCES = ["events", "leases", "rent", "work", "finance", "deals", "reports"] as const;
 export type Source = (typeof SOURCES)[number];
 /** Which sources each role sees. Rent and report schedules are managers' records. */
-export const sourcesFor = (role: CurrentUser["role"]): Source[] => (role === "manager" ? [...SOURCES] : role === "investor" ? ["events", "leases", "work", "finance"] : []);
+export const sourcesFor = (role: CurrentUser["role"]): Source[] => (role === "manager" ? [...SOURCES] : role === "investor" ? ["events", "leases", "work", "finance", "deals"] : []);
 
 export interface CalItem {
   id: string; // CE-001 for a diary event; lease:L-014, rent:2026-11-01, work:WO-003, dist:DS-002, report:RS-001:2026-12-01 for the rest
   source: Source;
-  kind: EventKind | "lease_end" | "rent_due" | "work_due" | "distribution_paid" | "report_run";
+  kind: EventKind | "lease_end" | "rent_due" | "work_due" | "distribution_paid" | "deal_close" | "report_run";
   date: string;
   start: string | null;
   end: string | null;
@@ -66,6 +66,7 @@ export async function getCalendar(user: CurrentUser, lang: "en" | "ar", from: st
     rent: want("rent") ? await tx.select({ dueOn: rentInvoices.dueOn, amountEgp: rentInvoices.amountEgp, paidEgp: rentInvoices.paidEgp, status: rentInvoices.status }).from(rentInvoices) : [],
     work: want("work") ? await tx.select({ id: workOrders.id, title: workOrders.title, assetId: workOrders.assetId, dueOn: workOrders.dueOn, status: workOrders.status }).from(workOrders) : [],
     dist: want("finance") ? await tx.select().from(distributions) : [],
+    deals: want("deals") ? await tx.select({ id: deals.id, title: deals.title, titleAr: deals.titleAr, stage: deals.stage, expectedClose: deals.expectedClose }).from(deals) : [],
     reports: want("reports") ? await tx.select().from(reportSchedules) : [],
   }));
   const asset = new Map(d.assets.map((a) => [a.id, lang === "ar" ? a.nameAr : a.name]));
@@ -101,6 +102,10 @@ export async function getCalendar(user: CurrentUser, lang: "en" | "ar", from: st
   for (const x of d.dist) {
     if (x.status !== "paid" || !inRange(x.paidOn)) continue;
     items.push({ ...base, id: `dist:${x.id}`, source: "finance", kind: "distribution_paid", date: x.paidOn!, title: t("d_distribution_paid", { id: x.id, period: x.period }), detail: t("d_amount", { amount: egp(x.amountEgp, lang) }), link: "/finance#distributions" });
+  }
+  for (const x of d.deals) {
+    if (!inRange(x.expectedClose) || ["won", "lost"].includes(x.stage)) continue;
+    items.push({ ...base, id: `deal:${x.id}`, source: "deals", kind: "deal_close", date: x.expectedClose!, title: t("d_deal_close", { id: x.id, title: (lang === "ar" && x.titleAr) || x.title }), link: `/deals/${x.id}`, overdue: x.expectedClose! < DEMO_TODAY });
   }
   // Report schedules: the next run and the runs after it, as far as the range reaches.
   for (const s of d.reports) {

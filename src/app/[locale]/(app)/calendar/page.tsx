@@ -16,7 +16,7 @@ import { titleFrom } from "@/lib/meta";
 export const generateMetadata = titleFrom("cal");
 
 /** The colour band each source wears; the source is also always named in text, so colour is never the only cue. */
-const BAND: Record<Source, string> = { events: "border-s-gold", leases: "border-s-teal", rent: "border-s-ok", work: "border-s-muted", finance: "border-s-ok", reports: "border-s-line" };
+const BAND: Record<Source, string> = { events: "border-s-gold", leases: "border-s-teal", rent: "border-s-ok", work: "border-s-muted", finance: "border-s-ok", deals: "border-s-gold", reports: "border-s-line" };
 
 export default async function CalendarPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ m?: string; view?: string; s?: string; deleted?: string }> }) {
   const { locale } = await params;

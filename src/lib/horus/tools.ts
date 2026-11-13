@@ -7,6 +7,7 @@ import { getLeasing } from "../leasing";
 import { getFinance } from "../finance";
 import { boardOrder, listWork } from "../work";
 import { upcoming } from "../calendar";
+import { listDeals, OPEN_STAGES } from "../deals";
 import { getPortfolio, type PortfolioRow } from "../access";
 import { getAggregateIncome } from "../portfolio-data";
 import { momentum3m, portfolioMetrics, sentiment } from "../metrics";
@@ -40,6 +41,7 @@ export const TOOLS = [
   { name: "finance_summary", description: "Finance. For managers: income, costs and net operating income over the last 12 months, the 12-month forecast, the largest budget variances this year and the suggested next distribution. For investors: the distributions paid to them.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "work_orders", description: "Maintenance requests and team tasks: how many are open, overdue and urgent, and the most pressing ones with their asset, assignee and due date.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "calendar_upcoming", description: "What is on the calendar in the next days (default 14): meetings, inspections, viewings and deadlines, plus leases ending, work due, distributions paid and, for managers, rent due and scheduled reports. Each with its date, time and asset.", input_schema: { type: "object", properties: { withinDays: { type: "integer", minimum: 1, maximum: 90 } }, additionalProperties: false } },
+  { name: "deal_pipeline", description: "The deals pipeline: open purchases and sales, their total asking value, the value weighted by each stage's chance of closing, and the deals furthest along with their price against comparable sales. Investors see only deals shared with them.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "recent_updates", description: "Latest published investor updates (title, date, text).", input_schema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 12 } }, additionalProperties: false } },
 ] as const;
 
@@ -243,6 +245,20 @@ const impl: Record<string, (c: HorusCtx, a: Args) => Promise<ToolOut>> = {
       data: {
         from: dateFmt(DEMO_TODAY, c.locale), withinDays: n, count: items.length,
         items: items.slice(0, 12).map((x) => ({ date: dateFmt(x.date, c.locale), time: x.start, title: x.title, kind: x.source, asset: x.assetName, overdue: x.overdue || undefined })),
+      },
+    };
+  },
+
+  async deal_pipeline(c) {
+    const d = await listDeals(asUser(c));
+    if (!d) return { cites: [], data: { error: "forbidden" } };
+    const f = money$(c);
+    const open = d.items.filter((x) => OPEN_STAGES.includes(x.stage)).sort((a, b) => OPEN_STAGES.indexOf(b.stage) - OPEN_STAGES.indexOf(a.stage));
+    return {
+      cites: ["calc:deal_pipeline"],
+      data: {
+        open: d.totals.open, buying: f(d.totals.buyingEgp), selling: f(d.totals.sellingEgp), weighted: f(d.totals.weightedEgp), wonThisYear: d.totals.wonThisYear, lostThisYear: d.totals.lostThisYear,
+        furthestAlong: open.slice(0, 5).map((x) => ({ id: x.id, title: (c.locale === "ar" && x.titleAr) || x.title, kind: x.kind, stage: x.stage, price: f(x.offerEgp ?? x.askingEgp), againstMarket: x.market ? pct(x.market.diff, c.locale, 0) : null, marketDiff: x.market?.diff ?? null })),
       },
     };
   },

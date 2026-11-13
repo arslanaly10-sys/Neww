@@ -16,7 +16,7 @@ import type { CurrentUser } from "./session";
  * ready. Each person chooses per category whether to hear about it in the app, by email (the outbox here), or both.
  * The text is stored as a kind and its parameters and rendered in the reader's language.
  */
-export const N_CATEGORIES = ["approvals", "work", "finance", "leasing", "reports", "sales", "calendar"] as const;
+export const N_CATEGORIES = ["approvals", "work", "finance", "leasing", "reports", "sales", "calendar", "deals"] as const;
 export type NCategory = (typeof N_CATEGORIES)[number];
 export const KINDS = {
   approval_request: "approvals", approval_decided: "approvals",
@@ -25,6 +25,7 @@ export const KINDS = {
   rent_overdue: "leasing", renewal_due: "leasing",
   report_ready: "reports", lead_new: "sales",
   event_invited: "calendar", event_changed: "calendar", event_cancelled: "calendar",
+  deal_assigned: "deals", deal_stage: "deals",
 } as const satisfies Record<string, NCategory>;
 export type NKind = keyof typeof KINDS;
 /** Defaults when a person has not chosen: everything in the app, approvals also by email. */
@@ -32,6 +33,7 @@ export const DEFAULT_PREFS: Record<NCategory, { inApp: boolean; email: boolean }
   approvals: { inApp: true, email: true }, work: { inApp: true, email: false }, finance: { inApp: true, email: false },
   leasing: { inApp: true, email: false }, reports: { inApp: true, email: false }, sales: { inApp: true, email: false },
   calendar: { inApp: true, email: true },
+  deals: { inApp: true, email: false },
 };
 export type Params = Record<string, string | number>;
 

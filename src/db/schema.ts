@@ -523,3 +523,44 @@ export const calendarEvents = pgTable("calendar_events", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 }, (t) => [index("calendar_events_date").on(t.date)]);
+
+/**
+ * The deals pipeline: properties the portfolio may buy, and holdings it may sell. Each deal moves through stages from
+ * sourcing to closed. Managers run it; a deal marked shared is visible to investors.
+ */
+export const deals = pgTable("deals", {
+  id: text("id").primaryKey(), // D-001
+  kind: text("kind").notNull(), // buy | sell
+  title: text("title").notNull(),
+  titleAr: text("title_ar"),
+  districtId: text("district_id").notNull().references(() => districts.id),
+  type: text("type").notNull(), // apartment | villa | office | retail | land | mixed
+  areaSqm: integer("area_sqm"),
+  assetId: text("asset_id").references(() => assets.id), // the holding, for a sale
+  askingEgp: bigint("asking_egp", { mode: "number" }).notNull(),
+  offerEgp: bigint("offer_egp", { mode: "number" }),
+  stage: text("stage").notNull(), // sourcing | screening | due_diligence | offer | negotiation | won | lost
+  position: integer("position").notNull().default(0), // order within its column
+  ownerId: text("owner_id").notNull().references(() => users.id),
+  counterparty: text("counterparty").notNull().default(""),
+  source: text("source").notNull().default("broker"), // broker | developer | direct | auction
+  expectedClose: date("expected_close"),
+  notes: text("notes").notNull().default(""),
+  lostReason: text("lost_reason"),
+  shared: integer("shared").notNull().default(0),
+  createdBy: text("created_by").notNull().references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+  closedOn: date("closed_on"),
+}, (t) => [index("deals_stage").on(t.stage, t.position)]);
+
+/** A deal's timeline: created, stage moves, offers, owner changes, notes, closing. Append-only. */
+export const dealEvents = pgTable("deal_events", {
+  id: text("id").primaryKey(),
+  dealId: text("deal_id").notNull().references(() => deals.id),
+  kind: text("kind").notNull(), // created | stage | offer | owner | note | closed | shared
+  text: text("text").notNull().default(""),
+  detail: jsonb("detail").notNull().default({}),
+  actorId: text("actor_id").notNull().references(() => users.id),
+  at: timestamp("at", { withTimezone: true }).notNull(),
+}, (t) => [index("deal_events_deal").on(t.dealId, t.at)]);

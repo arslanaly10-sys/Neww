@@ -12,7 +12,7 @@ import type { Block, Draft, HorusAction, HorusAnswer, HorusCtx, Notice } from ".
  * It calls the same deterministic tools as the live path and writes the answer from fixed templates in both languages.
  * It recognises twelve kinds of question; anything else gets an honest "I can't verify that".
  */
-export type Intent = "calendar" | "work" | "finance" | "arrears" | "file" | "snooze" | "startval" | "email" | "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
+export type Intent = "deals" | "calendar" | "work" | "finance" | "arrears" | "file" | "snooze" | "startval" | "email" | "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
 
 export const SUGGESTED: Intent[] = ["value", "gain", "yield", "units", "vacant", "expiring", "docs", "largest", "concentration", "market", "valuation", "draft"];
 
@@ -38,6 +38,7 @@ const EMAIL_RE = /e-?mail|mail to|بريد|إيميل|رسالة إلى/i;
 const ARREARS_RE = /arrears|overdue|unpaid|behind on rent|owe|late (rent|payment)|rent collect|collection rate|متأخر|متأخرات|غير مدفوع|تحصيل/i;
 const FINANCE_RE = /\bnoi\b|net operating|budget|cash ?flow|distribution|payout|expenses|operating costs|ميزانية|موازنة|توزيع|التدفق النقدي|صافي الدخل التشغيلي|مصروفات/i;
 const WORK_RE = /maintenance|repair|work order|fix(es)?\b|broken|leak|technician|tasks?\b|to-?do|صيانة|إصلاح|أعمال|مهام|عطل|تسريب/i;
+const DEALS_RE = /\bdeals?\b|pipeline|acquisition|acquire|disposal|offers? (we|on)|صفق|الصفقات|استحواذ|مسار الصفقات/i;
 const CAL_RE = /calendar|diary|agenda|this week|next week|what\x27?s (on|coming up)|meetings?\b|appointments?|inspections?\b|viewings?\b|التقويم|تقويم|الأجندة|جدول الأعمال|هذا الأسبوع|الأسبوع القادم|اجتماع|معاينة|مواعيدي/i;
 const FILE_RE = /file|attach|upload|this (document|pdf|lease)|summari[sz]e|الملف|مرفق|المرفق|لخّص|لخص|هذا المستند/i;
 
@@ -48,6 +49,7 @@ export function classify(q: string, hasFiles = false): { intent: Intent | null; 
   if (hasFiles && FILE_RE.test(text)) return { intent: "file" };
   if (SNOOZE_RE.test(text)) return { intent: "snooze" };
   // "Overdue" belongs to rent only when the question is about rent or tenants; otherwise maintenance words win.
+  if (DEALS_RE.test(text) && !KEYS[0][1].test(text)) return { intent: "deals" };
   if (CAL_RE.test(text) && !/report|تقرير/i.test(text)) return { intent: "calendar" };
   if (WORK_RE.test(text) && !/rent|tenant|إيجار|مستأجر/i.test(text) && !KEYS[0][1].test(text)) return { intent: "work" };
   if (ARREARS_RE.test(text)) return { intent: "arrears" };
@@ -84,6 +86,14 @@ export async function scriptedAnswer(question: string, c: HorusCtx, notice: Noti
   const cites = (...o: { cites: string[] }[]) => [...new Set(o.flatMap((x) => x.cites))];
 
   switch (intent) {
+    case "deals": {
+      const s = await run("deal_pipeline"); const d = s.data as TData;
+      if (d.error) return cannot();
+      const dt = await getTranslations({ locale: c.locale, namespace: "deals" });
+      blocks.push({ text: t("s_deals", { open: d.open, buying: d.buying.display, selling: d.selling.display, weighted: d.weighted.display }), cites: ["calc:deal_pipeline"] });
+      if (d.furthestAlong.length) blocks.push({ text: t("s_deals_list", { list: list(d.furthestAlong.slice(0, 3).map((x: TData) => t("s_deals_item", { id: x.id, title: x.title, stage: dt(`s_${x.stage}` as "s_offer"), market: x.againstMarket ? t("s_deals_market", { pct: (x.marketDiff > 0 ? "+" : "") + x.againstMarket }) : "" })), sep) }), cites: ["calc:deal_pipeline"] });
+      break;
+    }
     case "calendar": {
       const s = await run("calendar_upcoming"); const d = s.data as TData;
       if (d.error) return cannot();

@@ -84,6 +84,7 @@ const axeSrc = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
   await noH(p, "ar sign-in @390");
   await p.getByRole("list", { name: "أين تعيش سجلات المحفظة اليوم" }).getByRole("button", { name: "مجموعات واتساب" }).click();
   await p.getByRole("region", { name: "مجموعات واتساب" }).waitFor();
+  await p.waitForTimeout(600); // let the card finish fading in before measuring contrast
   log(true, "phones open a source from the list");
   await axe(p, "ar sign-in phone, reduced motion");
   await p.locator('section[aria-labelledby="rs-h"]').screenshot({ path: `${OUT}/motion-sphere-phone-ar.png` });

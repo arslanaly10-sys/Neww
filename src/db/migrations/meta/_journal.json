@@ -57,6 +57,13 @@
       "when": 1794584365547,
       "tag": "0007_stage13_calendar",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794588027798,
+      "tag": "0008_stage14_deals",
+      "breakpoints": true
     }
   ]
 }

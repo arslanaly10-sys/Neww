@@ -196,3 +196,17 @@ CREATE POLICY cal_read ON calendar_events FOR SELECT TO app_user
 DROP POLICY IF EXISTS cal_write ON calendar_events;
 CREATE POLICY cal_write ON calendar_events FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
 GRANT DELETE ON calendar_events TO app_user;
+
+-- Deals: managers run the pipeline. Investors read the deals shared with them, and those deals' timelines.
+ALTER TABLE deals ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS deals_read ON deals;
+CREATE POLICY deals_read ON deals FOR SELECT TO app_user USING (app_role() = 'manager' OR (app_role() = 'investor' AND shared = 1));
+DROP POLICY IF EXISTS deals_write ON deals;
+CREATE POLICY deals_write ON deals FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+ALTER TABLE deal_events ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS deal_ev_read ON deal_events;
+CREATE POLICY deal_ev_read ON deal_events FOR SELECT TO app_user
+  USING (app_role() = 'manager' OR (app_role() = 'investor' AND kind <> 'note' AND EXISTS (SELECT 1 FROM deals d WHERE d.id = deal_id AND d.shared = 1)));
+DROP POLICY IF EXISTS deal_ev_write ON deal_events;
+CREATE POLICY deal_ev_write ON deal_events FOR INSERT TO app_user WITH CHECK (app_role() = 'manager' AND actor_id = app_user_id());
+REVOKE UPDATE, DELETE ON deal_events FROM app_user;
