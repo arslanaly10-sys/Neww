@@ -54,7 +54,7 @@ export function ChainControls({ initial }: { initial: ChainCheck }) {
         {note && (
           <div className={cn("rounded-md border p-3 text-sm", note.tone === "ok" ? "border-ok/50" : note.tone === "bad" ? "border-danger/60" : "border-line")}>
             <p className={note.tone === "ok" ? "text-ok" : note.tone === "bad" ? "text-danger" : ""}>{note.text}</p>
-            {note.detail && <pre dir="ltr" className="mt-2 overflow-x-auto rounded bg-surface-2 p-2 font-mono text-[11px] text-muted">{note.detail}</pre>}
+            {note.detail && <pre dir="ltr" className="mt-2 overflow-x-auto rounded bg-surface-2 p-2 font-mono text-xs text-muted">{note.detail}</pre>}
           </div>
         )}
       </div>

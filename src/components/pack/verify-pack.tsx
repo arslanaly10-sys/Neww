@@ -17,7 +17,7 @@ export function VerifyPack() {
   return (
     <Card>
       <h2 className="font-display text-2xl">{t("verifyTitle")}</h2>
-      <p className="mb-4 mt-1 max-w-2xl text-sm text-muted">{t("verifyHelp")}</p>
+      <p className="mb-4 mt-1 max-w-md text-sm text-muted">{t("verifyHelp")}</p>
       <form className="flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={(e) => {
         e.preventDefault();
         const h = hash.trim().toLowerCase();

@@ -25,7 +25,7 @@ export function SideNav({ areas, badges = {} }: { areas: Area[]; badges?: Partia
             {active && <motion.span layoutId="sidenav-active" aria-hidden="true" className="absolute inset-0 -z-10 rounded-md bg-surface-2" transition={{ type: "spring", bounce: 0, visualDuration: 0.3 }} />}
             <Icon aria-hidden="true" size={18} />
             <span className="flex-1">{t(a)}</span>
-            {badges[a] ? <span className="num rounded-full bg-gold-fill px-1.5 text-[11px] font-bold text-on-gold"><span aria-hidden="true">{badges[a]}</span><span className="sr-only"> ({badges[a]})</span></span> : null}
+            {badges[a] ? <span className="num rounded-full bg-gold-fill px-1.5 text-xs font-bold text-on-gold"><span aria-hidden="true">{badges[a]}</span><span className="sr-only"> ({badges[a]})</span></span> : null}
           </Link>
         );
       })}
@@ -43,7 +43,7 @@ export function TabBar({ areas, badges = {} }: { areas: Area[]; badges?: Partial
         const active = isActive(path, a);
         return (
           <Link key={a} href={`/${a}`} aria-current={active ? "page" : undefined}
-            className={cn("relative flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 text-[11px] font-medium", active ? "text-gold" : "text-muted")}>
+            className={cn("relative flex min-h-14 min-w-11 flex-auto flex-col items-center justify-center gap-0.5 px-0 text-xs font-medium", active ? "text-gold" : "text-muted")}>
             {active && <motion.span layoutId="tabbar-active" aria-hidden="true" className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-gold-fill" transition={{ type: "spring", bounce: 0, visualDuration: 0.3 }} />}
             <span className="relative"><Icon aria-hidden="true" size={20} />{badges[a] ? <span aria-hidden="true" className="num absolute -end-2.5 -top-1.5 min-w-4 rounded-full bg-gold-fill px-1 text-center text-[10px] font-bold leading-4 text-on-gold">{badges[a]}</span> : null}</span>
             <span className="max-w-full truncate">{t(a)}{badges[a] ? <span className="sr-only"> ({badges[a]})</span> : null}</span>

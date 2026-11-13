@@ -58,17 +58,19 @@ export function PortfolioMap({ districts, assets, currency, fx }: { districts: M
   useEffect(() => {
     let map: import("maplibre-gl").Map | undefined;
     let cancelled = false;
+    let unwatch: (() => void) | undefined;
     (async () => {
       const maplibregl = await import("maplibre-gl");
       maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
       if (cancelled || !ref.current) return;
-      const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const ink = dark ? "#efe8d8" : "#14120e";
+      // MapLibre paints its layers from literal colours, so read the theme tokens from globals.css and repaint when the
+      // colour scheme changes. The DOM labels and markers use the CSS variables directly and follow the theme on their own.
+      const token = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
       let m: import("maplibre-gl").Map;
       try {
         m = new maplibregl.Map({
           container: ref.current,
-          style: { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": dark ? "#0d0f13" : "#efe9db" } }] },
+          style: { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": token("--surface-2") } }] },
           bounds: BOUNDS, fitBoundsOptions: { padding: 12 }, attributionControl: false, cooperativeGestures: true,
         });
       } catch { setFallback(true); return; }
@@ -79,26 +81,35 @@ export function PortfolioMap({ districts, assets, currency, fx }: { districts: M
           type: "geojson",
           data: { type: "FeatureCollection", features: districts.map((d) => ({ type: "Feature", properties: { id: d.id, heat: heat(d.share, maxShare) }, geometry: { type: "Polygon", coordinates: [circle(dPos[d.id])] } })) },
         });
-        m.addLayer({ id: "d-fill", type: "fill", source: "districts", paint: { "fill-color": "#c9a45c", "fill-opacity": ["get", "heat"] } });
-        m.addLayer({ id: "d-line", type: "line", source: "districts", paint: { "line-color": "#c9a45c", "line-width": 1, "line-opacity": 0.6 } });
+        m.addLayer({ id: "d-fill", type: "fill", source: "districts", paint: { "fill-color": token("--gold-fill"), "fill-opacity": ["get", "heat"] } });
+        m.addLayer({ id: "d-line", type: "line", source: "districts", paint: { "line-color": token("--gold-fill"), "line-width": 1, "line-opacity": 0.6 } });
         for (const d of districts) {
           const el = document.createElement("span");
           el.textContent = ar ? d.nameAr : d.name;
-          el.style.cssText = `display:block;width:104px;text-align:center;font:600 11px/1.25 var(--font-sans, sans-serif);color:${ink};text-shadow:0 0 3px ${dark ? "#090a0c" : "#f6f2e9"};pointer-events:none;margin-top:4px`;
+          el.style.cssText = `display:block;width:104px;text-align:center;font:600 12px/1.25 var(--font-sans, sans-serif);color:var(--text);text-shadow:0 0 3px var(--bg);pointer-events:none;margin-top:4px`;
           new maplibregl.Marker({ element: el, anchor: "top" }).setLngLat([dPos[d.id][0], dPos[d.id][1] - radius()]).addTo(m);
         }
         for (const a of assets) {
           const b = document.createElement("button");
           b.type = "button";
           b.setAttribute("aria-label", `${ar ? a.nameAr : a.name}`);
-          b.style.cssText = "width:14px;height:14px;border-radius:50%;background:#c9a45c;border:2px solid " + (dark ? "#090a0c" : "#14120e") + ";cursor:pointer;padding:0";
+          b.style.cssText = "width:14px;height:14px;border-radius:50%;background:var(--gold-fill);border:2px solid var(--on-gold);cursor:pointer;padding:0";
           b.addEventListener("click", (e) => { e.stopPropagation(); setSelected(a.id); });
           new maplibregl.Marker({ element: b }).setLngLat(aPos[a.id]).addTo(m);
         }
       });
+      const scheme = window.matchMedia("(prefers-color-scheme: dark)");
+      const repaint = () => {
+        if (!m.loaded()) return;
+        m.setPaintProperty("bg", "background-color", token("--surface-2"));
+        m.setPaintProperty("d-fill", "fill-color", token("--gold-fill"));
+        m.setPaintProperty("d-line", "line-color", token("--gold-fill"));
+      };
+      scheme.addEventListener("change", repaint);
+      unwatch = () => scheme.removeEventListener("change", repaint);
       m.on("error", (e) => { if (!m.loaded() && /worker|webgl/i.test(String(e.error?.message))) setFallback(true); });
     })().catch(() => setFallback(true));
-    return () => { cancelled = true; map?.remove(); };
+    return () => { cancelled = true; unwatch?.(); map?.remove(); };
   }, [districts, assets, ar, maxShare, dPos, aPos]);
 
   const w = 640, h = 340, lngMin = BOUNDS[0][0], lngMax = BOUNDS[1][0], latMin = BOUNDS[0][1], latMax = BOUNDS[1][1];
@@ -111,7 +122,7 @@ export function PortfolioMap({ districts, assets, currency, fx }: { districts: M
           {districts.map((d) => (
             <g key={d.id}>
               <circle cx={X(dPos[d.id][0])} cy={Y(dPos[d.id][1])} r={22} fill="var(--gold-fill)" fillOpacity={heat(d.share, maxShare)} stroke="var(--gold)" strokeOpacity={0.6} />
-              <text x={X(dPos[d.id][0])} y={Y(dPos[d.id][1]) + 36} textAnchor="middle" fontSize="11" fontWeight="600" fill="var(--text)">{ar ? d.nameAr : d.name}</text>
+              <text x={X(dPos[d.id][0])} y={Y(dPos[d.id][1]) + 36} textAnchor="middle" fontSize="12" fontWeight="600" fill="var(--text)">{ar ? d.nameAr : d.name}</text>
             </g>
           ))}
           {assets.map((a) => (

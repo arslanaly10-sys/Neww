@@ -48,7 +48,7 @@ export default async function Valuation({ params, searchParams }: { params: Prom
 
       <section id="queue" className="scroll-mt-24">
         <h2 className="mb-1 font-display text-2xl">{t("queue")}</h2>
-        <p className="mb-4 max-w-2xl text-sm text-muted">{t("queueLead")}</p>
+        <p className="mb-4 max-w-md text-sm text-muted">{t("queueLead")}</p>
         {queue.length === 0 ? <Card className="text-sm text-muted">{t("queueEmpty")}</Card> : (
           <ul className="space-y-3">
             {queue.map((v) => (
@@ -87,7 +87,7 @@ export default async function Valuation({ params, searchParams }: { params: Prom
 
       <section id="register" className="scroll-mt-24">
         <h2 className="mb-2 font-display text-2xl">{t("register")}</h2>
-        <p className="mb-4 max-w-2xl text-sm text-muted">{t("registerNote")}</p>
+        <p className="mb-4 max-w-md text-sm text-muted">{t("registerNote")}</p>
         <div className="space-y-3">
           {sets.map((s) => (
             <Card key={s.id} className="p-4">

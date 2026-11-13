@@ -34,7 +34,7 @@ export function Badge({ className, tone = "muted", ...p }: HTMLAttributes<HTMLSp
     danger: "border-danger/50 text-danger",
     ok: "border-ok/50 text-ok",
   };
-  return <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold  ", tones[tone], className)} {...p} />;
+  return <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold", tones[tone], className)} {...p} />;
 }
 
 export function Skeleton({ className }: { className?: string }) {
@@ -48,7 +48,7 @@ export function PageHeader({ title, lead, children, animated = false }: { title:
     <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
         {animated ? <BlurHeadline text={title} className={titleClass} /> : <h1 className={titleClass}>{title}</h1>}
-        {lead && <p className="mt-2 max-w-2xl text-muted">{lead}</p>}
+        {lead && <p className="mt-2 max-w-lg text-muted">{lead}</p>}
       </div>
       {children}
     </header>

@@ -28,9 +28,9 @@ export function Fig({
             <Badge tone="gold" title={s("badgeTitle")}>{s("badge")}</Badge>
           </div>
           <dl className="space-y-2 text-muted">
-            <div><dt className="text-[11px] font-semibold text-gold">{t("source")}</dt><dd>{source}</dd></div>
-            {calc && <div><dt className="text-[11px] font-semibold text-gold">{t("calc")}</dt><dd>{calc}</dd></div>}
-            <div><dt className="text-[11px] font-semibold text-gold">{t("assumptions")}</dt><dd className="num">{assumptions}</dd></div>
+            <div><dt className="text-xs font-semibold text-gold">{t("source")}</dt><dd>{source}</dd></div>
+            {calc && <div><dt className="text-xs font-semibold text-gold">{t("calc")}</dt><dd>{calc}</dd></div>}
+            <div><dt className="text-xs font-semibold text-gold">{t("assumptions")}</dt><dd className="num">{assumptions}</dd></div>
           </dl>
           <Link href="/valuation#register" className="mt-3 inline-block text-gold underline underline-offset-4">{t("open")}</Link>
           <Popover.Close className="sr-only">{t("close")}</Popover.Close>

@@ -69,6 +69,10 @@ body {
 html[lang="ar"] body { font-family: var(--font-sans-ar); font-size: 16px; line-height: 1.7; }
 html[lang="ar"] .font-display { font-family: var(--font-display-ar); letter-spacing: 0; }
 
+/* Headings break into even lines; running text avoids a lone word on its last line. */
+h1, h2, h3, h4 { text-wrap: balance; }
+p, li, dd, figcaption, blockquote { text-wrap: pretty; }
+
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 ::selection { background: var(--gold-fill); color: var(--on-gold); }
 
@@ -90,6 +94,10 @@ html[lang="ar"] .font-display { font-family: var(--font-display-ar); letter-spac
 
 html:not([data-js]) [data-anim] { opacity: 1 !important; transform: none !important; filter: none !important; }
 
+/* Reduced motion: the app's own CSS movement stops (the loading shimmer holds still, entrances simply appear). Motion and
+   the React Bits effects handle the preference themselves, so status feedback such as the audit chain's mark keeps its
+   gentle opacity pulse instead of freezing mid-turn. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  html { scroll-behavior: auto; }
+  .skeleton, .fade-in { animation: none; }
 }

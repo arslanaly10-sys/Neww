@@ -42,7 +42,7 @@ export function ResultView({ r, currency, fx, districtName }: { r: ValuationResu
             <div className="absolute inset-y-0 start-0 end-0 rounded-full bg-gold-fill/30" />
             <div className="absolute -top-1.5 h-6 w-0.5 bg-gold" style={{ left: `${pos}%` }} />
           </div>
-          <div dir="ltr" className="mt-1 flex justify-between text-[11px] text-muted"><span>{f(r.lowEgp, { compact: true })}</span><span>{f(r.highEgp, { compact: true })}</span></div>
+          <div dir="ltr" className="mt-1 flex justify-between text-xs text-muted"><span>{f(r.lowEgp, { compact: true })}</span><span>{f(r.highEgp, { compact: true })}</span></div>
         </div>
 
         <ul className="mt-5 space-y-1 text-sm text-muted">

@@ -89,7 +89,7 @@ export function ScenarioWorkbench({ initial, sets, saved, canSave, currency, fx:
                       <span className="w-14 text-xs text-muted">{unit}</span>
                     </label>
                   </div>
-                  <div dir="ltr" className="mt-0.5 flex justify-between text-[11px] text-muted"><span>{min}</span><span>{max}</span></div>
+                  <div dir="ltr" className="mt-0.5 flex justify-between text-xs text-muted"><span>{min}</span><span>{max}</span></div>
                 </div>
               );
             })}
@@ -189,7 +189,7 @@ function CaseCard({ id, title, hint, c, f, center }: { id: string; title: string
         <div><dt className="text-muted">{t("avgRisk")}</dt><dd className="text-sm font-semibold"><bdi>{p.avgRisk.toFixed(1)}</bdi></dd></div>
         <div><dt className="text-muted">{t("highRisk")}</dt><dd className="text-sm font-semibold"><bdi>{int(p.highRiskCount, locale)}</bdi></dd></div>
       </dl>
-      <p className="mt-3 text-[11px] leading-snug text-muted">{hint}</p>
+      <p className="mt-3 text-[13px] leading-snug text-muted">{hint}</p>
     </Card>
   );
 }
@@ -283,7 +283,7 @@ function Register({ sets, A, canSave, onPublished }: { sets: SetInfo[]; A: RunOu
             <li key={s.id} className="rounded-md border border-line p-3 text-sm">
               <p className="flex flex-wrap items-center gap-2"><span className="num font-semibold text-gold">{s.id}</span>{i === 0 && <Badge tone="gold">{t("latest")}</Badge>}<span className="text-xs text-muted">{t("regBy")} <bdi>{dateFmt(s.createdAt.slice(0, 10), locale)}</bdi></span></p>
               <p className="mt-1 text-muted">{s.note}</p>
-              <p className="num mt-1 break-all font-mono text-[11px] text-muted">{t("regHash")}: {s.contentHash}</p>
+              <p className="num mt-1 break-all font-mono text-xs text-muted">{t("regHash")}: {s.contentHash}</p>
             </li>
           ))}
         </ul>

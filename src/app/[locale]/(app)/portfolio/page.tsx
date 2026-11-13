@@ -10,7 +10,6 @@ import { Card, PageHeader, Badge } from "@/components/ui";
 import { Fig, SampleBadge } from "@/components/fig";
 import { Stat } from "@/components/stat";
 import { Stagger } from "@/components/motion";
-import { Sheen } from "@/components/brand-fx";
 import { NoAccess } from "@/components/no-access";
 import { ValueChart } from "@/components/charts";
 import { AllocationBars } from "@/components/allocation";
@@ -52,7 +51,7 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
       <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
 
       <section aria-label={pk("title")} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 md:flex-row md:items-center md:justify-between">
-        <div className="max-w-xl"><h2 className="font-display text-xl"><Sheen>{pk("title")}</Sheen></h2><p className="text-sm text-muted">{pk("lead")}</p><p className="mt-1 text-xs text-muted">{pk("note")}</p></div>
+        <div className="max-w-xl"><h2 className="font-display text-xl">{pk("title")}</h2><p className="text-sm text-muted">{pk("lead")}</p><p className="mt-1 text-xs text-muted">{pk("note")}</p></div>
         <div className="flex flex-col items-start gap-3 md:items-end"><PackButtons /><Link href="/portfolio/scenarios" className="tap text-sm text-gold underline underline-offset-4">{sc("openScenarios")}</Link></div>
       </section>
 

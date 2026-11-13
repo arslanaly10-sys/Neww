@@ -109,7 +109,7 @@ export default async function Governance({ params, searchParams }: { params: Pro
       <section className="mt-10"><VerifyPack /></section>
       <section className="mt-10" aria-labelledby="audit">
         <h2 id="audit" className="font-display text-2xl">{g("audTitle")}</h2>
-        <p className="mb-4 mt-1 max-w-2xl text-sm text-muted">{g("audLead")}</p>
+        <p className="mb-4 mt-1 max-w-md text-sm text-muted">{g("audLead")}</p>
         {!isAdmin || !audit ? <Card className="text-sm text-muted">{g("audAdminOnly")}</Card> : (
           <div className="space-y-6">
             <ChainControls initial={chain} />
@@ -132,8 +132,8 @@ export default async function Governance({ params, searchParams }: { params: Pro
                       </div>
                       <p className="mt-0.5 text-xs text-muted">{e.actorId === "system" ? g("system") : ar ? e.actorNameAr : e.actorName}{listSep(locale)}<span className="num">{e.entity} {e.entityId}</span>{listSep(locale)}<span className="num font-mono">{e.hash.slice(0, 12)}…</span></p>
                       <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">{g("detail")}</summary>
-                        <pre dir="ltr" className="mt-1 overflow-x-auto rounded bg-surface-2 p-2 font-mono text-[11px]">{JSON.stringify(e.detail, null, 1)}</pre>
-                        <p dir="ltr" className="mt-1 break-all font-mono text-[11px]">{g("prevHash")}: {e.prevHash}</p><p dir="ltr" className="break-all font-mono text-[11px]">{g("fullHash")}: {e.hash}</p></details>
+                        <pre dir="ltr" className="mt-1 overflow-x-auto rounded bg-surface-2 p-2 font-mono text-xs">{JSON.stringify(e.detail, null, 1)}</pre>
+                        <p dir="ltr" className="mt-1 break-all font-mono text-xs">{g("prevHash")}: {e.prevHash}</p><p dir="ltr" className="break-all font-mono text-xs">{g("fullHash")}: {e.hash}</p></details>
                     </Card>
                   </li>
                 );
