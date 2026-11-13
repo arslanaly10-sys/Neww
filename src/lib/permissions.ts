@@ -33,6 +33,7 @@ export const PERMISSIONS = {
   "governance.view": { investor: true, manager: true, admin: true },
   "audit.view": { investor: false, manager: false, admin: true },
   "audit.verify": { investor: false, manager: false, admin: true },
+  "users.manage": { investor: false, manager: false, admin: true },
   "role.change": { investor: false, manager: false, admin: true },
   "demo.reset": { investor: false, manager: false, admin: true },
 } as const satisfies Record<string, Record<Role, boolean>>;
@@ -40,14 +41,14 @@ export const PERMISSIONS = {
 export type Permission = keyof typeof PERMISSIONS;
 export const can = (role: Role, p: Permission) => PERMISSIONS[p][role];
 
-export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "calendar", "finance", "valuation", "deals", "reports", "notifications", "governance"] as const;
+export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "calendar", "finance", "valuation", "deals", "reports", "notifications", "settings", "users", "governance"] as const;
 export type Area = (typeof AREAS)[number];
 /** The sidebar's sections, in order. Every area belongs to exactly one. */
 export const AREA_GROUPS: { id: "portfolio" | "operations" | "money" | "records"; areas: Area[] }[] = [
   { id: "portfolio", areas: ["overview", "portfolio", "asset", "market"] },
   { id: "operations", areas: ["leases", "maintenance", "calendar"] },
   { id: "money", areas: ["finance", "valuation", "deals"] },
-  { id: "records", areas: ["reports", "notifications", "governance"] },
+  { id: "records", areas: ["reports", "notifications", "settings", "users", "governance"] },
 ];
 export const AREA_ACCESS: Record<Area, Role[]> = {
   overview: ["investor", "manager", "admin"],
@@ -58,6 +59,8 @@ export const AREA_ACCESS: Record<Area, Role[]> = {
   calendar: ["investor", "manager"],
   reports: ["investor", "manager", "admin"],
   notifications: ["investor", "manager", "admin"],
+  settings: ["investor", "manager", "admin"],
+  users: ["admin"],
   finance: ["investor", "manager"],
   valuation: ["investor", "manager"],
   deals: ["investor", "manager"],

@@ -37,6 +37,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
   for (const loc of ["en", "ar"]) {
     const { c, p } = await open(loc === "en" ? { width: 1360, height: 900 } : { width: 390, height: 844 });
     await p.goto(`${BASE}/${loc}`);
+    await p.waitForTimeout(2500); // the sign-in hero finishes its entrance before contrast is measured
     await p.getByRole("button", { name: loc === "en" ? "Questions? Ask us" : "لديك سؤال؟ اسألنا" }).click();
     const d = p.getByRole("dialog", { name: loc === "en" ? "Ask about ZMNHOOF OS" : "اسأل عن ZMNHOOF OS" });
     await d.waitFor();

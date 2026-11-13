@@ -19,10 +19,14 @@ const DARK = "(prefers-color-scheme: dark)";
 const subscribe = (cb: () => void) => {
   const m = window.matchMedia(DARK);
   m.addEventListener("change", cb);
-  return () => m.removeEventListener("change", cb);
+  const o = new MutationObserver(cb);
+  o.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => { m.removeEventListener("change", cb); o.disconnect(); };
 };
+/** Dark when chosen in Settings (data-theme on <html>), otherwise when the system asks for it. */
+const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === "dark" : window.matchMedia(DARK).matches; };
 function usePalette() {
-  const dark = useSyncExternalStore(subscribe, () => window.matchMedia(DARK).matches, () => false);
+  const dark = useSyncExternalStore(subscribe, isDark, () => false);
   return PALETTE[dark ? "dark" : "light"];
 }
 

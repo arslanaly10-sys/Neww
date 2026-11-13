@@ -210,3 +210,14 @@ CREATE POLICY deal_ev_read ON deal_events FOR SELECT TO app_user
 DROP POLICY IF EXISTS deal_ev_write ON deal_events;
 CREATE POLICY deal_ev_write ON deal_events FOR INSERT TO app_user WITH CHECK (app_role() = 'manager' AND actor_id = app_user_id());
 REVOKE UPDATE, DELETE ON deal_events FROM app_user;
+
+-- Users: everyone signed in can read the directory (names on approvals, owners on work and deals). A person may
+-- change only their own name, title and preferences; role and status are not writable by app_user at all and change
+-- only through the administrator's audited path on the privileged connection.
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS users_read ON users;
+CREATE POLICY users_read ON users FOR SELECT TO app_user USING (true);
+DROP POLICY IF EXISTS users_self ON users;
+CREATE POLICY users_self ON users FOR UPDATE TO app_user USING (id = app_user_id()) WITH CHECK (id = app_user_id());
+REVOKE INSERT, UPDATE, DELETE ON users FROM app_user;
+GRANT UPDATE (name, name_ar, title, title_ar, prefs, last_seen_at) ON users TO app_user;

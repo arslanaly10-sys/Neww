@@ -40,7 +40,7 @@ async function load(user: CurrentUser) {
   return withSession(sess(user), async (tx) => ({
     w: await tx.select().from(workOrders).orderBy(asc(workOrders.id)),
     a: await tx.select({ id: assets.id, name: assets.name, nameAr: assets.nameAr }).from(assets),
-    u: await tx.select({ id: users.id, name: users.name, nameAr: users.nameAr, role: users.role }).from(users),
+    u: (await tx.select({ id: users.id, name: users.name, nameAr: users.nameAr, role: users.role, status: users.status }).from(users)),
   }));
 }
 
@@ -58,7 +58,7 @@ export async function listWork(user: CurrentUser) {
     reportedBy: w.reportedBy, reporterName: u.get(w.reportedBy)?.name ?? w.reportedBy, reporterNameAr: u.get(w.reportedBy)?.nameAr ?? w.reportedBy,
     createdAt: w.createdAt.toISOString(), completedOn: w.completedOn,
   }));
-  const managers = d.u.filter((x) => x.role === "manager").map((x) => ({ id: x.id, name: x.name, nameAr: x.nameAr }));
+  const managers = d.u.filter((x) => x.role === "manager" && x.status !== "deactivated").map((x) => ({ id: x.id, name: x.name, nameAr: x.nameAr }));
   return { items, money, managers, assets: d.a };
 }
 

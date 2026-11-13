@@ -6,13 +6,14 @@ import { users } from "@/db/schema";
 import { getCurrentUser } from "@/lib/session";
 import { signIn } from "@/app/actions";
 import { Wordmark, HorusGlyph } from "@/components/brand";
+import { LoginHero } from "@/components/showcase/login-hero";
+import { assets as assetsTable } from "@/db/schema";
 import { Card, buttonStyles } from "@/components/ui";
 import { LangToggle } from "@/components/shell/controls";
 import { cn } from "@/lib/cn";
 import { DEMO_TODAY } from "@/lib/assumptions";
 import { dateFmt } from "@/lib/format";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion";
-import { BlurHeadline, HeroDots } from "@/components/brand-fx";
 import { PublicChat } from "@/components/public-chat";
 import { ScatteredArc } from "@/components/showcase/scattered-arc";
 import { RecordSphere, type Capability } from "@/components/showcase/record-sphere";
@@ -26,7 +27,10 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
   const s = await getTranslations("sample");
   const r = await getTranslations("roles");
   const db = await getDb();
-  const all = await db.select().from(users).orderBy(asc(sql`case role when 'investor' then 1 when 'manager' then 2 else 3 end`), asc(users.id));
+  const nAssets = (await db.select({ id: assetsTable.id }).from(assetsTable)).length;
+  const lg = await getTranslations("login");
+  const all0 = await db.select().from(users).orderBy(asc(sql`case role when 'investor' then 1 when 'manager' then 2 else 3 end`), asc(users.id));
+  const all = all0.filter((u) => u.status !== "deactivated");
   const ar = locale === "ar";
   const sh = await getTranslations("show");
   // Four of each side are built in this demo; the last two are planned.
@@ -34,22 +38,16 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
   const how = sh.raw("arcD") as Record<string, string>;
   const arcItems = Object.entries(sh.raw("arc") as Record<string, string>).map(([k, label]) => ({ label, how: how[k] }));
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div data-theme="dark" className="flex min-h-dvh flex-col bg-bg text-text">
       <div role="note" className="bg-gold-fill px-4 py-1.5 text-center text-xs font-semibold text-on-gold">{s("ribbon")}</div>
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5">
-        <Wordmark />
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 border-b border-line/60 px-4 py-4">
+        <span className="flex items-center gap-4"><Wordmark /><span className="hidden text-xs text-muted sm:inline">{lg("motto")}</span></span>
         <LangToggle />
       </header>
-      <main id="main" className="isolate mx-auto w-full max-w-5xl flex-1 px-4 pb-16 pt-6 md:pt-14">
-        <div className="relative">
-          <HeroDots className="pointer-events-none absolute -inset-x-4 -bottom-6 -top-14 -z-10 [mask-image:radial-gradient(ellipse_at_70%_40%,var(--color-text)_10%,transparent_75%)] md:-top-24" />
-          <BlurHeadline text={b("tagline")} className="font-display text-4xl leading-tight md:text-6xl" />
-          <Reveal delay={0.08}>
-            <p className="mt-4 max-w-xl text-lg text-muted">{b("valueLine")}. {b("aiLine")}.</p>
-            {/* The brand line signs off the hero instead of standing over the headline as an eyebrow */}
-            <p className="mt-3 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}</p>
-          </Reveal>
-        </div>
+      <main id="main" className="isolate mx-auto w-full max-w-6xl flex-1 px-4 pb-16 pt-10 md:pt-16">
+        <LoginHero label={b("tagline")} lineA={lg("heroA")} lineB={lg("heroB")} lead={lg("heroLead")} cta={lg("heroCta")} live={lg("heroLive")}
+          chips={[{ label: lg("chip1Label"), title: lg("chip1Title"), note: lg("chip1Note", { n: nAssets }) }, { label: lg("chip2Label"), title: lg("chip2Title"), note: lg("chip2Note") }, { label: lg("chip3Label"), title: lg("chip3Title"), note: lg("chip3Note") }]} />
+        <p className="mt-10 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}. {b("aiLine")}.</p>
         <Reveal delay={0.16}>
           <h2 id="signin" className="mb-1 mt-12 scroll-mt-6 font-display text-2xl">{t("title")}</h2>
           <p className="mb-6 max-w-xl text-base text-muted">{t("sub")}</p>
@@ -65,7 +63,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
                   {group.map((u) => (
                     <form key={u.id} action={signIn.bind(null, u.id, locale)}>
                       <button type="submit" className={cn(buttonStyles({ variant: role === "manager" && u.id === "u-manager-1" ? "gold" : "outline" }), "w-full")}>
-                        {t("enter", { name: ar ? u.nameAr : u.name })}
+                        {t("enter", { name: ar ? u.nameAr : u.name })}{u.status === "invited" && <span className="text-xs font-normal opacity-80"> ({lg("invitedTag")})</span>}
                       </button>
                     </form>
                   ))}

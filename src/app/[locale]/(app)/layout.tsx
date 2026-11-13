@@ -34,7 +34,7 @@ export default async function AppShell({ children, params }: { children: React.R
   const areas = AREAS.filter((a) => AREA_ACCESS[a].includes(user.role));
 
   const db = await getDb();
-  const demoUsers = await db.select().from(users).orderBy(asc(sql`case role when 'investor' then 1 when 'manager' then 2 else 3 end`), asc(users.id));
+  const demoUsers = (await db.select().from(users).orderBy(asc(sql`case role when 'investor' then 1 when 'manager' then 2 else 3 end`), asc(users.id))).filter((u) => u.status !== "deactivated");
   const index = await withSession(toSession(user), async (tx) => {
     const a = await tx.select({ id: assets.id, name: assets.name, nameAr: assets.nameAr, district: districts.name, districtAr: districts.nameAr }).from(assets).innerJoin(districts, sql`${assets.districtId} = ${districts.id}`);
     const d = await tx.select({ id: documents.id, title: documents.title, kind: documents.kind, assetId: documents.assetId }).from(documents);

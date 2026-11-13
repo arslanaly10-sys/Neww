@@ -42,7 +42,7 @@ export async function listDeals(user: CurrentUser) {
   if (!can(user.role, "deals.view")) return null;
   const d = await withSession(sess(user), async (tx) => ({
     deals: await tx.select().from(deals).orderBy(asc(deals.stage), asc(deals.position)),
-    people: await tx.select({ id: users.id, name: users.name, nameAr: users.nameAr, role: users.role }).from(users),
+    people: await tx.select({ id: users.id, name: users.name, nameAr: users.nameAr, role: users.role, status: users.status }).from(users),
     districts: await tx.select({ id: districts.id, name: districts.name, nameAr: districts.nameAr }).from(districts),
     comps: await tx.select({ districtId: comparableSales.districtId, type: comparableSales.type, priceEgp: comparableSales.priceEgp, areaSqm: comparableSales.areaSqm }).from(comparableSales).where(gte(comparableSales.soldOn, since())),
     assets: await tx.select({ id: assets.id, name: assets.name, nameAr: assets.nameAr }).from(assets),
@@ -66,7 +66,7 @@ export async function listDeals(user: CurrentUser) {
   const year = DEMO_TODAY.slice(0, 4);
   return {
     items,
-    managers: d.people.filter((p) => p.role === "manager"),
+    managers: d.people.filter((p) => p.role === "manager" && p.status !== "deactivated"),
     districts: d.districts,
     assets: d.assets,
     totals: {

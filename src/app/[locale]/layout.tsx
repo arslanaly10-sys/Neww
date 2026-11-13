@@ -3,18 +3,16 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, isRtl } from "@/i18n/routing";
-import "@fontsource/playfair-display/400.css";
-import "@fontsource/playfair-display/600.css";
+import "@fontsource/dm-serif-display/400.css";
+import "@fontsource/dm-serif-display/400-italic.css";
 import "@fontsource/manrope/400.css";
 import "@fontsource/manrope/500.css";
 import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
-import "@fontsource/noto-naskh-arabic/400.css";
-import "@fontsource/noto-naskh-arabic/600.css";
-import "@fontsource/ibm-plex-sans-arabic/400.css";
-import "@fontsource/ibm-plex-sans-arabic/500.css";
-import "@fontsource/ibm-plex-sans-arabic/600.css";
-import "@fontsource/ibm-plex-sans-arabic/700.css";
+import "@fontsource/noto-kufi-arabic/400.css";
+import "@fontsource/noto-kufi-arabic/500.css";
+import "@fontsource/noto-kufi-arabic/600.css";
+import "@fontsource/noto-kufi-arabic/700.css";
 import "../globals.css";
 import { MotionProvider } from "@/components/motion";
 import { InlineScript } from "@/components/inline-script";
@@ -30,9 +28,10 @@ export const metadata: Metadata = {
 /**
  * Entrance animations render their hidden starting state into the HTML. This flag (data-js on <html>) is what lets
  * that state apply: without JavaScript there is no flag and globals.css shows everything at rest. If the app has not
- * started within 4 s (a slow or failed bundle), the flag is dropped again so the page never stays blank.
+ * started within 4 s (a slow or failed bundle), the flag is dropped again so the page never stays blank. It also applies
+ * a saved light or dark choice (the zos_theme cookie) before the first paint.
  */
-const JS_FLAG = `(function(){var d=document.documentElement;d.setAttribute("data-js","");setTimeout(function(){if(!window.__zosReady)d.removeAttribute("data-js")},4000)})()`;
+const JS_FLAG = `(function(){var d=document.documentElement;d.setAttribute("data-js","");var m=document.cookie.match(/(?:^|; )zos_theme=(dark|light)/);if(m)d.setAttribute("data-theme",m[1]);setTimeout(function(){if(!window.__zosReady)d.removeAttribute("data-js")},4000)})()`;
 
 export function generateStaticParams() { return routing.locales.map((locale) => ({ locale })); }
 

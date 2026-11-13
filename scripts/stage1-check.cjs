@@ -83,8 +83,8 @@ const RAWKEY = /\b(governance|overview|portfolio|asset|assetx|valuation|val|mark
   await p.goto(`${BASE}/ar/overview`);
   const sidebarSide = await p.evaluate(() => { const r = document.querySelector("aside").getBoundingClientRect(); return r.left > window.innerWidth / 2 ? "right" : "left"; });
   log(sidebarSide === "right", `AR sidebar is on the right (${sidebarSide})`);
-  const fontOk = await p.evaluate(() => getComputedStyle(document.body).fontFamily.includes("IBM Plex Sans Arabic"));
-  log(fontOk, "AR body font is IBM Plex Sans Arabic");
+  const fontOk = await p.evaluate(() => getComputedStyle(document.body).fontFamily.includes("Noto Kufi Arabic"));
+  log(fontOk, "AR body font is Noto Kufi Arabic (the zmnhoof.com Arabic face)");
   await c.close();
 
   // ---------- Dark scheme (brand look) ----------

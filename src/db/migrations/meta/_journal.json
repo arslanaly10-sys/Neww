@@ -64,6 +64,13 @@
       "when": 1794588027798,
       "tag": "0008_stage14_deals",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794589878492,
+      "tag": "0009_stage15_users",
+      "breakpoints": true
     }
   ]
 }

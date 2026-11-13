@@ -26,6 +26,11 @@ export const users = pgTable("users", {
   role: text("role").notNull(), // investor | manager | admin
   title: text("title").notNull(),
   titleAr: text("title_ar").notNull(),
+  status: text("status").notNull().default("active"), // invited | active | deactivated
+  prefs: jsonb("prefs").notNull().default({}), // { lang, currency, theme, landing }
+  invitedBy: text("invited_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
 });
 
 export const districts = pgTable("districts", {

@@ -18,8 +18,10 @@
   --focus: #7a5a14;
   color-scheme: light;
 }
+/* Dark tokens: the system preference unless the person chose light, a saved choice of dark (data-theme on <html>),
+   or a section that always wears the brand's dark look (data-theme="dark" on any element). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #090a0c;
     --surface: #101216;
     --surface-2: #171a1f;
@@ -36,6 +38,22 @@
     color-scheme: dark;
   }
 }
+[data-theme="dark"] {
+  --bg: #090a0c;
+  --surface: #101216;
+  --surface-2: #171a1f;
+  --line: #2a2e36;
+  --text: #efe8d8;
+  --muted: #aba699; /* 7:1 on bg, surface and surface-2 */
+  --gold: #c9a45c;
+  --gold-fill: #c9a45c;
+  --on-gold: #090a0c;
+  --teal: #6fb5ad;
+  --danger: #e58d79;
+  --ok: #86c08f;
+  --focus: #c9a45c;
+  color-scheme: dark;
+}
 
 @theme inline {
   --color-bg: var(--bg);
@@ -50,10 +68,10 @@
   --color-teal: var(--teal);
   --color-danger: var(--danger);
   --color-ok: var(--ok);
-  --font-display: "Playfair Display", "Noto Naskh Arabic", Georgia, serif;
-  --font-sans: "Manrope", "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-display-ar: "Noto Naskh Arabic", "Playfair Display", serif;
-  --font-sans-ar: "IBM Plex Sans Arabic", "Manrope", system-ui, sans-serif;
+  --font-display: "DM Serif Display", "Noto Kufi Arabic", Georgia, serif;
+  --font-sans: "Manrope", "Noto Kufi Arabic", system-ui, sans-serif;
+  --font-display-ar: "Noto Kufi Arabic", "DM Serif Display", serif;
+  --font-sans-ar: "Noto Kufi Arabic", "Manrope", system-ui, sans-serif;
 }
 
 html { background: var(--bg); overflow-x: clip; }

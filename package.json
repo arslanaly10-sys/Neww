@@ -27,14 +27,17 @@
     "check:stage12": "node scripts/stage12-check.cjs",
     "check:stage13": "node scripts/stage13-check.cjs",
     "check:motion": "node scripts/motion-check.cjs",
-    "check:stage14": "node scripts/stage14-check.cjs"
+    "check:stage14": "node scripts/stage14-check.cjs",
+    "check:stage15": "node scripts/stage15-check.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
     "@electric-sql/pglite": "^0.5.16",
     "@electric-sql/pglite-socket": "^0.2.19",
+    "@fontsource/dm-serif-display": "^5.3.0",
     "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
     "@fontsource/manrope": "^5.3.0",
+    "@fontsource/noto-kufi-arabic": "^5.3.0",
     "@fontsource/noto-naskh-arabic": "^5.3.0",
     "@fontsource/playfair-display": "^5.3.0",
     "@neondatabase/serverless": "^1.2.0",

@@ -16,7 +16,7 @@ import type { CurrentUser } from "./session";
  * ready. Each person chooses per category whether to hear about it in the app, by email (the outbox here), or both.
  * The text is stored as a kind and its parameters and rendered in the reader's language.
  */
-export const N_CATEGORIES = ["approvals", "work", "finance", "leasing", "reports", "sales", "calendar", "deals"] as const;
+export const N_CATEGORIES = ["approvals", "work", "finance", "leasing", "reports", "sales", "calendar", "deals", "account"] as const;
 export type NCategory = (typeof N_CATEGORIES)[number];
 export const KINDS = {
   approval_request: "approvals", approval_decided: "approvals",
@@ -26,6 +26,7 @@ export const KINDS = {
   report_ready: "reports", lead_new: "sales",
   event_invited: "calendar", event_changed: "calendar", event_cancelled: "calendar",
   deal_assigned: "deals", deal_stage: "deals",
+  role_changed: "account",
 } as const satisfies Record<string, NCategory>;
 export type NKind = keyof typeof KINDS;
 /** Defaults when a person has not chosen: everything in the app, approvals also by email. */
@@ -34,6 +35,7 @@ export const DEFAULT_PREFS: Record<NCategory, { inApp: boolean; email: boolean }
   leasing: { inApp: true, email: false }, reports: { inApp: true, email: false }, sales: { inApp: true, email: false },
   calendar: { inApp: true, email: true },
   deals: { inApp: true, email: false },
+  account: { inApp: true, email: true },
 };
 export type Params = Record<string, string | number>;
 
@@ -64,7 +66,7 @@ async function prefsFor(userIds: string[]) {
  */
 export async function notify(o: { to: { users?: string[]; roles?: Role[] }; kind: NKind; params?: Params; link?: string | null; actorId?: string | null; at?: Date }) {
   const db = await getDb();
-  const everyone = await db.select({ id: users.id, role: users.role, email: users.email }).from(users);
+  const everyone = (await db.select({ id: users.id, role: users.role, email: users.email, status: users.status }).from(users)).filter((u) => u.status !== "deactivated");
   const ids = new Set<string>(o.to.users ?? []);
   everyone.filter((u) => (o.to.roles ?? []).includes(u.role as Role)).forEach((u) => ids.add(u.id));
   if (o.actorId) ids.delete(o.actorId);

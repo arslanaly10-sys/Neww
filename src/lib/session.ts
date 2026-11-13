@@ -34,7 +34,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
   const db = await getDb();
   const [u] = await db.select().from(users).where(eq(users.id, id));
-  return u ? { id: u.id, name: u.name, nameAr: u.nameAr, role: u.role as Role, title: u.title, titleAr: u.titleAr } : null;
+  return u && u.status !== "deactivated" ? { id: u.id, name: u.name, nameAr: u.nameAr, role: u.role as Role, title: u.title, titleAr: u.titleAr } : null;
 }
 
 export async function getCurrency(): Promise<"EGP" | "USD"> {

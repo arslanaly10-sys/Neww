@@ -145,10 +145,10 @@ export async function getEvent(user: CurrentUser, id: string) {
 /** Who can be invited (managers and the investor) and which assets an event can be about. */
 export async function eventOptions(user: CurrentUser) {
   const r = await withSession(sess(user), async (tx) => ({
-    people: await tx.select({ id: users.id, name: users.name, nameAr: users.nameAr, role: users.role }).from(users),
+    people: await tx.select({ id: users.id, name: users.name, nameAr: users.nameAr, role: users.role, status: users.status }).from(users),
     assets: await tx.select({ id: assets.id, name: assets.name, nameAr: assets.nameAr }).from(assets).orderBy(asc(assets.id)),
   }));
-  return { people: r.people.filter((p) => p.role === "manager" || p.role === "investor"), assets: r.assets };
+  return { people: r.people.filter((p) => (p.role === "manager" || p.role === "investor") && p.status !== "deactivated"), assets: r.assets };
 }
 
 export type CalendarError = "forbidden" | "invalid" | "not_found" | "past" | "times";
