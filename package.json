@@ -25,7 +25,8 @@
     "check:stage10": "node scripts/stage10-check.cjs",
     "check:stage11": "node scripts/stage11-check.cjs",
     "check:stage12": "node scripts/stage12-check.cjs",
-    "check:stage13": "node scripts/stage13-check.cjs"
+    "check:stage13": "node scripts/stage13-check.cjs",
+    "check:motion": "node scripts/motion-check.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
@@ -49,7 +50,7 @@
     "exceljs": "^4.4.0",
     "lucide-react": "^1.72.0",
     "maplibre-gl": "^6.18.0",
-    "motion": "^14.13.0",
+    "motion": "^14.14.0",
     "next": "16.4.6",
     "next-intl": "^4.15.1",
     "pg": "^8.23.1",

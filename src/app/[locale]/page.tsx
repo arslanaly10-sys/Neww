@@ -30,7 +30,9 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
   const ar = locale === "ar";
   const sh = await getTranslations("show");
   // Four of each side are built in this demo; the last two are planned.
-  const caps = (k: "in" | "out") => Object.values(sh.raw(k) as Record<string, { t: string; n: string }>).map((x, i): Capability => ({ title: x.t, note: x.n, built: i < 4 }));
+  const caps = (k: "in" | "out") => Object.entries(sh.raw(k) as Record<string, { t: string; n: string; d: string }>).map(([id, x], i): Capability => ({ id, title: x.t, note: x.n, detail: x.d, built: i < 4 }));
+  const how = sh.raw("arcD") as Record<string, string>;
+  const arcItems = Object.entries(sh.raw("arc") as Record<string, string>).map(([k, label]) => ({ label, how: how[k] }));
   return (
     <div className="flex min-h-dvh flex-col">
       <div role="note" className="bg-gold-fill px-4 py-1.5 text-center text-xs font-semibold text-on-gold">{s("ribbon")}</div>
@@ -49,7 +51,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
           </Reveal>
         </div>
         <Reveal delay={0.16}>
-          <h2 className="mb-1 mt-12 font-display text-2xl">{t("title")}</h2>
+          <h2 id="signin" className="mb-1 mt-12 scroll-mt-6 font-display text-2xl">{t("title")}</h2>
           <p className="mb-6 max-w-xl text-base text-muted">{t("sub")}</p>
         </Reveal>
         <Stagger className="grid gap-4 lg:grid-cols-3">
@@ -72,8 +74,8 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
             );
           })}
         </Stagger>
-        <Reveal><ScatteredArc heading={sh("arcHeading")} sub={sh("arcSub")} body={sh("arcBody")} labels={Object.values(sh.raw("arc") as Record<string, string>)} listLabel={sh("arcList")} rtl={ar} /></Reveal>
-        <RecordSphere heading={sh("sphHeading")} lead={sh("sphLead")} center={sh("sphCenter")} centerSub={sh("sphCenterSub")} inputs={caps("in")} outputs={caps("out")} inputsLabel={sh("inputs")} outputsLabel={sh("outputs")} builtLabel={sh("built")} plannedLabel={sh("planned")} />
+        <ScatteredArc items={arcItems} rtl={ar} copy={{ heading: sh("arcHeading"), sub: sh("arcSub"), body: sh("arcBody"), listLabel: sh("arcList"), how: sh("arcHow"), today: sh("arcToday"), tryIt: sh("arcTry"), close: sh("arcClose"), hint: sh("arcHint") }} />
+        <RecordSphere inputs={caps("in")} outputs={caps("out")} copy={{ heading: sh("sphHeading"), lead: sh("sphLead"), center: sh("sphCenter"), centerSub: sh("sphCenterSub"), inputs: sh("inputs"), outputs: sh("outputs"), built: sh("built"), planned: sh("planned"), hint: sh("sphHint"), tryIt: sh("detailTry"), close: sh("arcClose") }} />
         <p className="mt-12 text-xs text-muted">{s("asOf", { date: dateFmt(DEMO_TODAY, locale) })}. {s("footer")}</p>
       </main>
       <PublicChat />

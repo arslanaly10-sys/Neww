@@ -18,6 +18,8 @@ import { AttentionCard } from "@/components/alerts/attention-card";
 import { verifyChain } from "@/lib/audit-service";
 import { GrowBar, Stagger } from "@/components/motion";
 import { titleFrom } from "@/lib/meta";
+import { getHistory } from "@/lib/portfolio-data";
+import { HoldingsRace, OccupancyRing, ValueLine } from "@/components/charts/motion-charts";
 
 export const generateMetadata = titleFrom("overview");
 
@@ -60,7 +62,16 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
     tx.select().from(investorUpdates).where(eq(investorUpdates.status, "published")).orderBy(desc(investorUpdates.postedOn)).limit(3));
   const maxAlloc = Math.max(...m.allocation.map((a) => a.value));
   const rate = SAMPLE_FX_EGP_PER_USD;
-  const [alerts, att] = await Promise.all([getAlerts(user), attentionCount(user)]);
+  const [alerts, att, history] = await Promise.all([getAlerts(user), attentionCount(user), getHistory(user)]);
+  const mg = await getTranslations("mg");
+  const st = await getTranslations("status");
+  const ar = locale === "ar";
+  const M = (n: number) => money(n, currency, locale, { compact: true, fx: rate });
+  const OCC = [["let", "var(--gold-fill)"], ["vacant", "var(--danger)"], ["owner", "var(--teal)"], ["land", "var(--muted)"]] as const;
+  const ring = OCC.map(([k, color]) => ({ key: k, color, label: st(k), assets: rows.filter((r) => r.occupancy === k).map((r) => ({ id: r.id, name: ar ? r.nameAr : r.name })) }));
+  const race = rows.map((r) => ({ id: r.id, name: ar ? r.nameAr : r.name, value: r.valueEgp, valueText: M(r.valueEgp), gain: r.costEgp ? (r.valueEgp - r.costEgp) / r.costEgp : 0, gainText: pct(r.costEgp ? (r.valueEgp - r.costEgp) / r.costEgp : 0, locale) }));
+  const monthFmt = new Intl.DateTimeFormat(ar ? "ar-EG-u-nu-latn" : "en-GB", { month: "short", year: "numeric", timeZone: "UTC" });
+  const line = history.filter((h) => h.value > 0).map((h) => ({ label: monthFmt.format(new Date(`${h.month.slice(0, 7)}-01T00:00:00Z`)), value: h.value, cost: h.cost, valueText: M(h.value), costText: M(h.cost) }));
 
   return (
     <div>
@@ -120,6 +131,15 @@ export default async function Overview({ params }: { params: Promise<{ locale: s
           <p className="mt-4 text-xs text-muted">{t("allUpdates")}</p>
         </Card>
       </div>
+      <section aria-labelledby="mg-h" className="mt-10">
+        <h2 id="mg-h" className="font-display text-2xl">{mg("title")}</h2>
+        <p className="mb-4 mt-1 text-sm text-muted">{mg("lead")}</p>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card><OccupancyRing segments={ring} title={mg("ring")} totalLabel={mg("total")} hint={mg("ringHint")} openLabel={mg("open")} /></Card>
+          <Card><HoldingsRace rows={race} title={mg("race")} byValue={mg("byValue")} byGain={mg("byGain")} sortLabel={mg("sort")} rtl={ar} /></Card>
+        </div>
+        {line.length > 1 && <Card className="mt-6"><ValueLine points={line} title={mg("line")} valueLabel={mg("value")} costLabel={mg("cost")} scrubLabel={mg("scrub")} /></Card>}
+      </section>
       <p className="mt-8 text-sm text-gold">{b("aiLine")}. <Link href="/governance" className="underline underline-offset-4">{b("triad")}</Link></p>
     </div>
   );

@@ -1902,54 +1902,107 @@
     "in": {
       "i1": {
         "t": "Title deeds and documents",
-        "n": "Built: upload, with extracted fields you confirm"
+        "n": "Built: upload, with extracted fields you confirm",
+        "d": "Upload a deed, contract or insurance policy; the key fields are read out and wait for a person to confirm them. Expiring and missing documents raise alerts."
       },
       "i2": {
         "t": "Leases, rent and renewals",
-        "n": "Built: invoices, payments and arrears"
+        "n": "Built: invoices, payments and arrears",
+        "d": "Invoices are raised every month from each lease, payments are matched, arrears are aged, and renewals move through offered, negotiating and agreed."
       },
       "i3": {
         "t": "Maintenance and tasks",
-        "n": "Built: requests, assignments, costs to the ledger"
+        "n": "Built: requests, assignments, costs to the ledger",
+        "d": "Investors report problems, managers assign, schedule and estimate them, and the actual cost goes to the finance ledger when the job is done."
       },
       "i4": {
         "t": "Market data",
-        "n": "Built: sample district index, sources named"
+        "n": "Built: sample district index, sources named",
+        "d": "A sample index for each district with three-month momentum and a named source, used to explain valuations and spot cooling markets."
       },
       "i5": {
         "t": "Bank feeds",
-        "n": "Planned: needs each bank's connection"
+        "n": "Planned: needs each bank's connection",
+        "d": "Statements will come straight from the bank instead of being keyed in. It needs a connection agreed with each bank, so it is not in this demo."
       },
       "i6": {
         "t": "Property registry",
-        "n": "Planned: Shahr Aqari records when access allows"
+        "n": "Planned: Shahr Aqari records when access allows",
+        "d": "Title and registration records from the Real Estate Publicity Department, once there is a lawful way to read them."
       }
     },
     "out": {
       "o1": {
         "t": "Horus, with citations",
-        "n": "Built: numbers from tools only, every figure sourced"
+        "n": "Built: numbers from tools only, every figure sourced",
+        "d": "Ask in English or Arabic. Horus calls the system's own functions for every number and shows where each one came from; it never invents figures."
       },
       "o2": {
         "t": "Valuations with approval",
-        "n": "Built: a second person confirms"
+        "n": "Built: a second person confirms",
+        "d": "Run a valuation from comparable sales, see each driver's effect, then send it for review. A different manager confirms it before it is used."
       },
       "o3": {
         "t": "Reports and exports",
-        "n": "Built: Excel, CSV and PDF statements, audited"
+        "n": "Built: Excel, CSV and PDF statements, audited",
+        "d": "Export holdings, the ledger and more to Excel or CSV, generate investor statements as PDF, and schedule reports to run every month."
       },
       "o4": {
         "t": "Calendar and notifications",
-        "n": "Built: invitations, reminders, .ics download"
+        "n": "Built: invitations, reminders, .ics download",
+        "d": "Invitations, reminders and changes reach the right people in the app or by email, and the whole calendar downloads as an .ics file."
       },
       "o5": {
         "t": "Email and WhatsApp",
-        "n": "Planned: email is simulated in this demo"
+        "n": "Planned: email is simulated in this demo",
+        "d": "Today emails are written to an outbox you can read on the Governance page. Real sending and WhatsApp messages are planned."
       },
       "o6": {
         "t": "Two-way calendar sync",
-        "n": "Planned: Outlook and Google"
+        "n": "Planned: Outlook and Google",
+        "d": "Events added in Outlook or Google will appear here and the other way round. Today the calendar exports one way, as an .ics file."
       }
-    }
+    },
+    "arcD": {
+      "a01": "Each asset keeps its deed on its Documents tab, with the expiry and status tracked and missing papers flagged.",
+      "a02": "Every lease lives on its asset: dates, rent, indexation and clauses, with renewals tracked months ahead.",
+      "a03": "Decisions stop disappearing in chats: approvals, notes and changes are recorded once, with who and when.",
+      "a04": "Rent received is matched to invoices, so arrears show by age and by tenant without reconciling by hand.",
+      "a05": "The same figures without the copies: holdings, ledger and budgets export to Excel when you need a sheet.",
+      "a06": "Instalments to developers sit with the asset, so cost to date and what is still due are always current.",
+      "a07": "Viewings and offers go in the calendar against the asset, with the people invited told automatically.",
+      "a08": "Valuations are run, explained driver by driver and confirmed by a second person before they count.",
+      "a09": "Maintenance requests carry their estimate and actual cost, and the cost lands in the ledger when done.",
+      "a10": "Running costs go to the ledger by category and asset, and are compared with the budget every month.",
+      "a11": "Investor updates are drafted, approved and published in one place instead of long email threads.",
+      "a12": "Deadlines go in the calendar and notifications, so nothing depends on someone remembering.",
+      "a13": "Photos and scans are uploaded to the asset; Horus can read an attached file and quote it.",
+      "a14": "Paper is scanned once, the key fields are extracted, and a person confirms them before they are used.",
+      "a15": "Payments are recorded with their method and date, and every change is kept in the audit trail.",
+      "a16": "Questions about the numbers go to Horus, which answers only from the record and cites every figure."
+    },
+    "arcHow": "In ZMNHOOF OS",
+    "arcToday": "Today",
+    "arcTry": "Sign in to see it",
+    "arcClose": "Close",
+    "arcHint": "Select a source to see where it goes.",
+    "sphHint": "Select a line to see what it does. Drag the sphere to turn it.",
+    "detailTry": "Sign in to try it"
+  },
+  "mg": {
+    "title": "Portfolio in motion",
+    "lead": "Select any part of a chart to open what is behind it.",
+    "ring": "Occupancy",
+    "total": "assets in all",
+    "ringHint": "Select a segment or a row to list its assets.",
+    "open": "Open the asset",
+    "race": "Largest holdings",
+    "byValue": "Value",
+    "byGain": "Gain",
+    "sort": "Sort holdings by",
+    "line": "Value against cost",
+    "value": "Value",
+    "cost": "Cost",
+    "scrub": "Month to read; use the arrow keys"
   }
 }
