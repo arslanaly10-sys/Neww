@@ -4,6 +4,7 @@ import { withSession } from "@/db/client";
 import { documents, districts, horusFiles, investorUpdates, marketSeries, valuations } from "@/db/schema";
 import { getAlerts } from "../alerts-service";
 import { getLeasing } from "../leasing";
+import { getFinance } from "../finance";
 import { getPortfolio, type PortfolioRow } from "../access";
 import { getAggregateIncome } from "../portfolio-data";
 import { momentum3m, portfolioMetrics, sentiment } from "../metrics";
@@ -34,6 +35,7 @@ export const TOOLS = [
   { name: "concentration", description: "Share of portfolio value by district.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "explain_valuation", description: "Explain a valuation: the model estimate, each driver's effect, the range, confidence, the five comparable sales and any human adjustment with its reason. Defaults to the most recent valuation.", input_schema: { type: "object", properties: { valuationId: { type: "string", description: "e.g. V-0001" } }, additionalProperties: false } },
   { name: "rent_arrears", description: "Rent collection (managers only): this month's collection rate, overdue rent by age (0-30, 31-60, 61-90, over 90 days) and the tenants who owe the most, with the lease and days overdue.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "finance_summary", description: "Finance. For managers: income, costs and net operating income over the last 12 months, the 12-month forecast, the largest budget variances this year and the suggested next distribution. For investors: the distributions paid to them.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "recent_updates", description: "Latest published investor updates (title, date, text).", input_schema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 12 } }, additionalProperties: false } },
 ] as const;
 
@@ -190,6 +192,26 @@ const impl: Record<string, (c: HorusCtx, a: Args) => Promise<ToolOut>> = {
         collectionThisMonth: d.rent.month.rate === null ? null : pct(d.rent.month.rate, c.locale, 0), collected: f(d.rent.month.collected), billed: f(d.rent.month.billed),
         totalOverdue: f(d.rent.aging.total), byAge: { "0-30 days": f(d.rent.aging.buckets.d0_30), "31-60 days": f(d.rent.aging.buckets.d31_60), "61-90 days": f(d.rent.aging.buckets.d61_90), "over 90 days": f(d.rent.aging.buckets.d90p) },
         tenantsOwing: owing.map((x) => ({ tenant: c.locale === "ar" ? x.nameAr : x.name, leases: x.leases.map((l) => l.id), owed: f(x.arrearsEgp ?? 0), oldestDaysOverdue: x.oldestOverdueDays })),
+      },
+    };
+  },
+
+  async finance_summary(c) {
+    const fin = await getFinance(asUser(c));
+    if (!fin) return { cites: [], data: { error: "forbidden" } };
+    const f = money$(c);
+    const paid = fin.distributions.filter((x) => x.status === "paid");
+    const dist = { totalPaid: f(fin.totalPaid), latest: paid[0] ? { id: paid[0].id, period: paid[0].period, amount: f(paid[0].amountEgp), paidOn: paid[0].paidOn ? dateFmt(paid[0].paidOn, c.locale) : null } : null };
+    if (!fin.money) return { cites: ["calc:finance_summary"], data: { distributions: dist } };
+    const worst = [...fin.bva].filter((v) => v.unfavourable).sort((a, b) => a.variance - b.variance)[0];
+    return {
+      cites: ["calc:finance_summary"],
+      data: {
+        last12Months: { income: f(fin.totals.income), costs: f(-fin.totals.costs), netOperatingIncome: f(fin.totals.noi), margin: fin.totals.income ? pct(fin.totals.noi / fin.totals.income, c.locale, 0) : null },
+        forecastNext12Months: f(fin.forecastTotals.noi),
+        largestBudgetShortfall: worst ? { category: worst.category, shortBy: f(Math.abs(worst.variance)), pct: worst.pct === null ? null : pct(Math.abs(worst.pct), c.locale, 0) } : null,
+        nextDistribution: { period: fin.nextDistribution.period, quarterNoi: f(fin.nextDistribution.noi), suggested: f(fin.nextDistribution.suggested), alreadyProposed: !fin.nextDistribution.canPropose },
+        distributions: dist,
       },
     };
   },

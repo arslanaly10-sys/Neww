@@ -12,7 +12,7 @@ import type { Block, Draft, HorusAction, HorusAnswer, HorusCtx, Notice } from ".
  * It calls the same deterministic tools as the live path and writes the answer from fixed templates in both languages.
  * It recognises twelve kinds of question; anything else gets an honest "I can't verify that".
  */
-export type Intent = "arrears" | "file" | "snooze" | "startval" | "email" | "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
+export type Intent = "finance" | "arrears" | "file" | "snooze" | "startval" | "email" | "value" | "gain" | "yield" | "units" | "vacant" | "expiring" | "docs" | "largest" | "concentration" | "market" | "valuation" | "draft" | "asset" | "advice";
 
 export const SUGGESTED: Intent[] = ["value", "gain", "yield", "units", "vacant", "expiring", "docs", "largest", "concentration", "market", "valuation", "draft"];
 
@@ -36,6 +36,7 @@ const SNOOZE_RE = /snooze|postpone|defer|أجّل|أجل|تأجيل/i;
 const STARTVAL_RE = /(run|start|new|begin|open)\b.{0,20}valuation|valuation (for|of)\b|value (asset )?a[- ]?\d|ابدأ.{0,10}تقييم|تقييم جديد|شغّل.{0,10}تقييم|قيّم/i;
 const EMAIL_RE = /e-?mail|mail to|بريد|إيميل|رسالة إلى/i;
 const ARREARS_RE = /arrears|overdue|unpaid|behind on rent|owe|late (rent|payment)|rent collect|collection rate|متأخر|متأخرات|غير مدفوع|تحصيل/i;
+const FINANCE_RE = /\bnoi\b|net operating|budget|cash ?flow|distribution|payout|expenses|operating costs|ميزانية|موازنة|توزيع|التدفق النقدي|صافي الدخل التشغيلي|مصروفات/i;
 const FILE_RE = /file|attach|upload|this (document|pdf|lease)|summari[sz]e|الملف|مرفق|المرفق|لخّص|لخص|هذا المستند/i;
 
 export function classify(q: string, hasFiles = false): { intent: Intent | null; assetId?: string } {
@@ -45,6 +46,7 @@ export function classify(q: string, hasFiles = false): { intent: Intent | null; 
   if (hasFiles && FILE_RE.test(text)) return { intent: "file" };
   if (SNOOZE_RE.test(text)) return { intent: "snooze" };
   if (ARREARS_RE.test(text)) return { intent: "arrears" };
+  if (FINANCE_RE.test(text) && !KEYS[0][1].test(text)) return { intent: "finance" };
   if (assetId && STARTVAL_RE.test(text)) return { intent: "startval", assetId };
   if (EMAIL_RE.test(text)) return { intent: "email" };
   if (assetId) return { intent: "asset", assetId };
@@ -77,6 +79,18 @@ export async function scriptedAnswer(question: string, c: HorusCtx, notice: Noti
   const cites = (...o: { cites: string[] }[]) => [...new Set(o.flatMap((x) => x.cites))];
 
   switch (intent) {
+    case "finance": {
+      const s = await run("finance_summary"); const d = s.data as TData;
+      if (d.error) return cannot();
+      const fc = await getTranslations({ locale: c.locale, namespace: "fin" });
+      if (d.last12Months) {
+        blocks.push({ text: t("s_fin", { income: d.last12Months.income.display, costs: d.last12Months.costs.display, noi: d.last12Months.netOperatingIncome.display, margin: d.last12Months.margin ?? "–", forecast: d.forecastNext12Months.display }), cites: s.cites });
+        if (d.largestBudgetShortfall) blocks.push({ text: t("s_fin_budget", { category: fc(`c_${d.largestBudgetShortfall.category}` as "c_rent"), short: d.largestBudgetShortfall.shortBy.display, pct: d.largestBudgetShortfall.pct ?? "–" }), cites: s.cites });
+        blocks.push({ text: t(d.nextDistribution.alreadyProposed ? "s_fin_next_done" : "s_fin_next", { period: d.nextDistribution.period, suggested: d.nextDistribution.suggested.display, noi: d.nextDistribution.quarterNoi.display }), cites: s.cites });
+      }
+      blocks.push(d.distributions.latest ? { text: t("s_fin_paid", { total: d.distributions.totalPaid.display, period: d.distributions.latest.period, amount: d.distributions.latest.amount.display }), cites: s.cites } : { text: t("s_fin_none"), cites: s.cites });
+      break;
+    }
     case "arrears": {
       if (c.user.role !== "manager") return { ...base, blocks: [{ text: t("s_arrears_denied"), cites: [] }], cannotVerify: false, draft: null };
       const s = await run("rent_arrears"); const d = s.data as TData;

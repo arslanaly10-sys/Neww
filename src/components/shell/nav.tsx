@@ -2,13 +2,13 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Briefcase, Building2, KeyRound, LayoutDashboard, LineChart, MoreHorizontal, Scale, ShieldCheck, X } from "lucide-react";
+import { Briefcase, Building2, KeyRound, Landmark, LayoutDashboard, LineChart, MoreHorizontal, Scale, ShieldCheck, X } from "lucide-react";
 import { motion } from "motion/react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import type { Area } from "@/lib/permissions";
 
-export const AREA_ICON = { overview: LayoutDashboard, portfolio: Briefcase, asset: Building2, leases: KeyRound, valuation: Scale, market: LineChart, governance: ShieldCheck } as const;
+export const AREA_ICON = { overview: LayoutDashboard, portfolio: Briefcase, asset: Building2, leases: KeyRound, finance: Landmark, valuation: Scale, market: LineChart, governance: ShieldCheck } as const;
 const isActive = (path: string, area: Area) => path === `/${area}` || path.startsWith(`/${area}/`);
 
 export function SideNav({ areas, badges = {} }: { areas: Area[]; badges?: Partial<Record<Area, number>> }) {

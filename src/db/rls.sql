@@ -124,3 +124,22 @@ DROP POLICY IF EXISTS ren_read ON lease_renewals;
 CREATE POLICY ren_read ON lease_renewals FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
 DROP POLICY IF EXISTS ren_write ON lease_renewals;
 CREATE POLICY ren_write ON lease_renewals FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+
+-- Finance: the ledger and the budget are manager-only. Distributions are visible to investors and managers (they are
+-- the investors' own payouts); managers propose and decide them.
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['ledger_entries','budget_lines']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS mgr_only ON %I', t);
+    EXECUTE format($p$CREATE POLICY mgr_only ON %I FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager')$p$, t);
+  END LOOP;
+END $$;
+REVOKE UPDATE, DELETE ON ledger_entries FROM app_user;
+ALTER TABLE distributions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS dist_read ON distributions;
+CREATE POLICY dist_read ON distributions FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+DROP POLICY IF EXISTS dist_write ON distributions;
+CREATE POLICY dist_write ON distributions FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');

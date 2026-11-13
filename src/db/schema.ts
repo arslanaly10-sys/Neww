@@ -372,3 +372,37 @@ export const leaseRenewals = pgTable("lease_renewals", {
   updatedBy: text("updated_by").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 });
+
+/** Income and costs entered by hand (anything the lease and seed lines do not cover). Managers only. */
+export const ledgerEntries = pgTable("ledger_entries", {
+  id: text("id").primaryKey(), // LE-<random>
+  assetId: text("asset_id").references(() => assets.id), // null = portfolio-level
+  entryDate: date("entry_date").notNull(),
+  category: text("category").notNull(), // rent | other_income | service_charge | maintenance | tax | insurance | management_fee | other_cost
+  amountEgp: bigint("amount_egp", { mode: "number" }).notNull(), // income positive, costs negative
+  memo: text("memo").notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+}, (t) => [index("ledger_entries_date").on(t.entryDate)]);
+
+/** The portfolio budget: one amount per category per month (income positive, costs negative). Managers only. */
+export const budgetLines = pgTable("budget_lines", {
+  id: text("id").primaryKey(), // B-2026-01-rent
+  month: date("month").notNull(),
+  category: text("category").notNull(),
+  amountEgp: bigint("amount_egp", { mode: "number" }).notNull(),
+}, (t) => [index("budget_lines_month").on(t.month)]);
+
+/** Distributions to investors. Proposed by a manager, approved by a different one, then marked paid. */
+export const distributions = pgTable("distributions", {
+  id: text("id").primaryKey(), // DS-001
+  period: text("period").notNull(), // 2026-Q3
+  amountEgp: bigint("amount_egp", { mode: "number" }).notNull(),
+  basisNoiEgp: bigint("basis_noi_egp", { mode: "number" }).notNull(), // the quarter's net operating income it was sized on
+  status: text("status").notNull(), // proposed | approved | rejected | paid
+  note: text("note").notNull().default(""),
+  proposedBy: text("proposed_by").notNull().references(() => users.id),
+  decidedBy: text("decided_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  paidOn: date("paid_on"),
+});

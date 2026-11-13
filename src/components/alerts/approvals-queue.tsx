@@ -35,6 +35,16 @@ export function ApprovalsQueue({ items, currency, fx }: { items: ApprovalItem[];
         ],
       };
     }
+    if (i.kind === "distribution") return {
+      title: `${i.refId}, ${String(s.period ?? "")}`, reason: s.note ? String(s.note) : null, effect: dc("effectDistribution"),
+      facts: [
+        { label: dc("fPeriod"), value: String(s.period ?? "") },
+        { label: dc("fAmount"), value: M(Number(s.amountEgp)), strong: true },
+        { label: dc("fNoi"), value: M(Number(s.basisNoiEgp)) },
+        { label: dc("fPayout"), value: `${Math.round((Number(s.amountEgp) / Number(s.basisNoiEgp)) * 100)}%` },
+        who,
+      ],
+    };
     if (i.kind === "update_draft") return { title: String((ar ? s.titleAr : s.title) ?? i.refId), reason: null, effect: dc("effectPublish"), facts: [{ label: dc("fUpdate"), value: String((ar ? s.titleAr : s.title) ?? i.refId) }, who] };
     return { title: String((ar ? s.targetAr : s.target) ?? i.refId), reason: i.note ?? null, effect: dc("effectRole"), facts: [{ label: dc("fPerson"), value: String((ar ? s.targetAr : s.target) ?? i.refId) }, who] };
   };
@@ -43,6 +53,7 @@ export function ApprovalsQueue({ items, currency, fx }: { items: ApprovalItem[];
     const s = i.summary;
     if (i.kind === "valuation") return t("a_valuation", { id: i.refId, asset: String((ar ? s.assetAr : s.asset) ?? "–"), model: money(Number(s.modelEstimateEgp), currency, locale, { fx, compact: true }), final: money(Number(s.finalValueEgp ?? s.modelEstimateEgp), currency, locale, { fx, compact: true }), adj: `${Number(s.adjustmentPct) > 0 ? "+" : ""}${s.adjustmentPct}%`, n: Number(s.approved), m: Number(s.required) });
     if (i.kind === "update_draft") return t("a_update", { title: String((ar ? s.titleAr : s.title) ?? i.refId) });
+    if (i.kind === "distribution") return t("a_distribution", { id: i.refId, period: String(s.period ?? ""), amount: money(Number(s.amountEgp), currency, locale, { fx, compact: true }), noi: money(Number(s.basisNoiEgp), currency, locale, { fx, compact: true }) });
     return t("a_role", { target: String((ar ? s.targetAr : s.target) ?? i.refId) });
   };
   const card = (i: ApprovalItem) => (

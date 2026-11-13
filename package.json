@@ -20,7 +20,8 @@
     "check:stage5": "node scripts/stage5-check.cjs",
     "check:stage6": "node scripts/stage6-check.cjs",
     "check:stage7": "node scripts/stage7-check.cjs",
-    "check:stage8": "node scripts/stage8-check.cjs"
+    "check:stage8": "node scripts/stage8-check.cjs",
+    "check:stage9": "node scripts/stage9-check.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

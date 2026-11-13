@@ -1,7 +1,7 @@
 import "server-only";
 import { and, desc, eq } from "drizzle-orm";
 import { withSession } from "@/db/client";
-import { approvals, investorUpdates, users, valuations, assets } from "@/db/schema";
+import { distributions, approvals, investorUpdates, users, valuations, assets } from "@/db/schema";
 import { can } from "./permissions";
 import { appendAudit } from "./audit";
 import { DEMO_TODAY } from "./assumptions";
@@ -12,7 +12,7 @@ const sess = (u: CurrentUser) => ({ userId: u.id, role: u.role });
 export type ApprovalError = "forbidden" | "not_found" | "self_approval" | "not_pending" | "invalid";
 
 export interface ApprovalItem {
-  id: string; kind: "valuation" | "update_draft" | "role_change" | "document"; refId: string; status: string; createdAt: string; decidedAt: string | null;
+  id: string; kind: "valuation" | "update_draft" | "role_change" | "document" | "distribution"; refId: string; status: string; createdAt: string; decidedAt: string | null;
   proposedBy: string; proposerName: string; proposerNameAr: string; routeRole: string; note: string | null;
   summary: Record<string, string | number | null>;
   canDecide: boolean; blocked: "role" | "self" | null;
@@ -25,6 +25,7 @@ export async function listApprovals(user: CurrentUser): Promise<ApprovalItem[]> 
     const vals = user.role === "admin" ? [] : await tx.select().from(valuations);
     const ups = user.role === "admin" ? [] : await tx.select().from(investorUpdates);
     const ass = user.role === "admin" ? [] : await tx.select({ id: assets.id, name: assets.name, nameAr: assets.nameAr }).from(assets);
+    const dists = user.role === "admin" ? [] : await tx.select().from(distributions);
     return rows.map((r): ApprovalItem => {
       const p = u.find((x) => x.id === r.proposedBy);
       const summary: ApprovalItem["summary"] = {};
@@ -34,6 +35,9 @@ export async function listApprovals(user: CurrentUser): Promise<ApprovalItem[]> 
       } else if (r.kind === "update_draft") {
         const d = ups.find((x) => x.id === r.refId);
         if (d) Object.assign(summary, { title: d.title, titleAr: d.titleAr, body: d.body, bodyAr: d.bodyAr });
+      } else if (r.kind === "distribution") {
+        const d = dists.find((x) => x.id === r.refId);
+        if (d) Object.assign(summary, { period: d.period, amountEgp: d.amountEgp, basisNoiEgp: d.basisNoiEgp, note: d.note });
       } else if (r.kind === "role_change") {
         const t = u.find((x) => x.id === r.refId);
         Object.assign(summary, { target: t?.name ?? r.refId, targetAr: t?.nameAr ?? r.refId, targetRole: t?.role ?? null });
@@ -70,6 +74,9 @@ export async function decideApproval(user: CurrentUser, id: string, decision: "a
   const status = decision === "approve" ? "approved" : "rejected";
   await withSession(sess(user), async (tx) => {
     await tx.update(approvals).set({ status, decidedBy: user.id, decidedAt: now }).where(and(eq(approvals.id, id), eq(approvals.status, "pending")));
+    if (item.kind === "distribution") {
+      await tx.update(distributions).set({ status: decision === "approve" ? "approved" : "rejected", decidedBy: user.id }).where(eq(distributions.id, item.refId));
+    }
     if (item.kind === "update_draft") {
       await tx.update(investorUpdates).set(decision === "approve" ? { status: "published", postedOn: DEMO_TODAY } : { status: "rejected" }).where(eq(investorUpdates.id, item.refId));
     }
@@ -77,8 +84,8 @@ export async function decideApproval(user: CurrentUser, id: string, decision: "a
   const n = String(note ?? "").trim().slice(0, 500);
   const ev = await appendAudit({
     actorId: user.id, actorRole: user.role,
-    action: item.kind === "update_draft" ? (decision === "approve" ? "update.publish" : "update.reject") : "role.change.decide",
-    entity: item.kind === "update_draft" ? "investor_update" : "user", entityId: item.refId,
+    action: item.kind === "update_draft" ? (decision === "approve" ? "update.publish" : "update.reject") : item.kind === "distribution" ? (decision === "approve" ? "distribution.approve" : "distribution.reject") : "role.change.decide",
+    entity: item.kind === "update_draft" ? "investor_update" : item.kind === "distribution" ? "distribution" : "user", entityId: item.refId,
     detail: { approval: id, decision, proposedBy: item.proposedBy, ...(item.kind === "role_change" ? { recordedOnly: true } : {}), ...(n ? { note: n } : {}) },
   });
   return { ok: true, status, auditSeq: ev.seq };

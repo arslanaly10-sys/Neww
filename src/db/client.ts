@@ -14,7 +14,7 @@ declare global {
 
 const LOCK_KEY = 727001; // advisory lock: only one process provisions the database at a time
 // Bump the marker when the schema changes: a database provisioned by an older version is rebuilt from the seed.
-const MARKER = "_zos_provisioned_v3";
+const MARKER = "_zos_provisioned_v4";
 
 async function readSql() {
   const { readFile, readdir } = await import("node:fs/promises");

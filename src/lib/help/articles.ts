@@ -102,6 +102,15 @@ export const ARTICLES: HelpArticle[] = [
     href: "/leases",
   },
   {
+    id: "finance", public: false, terms: "finance cash flow ledger budget actual variance forecast noi net operating income distribution payout expense cost entry المالية التدفق النقدي الدفتر الموازنة الفعلي توقع صافي الدخل التشغيلي توزيع مصروفات بند",
+    title: { en: "Cash flow, budget and distributions", ar: "التدفق النقدي والموازنة والتوزيعات" },
+    body: {
+      en: "Finance shows managers income, costs and net operating income for the last twelve months, a twelve-month forecast built from the leases and their renewals, the year against budget by category, and the ledger, where a manager adds a line by hand (lines are never edited; a correction is a new line). Each quarter a manager proposes a distribution, at most the quarter's net operating income; a different manager approves it on Alerts and approvals, then it is marked paid. Investors see their distributions only.",
+      ar: "تعرض صفحة المالية للمديرين الدخل والتكاليف وصافي الدخل التشغيلي لآخر اثني عشر شهرًا، وتوقعًا لاثني عشر شهرًا مبنيًا على العقود وتجديداتها، والعام مقارنة بالموازنة حسب الفئة، ودفتر الأستاذ حيث يضيف المدير بندًا يدويًا (لا تُعدَّل البنود؛ التصحيح بند جديد). وفي كل ربع يقترح مدير توزيعًا لا يتجاوز صافي الدخل التشغيلي للربع، ويعتمده مدير آخر في صفحة التنبيهات والموافقات، ثم يُحدد كمدفوع. ويرى المستثمرون توزيعاتهم فقط.",
+    },
+    href: "/finance",
+  },
+  {
     id: "scenarios", public: false, terms: "scenarios stress test what if rates vacancy sliders sensitivity السيناريوهات اختبار ضغط ماذا لو أسعار شغور",
     title: { en: "Scenarios", ar: "السيناريوهات" },
     body: {
