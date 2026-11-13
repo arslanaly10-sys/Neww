@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Third-party React Bits components, kept as published so they can be updated from upstream.
     "src/components/react-bits/**",
+    // Ponytail, vendored as published (github.com/dietrichgebert/ponytail).
+    "vendor/**",
   ]),
 ]);
 

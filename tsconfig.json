@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "src/components/react-bits"]
+  "exclude": ["node_modules", "src/components/react-bits", "vendor"]
 }
