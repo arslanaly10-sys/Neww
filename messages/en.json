@@ -1867,5 +1867,89 @@
     "err_not_found": "That event no longer exists.",
     "err_past": "The date has passed. Pick today or later.",
     "err_times": "Give a start time, and an end after it, or mark it all day."
+  },
+  "show": {
+    "arcHeading": "Your portfolio is scattered",
+    "arcSub": "across WhatsApp, spreadsheets, paper files and people's heads.",
+    "arcBody": "ZMNHOOF OS gathers it into one record: every asset, lease, document and number, with where it came from.",
+    "arcList": "Where portfolio records live today",
+    "arc": {
+      "a01": "Title deeds",
+      "a02": "Lease contracts",
+      "a03": "WhatsApp groups",
+      "a04": "Bank statements",
+      "a05": "Spreadsheets",
+      "a06": "Developer payment plans",
+      "a07": "Broker messages",
+      "a08": "Valuation reports",
+      "a09": "Maintenance invoices",
+      "a10": "Utility bills",
+      "a11": "Email threads",
+      "a12": "Tax notices",
+      "a13": "Photos on phones",
+      "a14": "Paper files",
+      "a15": "Receipts",
+      "a16": "Accountant's notes"
+    },
+    "sphHeading": "One record, and what it powers",
+    "sphLead": "What feeds the record on the left, what it does for you on the right. Each line says whether it is built in this demo or still planned.",
+    "sphCenter": "One portfolio record",
+    "sphCenterSub": "governed by ZMNHOOF OS",
+    "inputs": "What feeds it",
+    "outputs": "What it powers",
+    "built": "Built",
+    "planned": "Planned",
+    "in": {
+      "i1": {
+        "t": "Title deeds and documents",
+        "n": "Built: upload, with extracted fields you confirm"
+      },
+      "i2": {
+        "t": "Leases, rent and renewals",
+        "n": "Built: invoices, payments and arrears"
+      },
+      "i3": {
+        "t": "Maintenance and tasks",
+        "n": "Built: requests, assignments, costs to the ledger"
+      },
+      "i4": {
+        "t": "Market data",
+        "n": "Built: sample district index, sources named"
+      },
+      "i5": {
+        "t": "Bank feeds",
+        "n": "Planned: needs each bank's connection"
+      },
+      "i6": {
+        "t": "Property registry",
+        "n": "Planned: Shahr Aqari records when access allows"
+      }
+    },
+    "out": {
+      "o1": {
+        "t": "Horus, with citations",
+        "n": "Built: numbers from tools only, every figure sourced"
+      },
+      "o2": {
+        "t": "Valuations with approval",
+        "n": "Built: a second person confirms"
+      },
+      "o3": {
+        "t": "Reports and exports",
+        "n": "Built: Excel, CSV and PDF statements, audited"
+      },
+      "o4": {
+        "t": "Calendar and notifications",
+        "n": "Built: invitations, reminders, .ics download"
+      },
+      "o5": {
+        "t": "Email and WhatsApp",
+        "n": "Planned: email is simulated in this demo"
+      },
+      "o6": {
+        "t": "Two-way calendar sync",
+        "n": "Planned: Outlook and Google"
+      }
+    }
   }
 }

@@ -14,6 +14,8 @@ import { dateFmt } from "@/lib/format";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import { BlurHeadline, HeroDots } from "@/components/brand-fx";
 import { PublicChat } from "@/components/public-chat";
+import { ScatteredArc } from "@/components/showcase/scattered-arc";
+import { RecordSphere, type Capability } from "@/components/showcase/record-sphere";
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -26,6 +28,9 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
   const db = await getDb();
   const all = await db.select().from(users).orderBy(asc(sql`case role when 'investor' then 1 when 'manager' then 2 else 3 end`), asc(users.id));
   const ar = locale === "ar";
+  const sh = await getTranslations("show");
+  // Four of each side are built in this demo; the last two are planned.
+  const caps = (k: "in" | "out") => Object.values(sh.raw(k) as Record<string, { t: string; n: string }>).map((x, i): Capability => ({ title: x.t, note: x.n, built: i < 4 }));
   return (
     <div className="flex min-h-dvh flex-col">
       <div role="note" className="bg-gold-fill px-4 py-1.5 text-center text-xs font-semibold text-on-gold">{s("ribbon")}</div>
@@ -67,7 +72,9 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
             );
           })}
         </Stagger>
-        <p className="mt-8 text-xs text-muted">{s("asOf", { date: dateFmt(DEMO_TODAY, locale) })}. {s("footer")}</p>
+        <Reveal><ScatteredArc heading={sh("arcHeading")} sub={sh("arcSub")} body={sh("arcBody")} labels={Object.values(sh.raw("arc") as Record<string, string>)} listLabel={sh("arcList")} rtl={ar} /></Reveal>
+        <RecordSphere heading={sh("sphHeading")} lead={sh("sphLead")} center={sh("sphCenter")} centerSub={sh("sphCenterSub")} inputs={caps("in")} outputs={caps("out")} inputsLabel={sh("inputs")} outputsLabel={sh("outputs")} builtLabel={sh("built")} plannedLabel={sh("planned")} />
+        <p className="mt-12 text-xs text-muted">{s("asOf", { date: dateFmt(DEMO_TODAY, locale) })}. {s("footer")}</p>
       </main>
       <PublicChat />
     </div>
