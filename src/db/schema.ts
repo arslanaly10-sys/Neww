@@ -500,3 +500,26 @@ export const notificationPrefs = pgTable("notification_prefs", {
   inApp: integer("in_app").notNull(),
   email: integer("email").notNull(),
 }, (t) => [primaryKey({ columns: [t.userId, t.category] })]);
+
+/**
+ * Calendar events people put in the diary: meetings, inspections, viewings, deadlines. Lease ends, rent due dates,
+ * work due dates, paid distributions and scheduled reports appear on the calendar too, but are read from their own
+ * tables, never copied here. Investors see an event only when it is shared with them or they are invited.
+ */
+export const calendarEvents = pgTable("calendar_events", {
+  id: text("id").primaryKey(), // CE-001
+  title: text("title").notNull(),
+  titleAr: text("title_ar"), // optional Arabic title; the English one is shown when it is empty
+  kind: text("kind").notNull(), // meeting | inspection | viewing | deadline | other
+  assetId: text("asset_id").references(() => assets.id),
+  date: date("date").notNull(),
+  startTime: text("start_time"), // HH:MM, null for an all-day event
+  endTime: text("end_time"),
+  location: text("location").notNull().default(""),
+  notes: text("notes").notNull().default(""),
+  shared: integer("shared").notNull().default(0), // 1: visible to investors
+  attendees: jsonb("attendees").notNull().default([]), // user ids
+  createdBy: text("created_by").notNull().references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+}, (t) => [index("calendar_events_date").on(t.date)]);

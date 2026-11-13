@@ -6,6 +6,7 @@ import { getAlerts } from "../alerts-service";
 import { getLeasing } from "../leasing";
 import { getFinance } from "../finance";
 import { boardOrder, listWork } from "../work";
+import { upcoming } from "../calendar";
 import { getPortfolio, type PortfolioRow } from "../access";
 import { getAggregateIncome } from "../portfolio-data";
 import { momentum3m, portfolioMetrics, sentiment } from "../metrics";
@@ -38,6 +39,7 @@ export const TOOLS = [
   { name: "rent_arrears", description: "Rent collection (managers only): this month's collection rate, overdue rent by age (0-30, 31-60, 61-90, over 90 days) and the tenants who owe the most, with the lease and days overdue.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "finance_summary", description: "Finance. For managers: income, costs and net operating income over the last 12 months, the 12-month forecast, the largest budget variances this year and the suggested next distribution. For investors: the distributions paid to them.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "work_orders", description: "Maintenance requests and team tasks: how many are open, overdue and urgent, and the most pressing ones with their asset, assignee and due date.", input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "calendar_upcoming", description: "What is on the calendar in the next days (default 14): meetings, inspections, viewings and deadlines, plus leases ending, work due, distributions paid and, for managers, rent due and scheduled reports. Each with its date, time and asset.", input_schema: { type: "object", properties: { withinDays: { type: "integer", minimum: 1, maximum: 90 } }, additionalProperties: false } },
   { name: "recent_updates", description: "Latest published investor updates (title, date, text).", input_schema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 12 } }, additionalProperties: false } },
 ] as const;
 
@@ -228,6 +230,19 @@ const impl: Record<string, (c: HorusCtx, a: Args) => Promise<ToolOut>> = {
       data: {
         open: active.length, overdue: active.filter((x) => x.overdue).length, urgent: active.filter((x) => x.priority === "urgent").length, unassigned: active.filter((x) => !x.assigneeId).length,
         mostPressing: top.map((x) => ({ id: x.id, title: x.title, asset: x.assetId ? (c.locale === "ar" ? x.assetNameAr : x.assetName) : null, priority: x.priority, status: x.status, overdue: x.overdue, due: x.dueOn ? dateFmt(x.dueOn, c.locale) : null, assignee: x.assigneeId ? (c.locale === "ar" ? x.assigneeNameAr : x.assigneeName) : null })),
+      },
+    };
+  },
+
+  async calendar_upcoming(c, a) {
+    const n = Math.min(90, Math.max(1, Number(a.withinDays) || 14));
+    const items = await upcoming(asUser(c), c.locale === "ar" ? "ar" : "en", n);
+    if (!items) return { cites: [], data: { error: "forbidden" } };
+    return {
+      cites: ["calc:calendar_upcoming"],
+      data: {
+        from: dateFmt(DEMO_TODAY, c.locale), withinDays: n, count: items.length,
+        items: items.slice(0, 12).map((x) => ({ date: dateFmt(x.date, c.locale), time: x.start, title: x.title, kind: x.source, asset: x.assetName, overdue: x.overdue || undefined })),
       },
     };
   },

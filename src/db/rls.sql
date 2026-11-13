@@ -187,3 +187,12 @@ CREATE POLICY ntf_mark ON notifications FOR UPDATE TO app_user USING (user_id = 
 ALTER TABLE notification_prefs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS prefs_own ON notification_prefs;
 CREATE POLICY prefs_own ON notification_prefs FOR ALL TO app_user USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+
+-- Calendar: managers keep the diary. Investors read an event only when it is shared with them or they are invited.
+ALTER TABLE calendar_events ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS cal_read ON calendar_events;
+CREATE POLICY cal_read ON calendar_events FOR SELECT TO app_user
+  USING (app_role() = 'manager' OR (app_role() = 'investor' AND (shared = 1 OR attendees ? app_user_id())));
+DROP POLICY IF EXISTS cal_write ON calendar_events;
+CREATE POLICY cal_write ON calendar_events FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+GRANT DELETE ON calendar_events TO app_user;

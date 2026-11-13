@@ -37,7 +37,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
   const side = p.getByRole("navigation", { name: "Main navigation" }).first();
   const heads = await side.locator("p").allInnerTexts();
   log(JSON.stringify(heads) === JSON.stringify(["Portfolio", "Operations", "Money", "Records"]), `sidebar is grouped (${heads.join(", ")})`);
-  log(await side.getByRole("link").count() === 11, "manager sees eleven areas (notifications added in stage 12)");
+  log(await side.getByRole("link").count() === 12, "manager sees twelve areas (calendar added in stage 13)");
   await p.screenshot({ path: `${OUT}/en-sidebar.png` });
   await side.getByRole("link", { name: "Reports" }).click();
   await p.waitForURL("**/en/reports"); await settle(p);

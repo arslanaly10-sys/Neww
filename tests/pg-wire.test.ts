@@ -37,7 +37,7 @@ describe("PostgreSQL wire protocol (pg driver)", () => {
     const a = (await db.execute(sql`select count(*)::int n, sum(value_egp)::bigint v from assets`)).rows[0] as { n: number; v: string };
     expect(a.n).toBe(30);
     expect(Number(a.v)).toBe(1025563000);
-    expect((await db.execute(sql`select count(*)::int n from _zos_provisioned_v7`)).rows[0]).toEqual({ n: 1 });
+    expect((await db.execute(sql`select count(*)::int n from _zos_provisioned_v8`)).rows[0]).toEqual({ n: 1 });
     expect(await withSession({ role: "investor", userId: "u-investor" }, async (tx) => (await tx.select().from(cashflows)).length)).toBe(0);
     expect(await withSession({ role: "admin", userId: "u-admin" }, async (tx) => (await tx.select().from(assets)).length)).toBe(0);
     expect((await withSession({ role: "admin", userId: "u-admin" }, async (tx) => (await tx.select().from(auditEvents)).length))).toBeGreaterThan(10);

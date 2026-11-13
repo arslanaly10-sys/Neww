@@ -15,6 +15,7 @@ export const PERMISSIONS = {
   "work.report": { investor: true, manager: true, admin: false },
   "work.manage": { investor: false, manager: true, admin: false },
   "finance.manage": { investor: false, manager: true, admin: false },
+  "calendar.manage": { investor: false, manager: true, admin: false },
   "rent.manage": { investor: false, manager: true, admin: false },
   "help.use": { investor: true, manager: true, admin: true },
   "horus.email": { investor: false, manager: true, admin: false },
@@ -37,12 +38,12 @@ export const PERMISSIONS = {
 export type Permission = keyof typeof PERMISSIONS;
 export const can = (role: Role, p: Permission) => PERMISSIONS[p][role];
 
-export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "finance", "valuation", "reports", "notifications", "governance"] as const;
+export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "calendar", "finance", "valuation", "reports", "notifications", "governance"] as const;
 export type Area = (typeof AREAS)[number];
 /** The sidebar's sections, in order. Every area belongs to exactly one. */
 export const AREA_GROUPS: { id: "portfolio" | "operations" | "money" | "records"; areas: Area[] }[] = [
   { id: "portfolio", areas: ["overview", "portfolio", "asset", "market"] },
-  { id: "operations", areas: ["leases", "maintenance"] },
+  { id: "operations", areas: ["leases", "maintenance", "calendar"] },
   { id: "money", areas: ["finance", "valuation"] },
   { id: "records", areas: ["reports", "notifications", "governance"] },
 ];
@@ -52,6 +53,7 @@ export const AREA_ACCESS: Record<Area, Role[]> = {
   asset: ["investor", "manager"],
   leases: ["investor", "manager"],
   maintenance: ["investor", "manager"],
+  calendar: ["investor", "manager"],
   reports: ["investor", "manager", "admin"],
   notifications: ["investor", "manager", "admin"],
   finance: ["investor", "manager"],

@@ -138,6 +138,15 @@ export const ARTICLES: HelpArticle[] = [
     href: "/notifications",
   },
   {
+    id: "calendar", public: false, terms: "calendar diary agenda meeting meetings inspection viewing deadline event events invite invitation ics outlook google calendar schedule التقويم تقويم اجتماع معاينة فحص موعد حدث دعوة جدول الأعمال",
+    title: { en: "The calendar", ar: "التقويم" },
+    body: {
+      en: "Calendar, under Operations, shows a month at a time, or an agenda day by day. It holds the events managers add (meetings, inspections, viewings and deadlines) and every date the portfolio already knows: leases ending, work due, distributions paid and, for managers, rent falling due and scheduled reports. Filter by kind with the chips. Managers add an event with New event, invite people and can share it with investors; the people invited are notified, and told again if it moves or is cancelled. If an event overlaps another for the same person you get a warning. Investors see shared events and the ones they are invited to. Download .ics to add it all to Outlook, Google or Apple Calendar.",
+      ar: "يعرض التقويم، ضمن التشغيل، شهرًا كاملًا أو جدول أعمال يومًا بيوم. يضم الأحداث التي يضيفها المديرون (اجتماعات ومعاينات وفحوص ومواعيد نهائية) وكل تاريخ تعرفه المحفظة: انتهاء العقود والأعمال المستحقة والتوزيعات المدفوعة، وللمديرين الإيجار المستحق والتقارير المجدولة. صفِّ حسب النوع بالأزرار. يضيف المدير حدثًا من «حدث جديد» ويدعو الأشخاص ويمكنه مشاركته مع المستثمرين؛ ويُبلَّغ المدعوون، ثم يُبلَّغون مرة أخرى إذا تغيّر موعده أو أُلغي. وإذا تداخل حدث مع آخر للشخص نفسه يظهر تنبيه. يرى المستثمرون الأحداث المشتركة وما دُعوا إليه. نزّل ملف ‎.ics لإضافة كل ذلك إلى Outlook أو Google أو Apple.",
+    },
+    href: "/calendar",
+  },
+  {
     id: "scenarios", public: false, terms: "scenarios stress test what if rates vacancy sliders sensitivity السيناريوهات اختبار ضغط ماذا لو أسعار شغور",
     title: { en: "Scenarios", ar: "السيناريوهات" },
     body: {
