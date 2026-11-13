@@ -130,7 +130,8 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
   await signIn(p, "ar", "manager1");
   const tabs = await p.locator("nav.fixed > a, nav.fixed > button").count();
   log(tabs === 5, `phone tab bar has five items with More (${tabs})`);
-  await p.getByRole("link", { name: "العقود" }).last().click();
+  await p.getByRole("button", { name: "المزيد" }).click();
+  await p.getByRole("dialog", { name: "المزيد" }).getByRole("link", { name: "العقود" }).click();
   await p.waitForURL("**/ar/leases"); await settle(p);
   await noH(p, "ar leases @390");
   await leak(p, "ar leases");

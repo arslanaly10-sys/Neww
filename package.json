@@ -22,7 +22,8 @@
     "check:stage7": "node scripts/stage7-check.cjs",
     "check:stage8": "node scripts/stage8-check.cjs",
     "check:stage9": "node scripts/stage9-check.cjs",
-    "check:stage10": "node scripts/stage10-check.cjs"
+    "check:stage10": "node scripts/stage10-check.cjs",
+    "check:stage11": "node scripts/stage11-check.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
@@ -43,6 +44,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "drizzle-orm": "^0.45.4",
+    "exceljs": "^4.4.0",
     "lucide-react": "^1.72.0",
     "maplibre-gl": "^6.18.0",
     "motion": "^14.13.0",

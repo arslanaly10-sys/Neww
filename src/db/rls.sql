@@ -160,3 +160,20 @@ CREATE POLICY woe_read ON work_order_events FOR SELECT TO app_user USING (app_ro
 DROP POLICY IF EXISTS woe_write ON work_order_events;
 CREATE POLICY woe_write ON work_order_events FOR INSERT TO app_user WITH CHECK (app_role() IN ('investor','manager') AND actor_id = app_user_id());
 REVOKE UPDATE, DELETE ON work_order_events FROM app_user;
+
+-- Reports: statements are readable by the roles that see the portfolio; schedules and runs are managers' records.
+ALTER TABLE statements ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS stmt_read ON statements;
+CREATE POLICY stmt_read ON statements FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+DROP POLICY IF EXISTS stmt_write ON statements;
+CREATE POLICY stmt_write ON statements FOR INSERT TO app_user WITH CHECK (app_role() IN ('investor','manager') AND generated_by = app_user_id());
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['report_schedules','report_runs']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS mgr_only ON %I', t);
+    EXECUTE format($p$CREATE POLICY mgr_only ON %I FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager')$p$, t);
+  END LOOP;
+END $$;

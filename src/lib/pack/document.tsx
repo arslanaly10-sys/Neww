@@ -213,3 +213,7 @@ export function PackDocument({ m, t, ta, ty, hashes }: Props) {
     </Document>
   );
 }
+
+export { registerFonts, Text as PdfText, MIXED as PDF_MIXED, C as PDF_COLORS };
+/** Whether the document being rendered mixes Arabic and Latin text (see Text). */
+export const setPdfMixed = (v: boolean) => { MIXED.current = v; };

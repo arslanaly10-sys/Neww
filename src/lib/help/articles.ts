@@ -120,6 +120,15 @@ export const ARTICLES: HelpArticle[] = [
     href: "/maintenance",
   },
   {
+    id: "reports", public: false, terms: "reports export download excel csv xlsx spreadsheet statement pdf schedule scheduled monthly quarterly التقارير تصدير تنزيل إكسل جدول بيانات كشف مجدول شهري ربع سنوي",
+    title: { en: "Reports, exports and statements", ar: "التقارير والتصدير والكشوف" },
+    body: {
+      en: "Reports lets you download what you can see as Excel or CSV: holdings, leases, work orders and distributions, and for managers also unpaid rent, the ledger and the budget. Investor statements are PDFs of the portfolio for the year or a quarter, never showing a single asset's rent or costs. Managers can schedule a workbook or statement each month or quarter; investor workbooks are always built with the investor's permissions. Every download and report is recorded in the audit chain.",
+      ar: "تتيح صفحة التقارير تنزيل ما تراه بصيغة Excel أو CSV: الأصول والعقود وأوامر العمل والتوزيعات، وللمديرين أيضًا الإيجار غير المسدد ودفتر الأستاذ والموازنة. وكشوف المستثمر ملفات PDF للمحفظة عن العام أو الربع، لا تعرض إيجار أو تكاليف أصل منفرد. ويمكن للمديرين جدولة ملف أو كشف كل شهر أو ربع؛ وملفات المستثمر تُبنى دائمًا بصلاحياته. ويُسجَّل كل تنزيل وتقرير في سجل التدقيق.",
+    },
+    href: "/reports",
+  },
+  {
     id: "scenarios", public: false, terms: "scenarios stress test what if rates vacancy sliders sensitivity السيناريوهات اختبار ضغط ماذا لو أسعار شغور",
     title: { en: "Scenarios", ar: "السيناريوهات" },
     body: {

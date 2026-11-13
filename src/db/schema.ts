@@ -439,3 +439,43 @@ export const workOrderEvents = pgTable("work_order_events", {
   actorId: text("actor_id").notNull().references(() => users.id),
   at: timestamp("at", { withTimezone: true }).notNull(),
 }, (t) => [index("work_order_events_wo").on(t.workOrderId, t.at)]);
+
+/** Investor statements generated (PDF), so a statement can be traced back to the data it was made from. */
+export const statements = pgTable("statements", {
+  id: text("id").primaryKey(), // ST-0001
+  period: text("period").notNull(), // 2026 | 2026-Q3
+  lang: text("lang").notNull(),
+  generatedBy: text("generated_by").notNull().references(() => users.id),
+  contentHash: text("content_hash").notNull(),
+  at: timestamp("at", { withTimezone: true }).notNull(),
+});
+
+/** Reports sent on a schedule (simulated delivery through the outbox). */
+export const reportSchedules = pgTable("report_schedules", {
+  id: text("id").primaryKey(), // RS-001
+  name: text("name").notNull(),
+  kind: text("kind").notNull(), // workbook | statement
+  datasets: jsonb("datasets").notNull().default([]), // for a workbook: which sheets
+  frequency: text("frequency").notNull(), // monthly | quarterly
+  dayOfMonth: integer("day_of_month").notNull(),
+  recipients: jsonb("recipients").notNull(), // email addresses
+  lang: text("lang").notNull(),
+  active: integer("active").notNull().default(1),
+  nextRunOn: date("next_run_on").notNull(),
+  lastRunAt: timestamp("last_run_at", { withTimezone: true }),
+  createdBy: text("created_by").notNull().references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/** Every report produced, scheduled or on demand. The file is kept on local disk; its hash is kept here. */
+export const reportRuns = pgTable("report_runs", {
+  id: text("id").primaryKey(), // RR-<random>
+  scheduleId: text("schedule_id"),
+  kind: text("kind").notNull(),
+  fileName: text("file_name").notNull(),
+  mime: text("mime").notNull(),
+  bytes: integer("bytes").notNull(),
+  sha256: text("sha256").notNull(),
+  generatedBy: text("generated_by").notNull(), // a user id, or "scheduler"
+  at: timestamp("at", { withTimezone: true }).notNull(),
+});

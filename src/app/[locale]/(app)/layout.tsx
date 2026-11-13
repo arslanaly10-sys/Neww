@@ -56,7 +56,7 @@ export default async function AppShell({ children, params }: { children: React.R
   return (
     <HorusProvider>
     <div className="min-h-dvh md:grid md:grid-cols-[15.5rem_1fr]">
-      <aside className="hidden border-e border-line bg-surface md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:gap-8 md:px-3 md:py-5">
+      <aside className="hidden border-e border-line bg-surface md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:gap-6 md:overflow-y-auto md:px-3 md:py-5">
         <div className="px-3"><Wordmark /></div>
         <SideNav areas={areas} badges={badges} />
         <div className="mt-auto px-3 text-xs text-muted">
