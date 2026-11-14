@@ -39,13 +39,21 @@ export async function fetchWorldPop(points: { id: string; lat: number; lng: numb
 
 export async function fetchNasaPower(points: { id: string; lat: number; lng: number }[]): Promise<Obs[]> {
   const out: Obs[] = [];
+  const DAYS = { JAN: 31, FEB: 28, MAR: 31, APR: 30, MAY: 31, JUN: 30, JUL: 31, AUG: 31, SEP: 30, OCT: 31, NOV: 30, DEC: 31 } as const;
   for (const p of points) {
-    const j = await getJson(`https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,PRECTOTCORR,ALLSKY_SFC_SW_DWN&community=RE&longitude=${p.lng}&latitude=${p.lat}&format=JSON`);
-    const par = z.object({ properties: z.object({ parameter: z.record(z.string(), z.record(z.string(), z.number())) }) }).parse(j).properties.parameter;
+    const j = await getJson(`https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,T2M_MAX,PRECTOTCORR,ALLSKY_SFC_SW_DWN,WS2M,RH2M&community=RE&longitude=${p.lng}&latitude=${p.lat}&format=JSON`);
+    const parsed = z.object({ geometry: z.object({ coordinates: z.array(z.number()) }).optional(), properties: z.object({ parameter: z.record(z.string(), z.record(z.string(), z.number())) }) }).parse(j);
+    const par = parsed.properties.parameter;
     const period = "long-term average";
     out.push({ indicator: "temp_avg", label: "Average temperature", location: p.id, locationKind: "district", period, value: par.T2M.ANN, unit: "°C", transform: "NASA POWER climatology at the district centre, annual mean of T2M." });
     out.push({ indicator: "rain_year", label: "Rainfall", location: p.id, locationKind: "district", period, value: Math.round(par.PRECTOTCORR.ANN * 365 * 10) / 10, unit: "mm a year", transform: "NASA POWER PRECTOTCORR annual mean (mm a day) × 365." });
     out.push({ indicator: "solar", label: "Solar radiation", location: p.id, locationKind: "district", period, value: par.ALLSKY_SFC_SW_DWN.ANN, unit: "kWh/m² a day", transform: "NASA POWER ALLSKY_SFC_SW_DWN annual mean." });
+    if (par.T2M_MAX) out.push({ indicator: "temp_max", label: "Hottest temperature", location: p.id, locationKind: "district", period, value: par.T2M_MAX.ANN, unit: "°C", transform: "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period." });
+    if (par.PRECTOTCORR) { const wet = Math.max(...Object.entries(DAYS).map(([m, d]) => (par.PRECTOTCORR[m] ?? 0) * d)); out.push({ indicator: "rain_wettest", label: "Wettest month", location: p.id, locationKind: "district", period, value: Math.round(wet * 10) / 10, unit: "mm", transform: "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)." }); }
+    if (par.WS2M) out.push({ indicator: "wind", label: "Wind speed at 2 m", location: p.id, locationKind: "district", period, value: par.WS2M.ANN, unit: "m/s", transform: "NASA POWER WS2M annual mean." });
+    if (par.RH2M) out.push({ indicator: "humidity", label: "Relative humidity", location: p.id, locationKind: "district", period, value: par.RH2M.ANN, unit: "%", transform: "NASA POWER RH2M annual mean." });
+    const z3 = parsed.geometry?.coordinates[2];
+    if (typeof z3 === "number") out.push({ indicator: "elevation", label: "Ground elevation", location: p.id, locationKind: "district", period: "model terrain", value: Math.round(z3), unit: "m", transform: "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey." });
   }
   return out;
 }

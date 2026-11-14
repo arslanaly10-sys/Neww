@@ -861,3 +861,18 @@ export const permits = pgTable("permits", {
   recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull(),
   supersededAt: timestamp("superseded_at", { withTimezone: true }),
 }, (t) => [index("permits_asset").on(t.assetId, t.kind)]);
+
+/** Site-specific climate and hazard assessments (a survey, an engineer's report) that override the screening model. */
+export const climateAssessments = pgTable("climate_assessments", {
+  id: text("id").primaryKey(), // CA-001
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  hazard: text("hazard").notNull(), // heat | flood | coastal | seismic | dust
+  level: integer("level").notNull(), // 1 very low .. 5 very high
+  method: text("method").notNull(), // site_survey | engineer_report | insurer_survey | desk_review
+  note: text("note").notNull(),
+  assessedOn: date("assessed_on").notNull(),
+  documentId: text("document_id"),
+  recordedBy: text("recorded_by").notNull(),
+  recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull(),
+  supersededAt: timestamp("superseded_at", { withTimezone: true }),
+}, (t) => [index("climate_asset").on(t.assetId, t.hazard)]);

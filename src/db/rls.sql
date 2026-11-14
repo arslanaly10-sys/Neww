@@ -312,3 +312,13 @@ CREATE POLICY permits_insert ON permits FOR INSERT TO app_user WITH CHECK (app_r
 DROP POLICY IF EXISTS permits_update ON permits;
 CREATE POLICY permits_update ON permits FOR UPDATE TO app_user USING (app_role() IN ('manager','analyst')) WITH CHECK (app_role() IN ('manager','analyst'));
 REVOKE DELETE ON permits FROM app_user;
+
+-- Climate assessments: everyone with asset access reads; managers and analysts record; nothing is deleted.
+ALTER TABLE climate_assessments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS climate_read ON climate_assessments;
+CREATE POLICY climate_read ON climate_assessments FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'));
+DROP POLICY IF EXISTS climate_insert ON climate_assessments;
+CREATE POLICY climate_insert ON climate_assessments FOR INSERT TO app_user WITH CHECK (app_role() IN ('manager','analyst') AND recorded_by = app_user_id());
+DROP POLICY IF EXISTS climate_update ON climate_assessments;
+CREATE POLICY climate_update ON climate_assessments FOR UPDATE TO app_user USING (app_role() IN ('manager','analyst')) WITH CHECK (app_role() IN ('manager','analyst'));
+REVOKE DELETE ON climate_assessments FROM app_user;

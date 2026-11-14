@@ -17,6 +17,8 @@ import { assetContext } from "@/lib/market-data/service";
 import { GrowBar, Stagger, StaggerItem } from "@/components/motion";
 import { assetPermits } from "@/lib/permits";
 import { PermitList } from "@/components/permits/permit-list";
+import { assetClimate } from "@/lib/climate";
+import { HazardList } from "@/components/climate/hazard-list";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -42,6 +44,8 @@ export default async function AssetRecordPage({ params }: { params: Promise<{ lo
   const verify = can(user.role, "records.verify");
   const pm = await assetPermits(user, id);
   const pt = await getTranslations("permits");
+  const cl = await assetClimate(user, id);
+  const ct = await getTranslations("climate");
   const factValue = (field: string, v: string) => {
     if (field === "value_egp" || field === "horus_estimate") return M(Number(v));
     if (field.endsWith("sqm")) return `${int(Number(v), locale)} m²`;
@@ -236,6 +240,7 @@ export default async function AssetRecordPage({ params }: { params: Promise<{ lo
           { id: "history", label: t("tabHistory"), count: r.versions.length, content: history },
           { id: "location", label: md("tabLocation"), content: location },
           ...(pm ? [{ id: "permits", label: pt("tab"), count: pm.items.filter((i) => i.required && (i.state.state === "action" || i.state.state === "expiring")).length, content: <PermitList data={pm} locale={locale} edit={edit} verify={verify} me={user.id} /> }] : []),
+          ...(cl ? [{ id: "climate", label: ct("tab"), count: cl.results.filter((x) => x.residual >= 4).length, content: <HazardList data={cl} locale={locale} assess={edit || verify} /> }] : []),
           ...(plan ? [{ id: "plan", label: t("tabPlan"), content: plan }] : []),
         ]} />
       </Card>

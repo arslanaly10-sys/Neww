@@ -1,5 +1,5 @@
 {
- "retrievedAt": "2026-11-14T16:40:34.314Z",
+ "retrievedAt": "2026-11-14T19:57:20.212Z",
  "sources": {
   "worldbank": {
    "obs": [
@@ -1523,6 +1523,56 @@
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
     },
     {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.41,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.8,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 50.54,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 135,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
+    },
+    {
      "indicator": "temp_avg",
      "label": "Average temperature",
      "location": "sheikh-zayed",
@@ -1551,6 +1601,56 @@
      "value": 5.8334,
      "unit": "kWh/m² a day",
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.41,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.8,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 50.54,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 135,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
     },
     {
      "indicator": "temp_avg",
@@ -1583,6 +1683,56 @@
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
     },
     {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.73,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 17.4,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 52.99,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 111,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
+    },
+    {
      "indicator": "temp_avg",
      "label": "Average temperature",
      "location": "new-capital",
@@ -1611,6 +1761,56 @@
      "value": 5.7127,
      "unit": "kWh/m² a day",
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 44.15,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.5,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.61,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 52.9,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 284,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
     },
     {
      "indicator": "temp_avg",
@@ -1643,6 +1843,56 @@
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
     },
     {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.41,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.8,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 50.54,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 135,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
+    },
+    {
      "indicator": "temp_avg",
      "label": "Average temperature",
      "location": "zamalek",
@@ -1671,6 +1921,56 @@
      "value": 5.7127,
      "unit": "kWh/m² a day",
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.41,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.8,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 50.54,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 135,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
     },
     {
      "indicator": "temp_avg",
@@ -1703,6 +2003,56 @@
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
     },
     {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.41,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.8,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 50.54,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 135,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
+    },
+    {
      "indicator": "temp_avg",
      "label": "Average temperature",
      "location": "nasr-city",
@@ -1731,6 +2081,56 @@
      "value": 5.7127,
      "unit": "kWh/m² a day",
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.41,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.8,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 50.54,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 135,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
     },
     {
      "indicator": "temp_avg",
@@ -1763,6 +2163,56 @@
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
     },
     {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 39.79,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 34.1,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 3.98,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 69.47,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 21,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
+    },
+    {
      "indicator": "temp_avg",
      "label": "Average temperature",
      "location": "dokki",
@@ -1791,6 +2241,56 @@
      "value": 5.7127,
      "unit": "kWh/m² a day",
      "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_max",
+     "label": "Hottest temperature",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 45.41,
+     "unit": "°C",
+     "transform": "NASA POWER climatology T2M_MAX, annual value: the highest daily maximum in the climatology period."
+    },
+    {
+     "indicator": "rain_wettest",
+     "label": "Wettest month",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 16.8,
+     "unit": "mm",
+     "transform": "NASA POWER PRECTOTCORR, the highest monthly mean (mm a day × days in the month)."
+    },
+    {
+     "indicator": "wind",
+     "label": "Wind speed at 2 m",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 2.87,
+     "unit": "m/s",
+     "transform": "NASA POWER WS2M annual mean."
+    },
+    {
+     "indicator": "humidity",
+     "label": "Relative humidity",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 50.54,
+     "unit": "%",
+     "transform": "NASA POWER RH2M annual mean."
+    },
+    {
+     "indicator": "elevation",
+     "label": "Ground elevation",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "model terrain",
+     "value": 135,
+     "unit": "m",
+     "transform": "Elevation of the NASA POWER grid cell at the district centre (about 0.5° wide); a coarse average, not a site survey."
     }
    ]
   },

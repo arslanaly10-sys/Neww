@@ -63,7 +63,7 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
   );
   return (
     <div className="space-y-8">
-      <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><span className="flex flex-wrap items-center gap-3"><SampleBadge /><Link href="/portfolio/climate" className="tap text-sm text-gold underline underline-offset-4">{(await getTranslations("climate"))("title")}</Link></span></PageHeader>
       {rs && (
         <section aria-label={rc("pfRecord")} className="grid gap-3 rounded-lg border border-line bg-surface p-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div><p className="text-muted">{rc("portfolio")}</p><p className="font-semibold">{rs.portfolio ? (locale === "ar" ? rs.portfolio.nameAr : rs.portfolio.name) : "–"}</p></div>
