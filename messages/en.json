@@ -2962,7 +2962,8 @@
     "err_closed": "It is already closed.",
     "err_own": "Another manager must decide on your own proposal.",
     "err_lower": "The new value cannot be earlier or lower than the last one.",
-    "err_taken": "A contractor with this name already exists."
+    "err_taken": "A contractor with this name already exists.",
+    "registered": "Registered contractor"
   },
   "einv": {
     "title": "E-invoice drafts",

@@ -70,7 +70,7 @@ export function ContractorPanel({ workId, status, contractorId, rating, contract
   return (
     <div className="space-y-2 text-sm">
       {!closed ? (
-        <div><label htmlFor={`${id}-c`} className={label}>{t("contractor")}</label>
+        <div><label htmlFor={`${id}-c`} className={label}>{t("registered")}</label>
           <select id={`${id}-c`} defaultValue={contractorId ?? ""} disabled={pending} onChange={(e) => start(async () => { const r = await assignContractorAction(workId, e.target.value || null); if (!r.ok) setErr(t(`err_${r.error}`)); else { setErr(null); setMsg(t("contractorSaved")); router.refresh(); } })} className={field}>
             <option value="">{t("noContractor")}</option>{contractors.map((c) => <option key={c.id} value={c.id}>{nm(c, ar)}</option>)}
           </select></div>

@@ -70,7 +70,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], in
   // Detail: edit, then complete with a cost
   await p.goto(`${BASE}/en/maintenance/WO-005`); await settle(p);
   log(/^WO-005 · ZMNHOOF OS$/.test(await p.title()), "work order tab title is its id");
-  await p.getByLabel("Contractor").fill("Delta Doors Express (fictional)");
+  await p.getByLabel("Contractor", { exact: true }).fill("Delta Doors Express (fictional)");
   await p.getByLabel("Due date").fill("2026-11-15");
   await p.getByRole("button", { name: "Save changes" }).click();
   await p.getByText(/Saved 2 changes\. Audit event #\d+\./).waitFor();
