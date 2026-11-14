@@ -834,3 +834,30 @@ export const capexItems = pgTable("capex_items", {
   note: text("note").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
 });
+
+/**
+ * Permits, approvals and legal status per asset: one current row per asset and kind, older rows superseded (kept
+ * as history). The person who records a permit cannot verify it; an analyst does.
+ */
+export const permits = pgTable("permits", {
+  id: text("id").primaryKey(), // PM-001
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  kind: text("kind").notNull(), // title_registration | building_permit | occupancy | civil_defence | commercial_licence | reconciliation
+  status: text("status").notNull(), // valid | pending | expired | refused | missing
+  form: text("form"), // title_registration only: registered | court_validated | primary_contract
+  authority: text("authority").notNull().default(""),
+  reference: text("reference").notNull().default(""),
+  appliedOn: date("applied_on"),
+  issuedOn: date("issued_on"),
+  expiresOn: date("expires_on"),
+  documentId: text("document_id"),
+  note: text("note").notNull().default(""),
+  verification: text("verification").notNull().default("unverified"), // unverified | verified | disputed
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  reviewNote: text("review_note"),
+  remindedOn: date("reminded_on"),
+  recordedBy: text("recorded_by").notNull(),
+  recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull(),
+  supersededAt: timestamp("superseded_at", { withTimezone: true }),
+}, (t) => [index("permits_asset").on(t.assetId, t.kind)]);

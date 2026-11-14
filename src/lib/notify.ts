@@ -29,6 +29,7 @@ export const KINDS = {
   role_changed: "account",
   facts_to_review: "records", fact_disputed: "records",
   run_to_review: "records", run_reviewed: "records",
+  permit_to_verify: "records", permit_disputed: "records", permit_expiring: "records",
 } as const satisfies Record<string, NCategory>;
 export type NKind = keyof typeof KINDS;
 /** Defaults when a person has not chosen: everything in the app, approvals also by email. */

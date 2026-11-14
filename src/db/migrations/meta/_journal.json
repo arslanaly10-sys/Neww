@@ -99,6 +99,13 @@
       "when": 1794677832390,
       "tag": "0013_stage19_operations",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794680502509,
+      "tag": "0014_stage20_permits",
+      "breakpoints": true
     }
   ]
 }

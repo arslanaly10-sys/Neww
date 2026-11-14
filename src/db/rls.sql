@@ -301,3 +301,14 @@ BEGIN
   END LOOP;
 END $$;
 REVOKE UPDATE, DELETE ON utility_readings FROM app_user;
+
+-- Permits and legal status: read by investors, managers and analysts. Managers record (and supersede); analysts
+-- review. Nothing is deleted: history stays.
+ALTER TABLE permits ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS permits_read ON permits;
+CREATE POLICY permits_read ON permits FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'));
+DROP POLICY IF EXISTS permits_insert ON permits;
+CREATE POLICY permits_insert ON permits FOR INSERT TO app_user WITH CHECK (app_role() = 'manager' AND recorded_by = app_user_id());
+DROP POLICY IF EXISTS permits_update ON permits;
+CREATE POLICY permits_update ON permits FOR UPDATE TO app_user USING (app_role() IN ('manager','analyst')) WITH CHECK (app_role() IN ('manager','analyst'));
+REVOKE DELETE ON permits FROM app_user;
