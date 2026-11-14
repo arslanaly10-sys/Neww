@@ -8,7 +8,7 @@ import { setCurrency, signOut, switchUser } from "@/app/actions";
 import { cn } from "@/lib/cn";
 import { buttonStyles } from "../ui";
 
-export interface DemoUser { id: string; name: string; nameAr: string; role: "investor" | "manager" | "admin" }
+export interface DemoUser { id: string; name: string; nameAr: string; role: "investor" | "manager" | "analyst" | "admin" }
 
 export function RoleSwitcher({ users, currentId }: { users: DemoUser[]; currentId: string }) {
   const t = useTranslations("roles");

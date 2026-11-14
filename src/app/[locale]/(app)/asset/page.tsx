@@ -20,7 +20,7 @@ export default async function AssetIndex({ params }: { params: Promise<{ locale:
   const ar = locale === "ar";
   return (
     <div>
-      <PageHeader animated title={t("title")} lead={t("lead")}><Link href="/asset/documents" className="tap text-sm text-gold underline underline-offset-4">{(await getTranslations("docs"))("title")}</Link></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><span className="flex flex-wrap gap-4"><Link href="/asset/facts" className="tap text-sm text-gold underline underline-offset-4">{(await getTranslations("record"))("queueTitle")}</Link><Link href="/asset/documents" className="tap text-sm text-gold underline underline-offset-4">{(await getTranslations("docs"))("title")}</Link></span></PageHeader>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((r) => (
           <li key={r.id}>

@@ -4,6 +4,7 @@ export const USERS = [
   { id: "u-investor", name: "Karim Fahmy", nameAr: "كريم فهمي", email: "karim@sample.test", role: "investor", title: "Investor, Sample Family Office", titleAr: "مستثمر، مكتب عائلي تجريبي" },
   { id: "u-manager-1", name: "Nour Abdelrahman", nameAr: "نور عبد الرحمن", email: "nour@sample.test", role: "manager", title: "Asset Manager", titleAr: "مدير أصول" },
   { id: "u-manager-2", name: "Omar Saleh", nameAr: "عمر صالح", email: "omar@sample.test", role: "manager", title: "Senior Asset Manager", titleAr: "مدير أصول أول" },
+  { id: "u-analyst", name: "Laila Mansour", nameAr: "ليلى منصور", email: "laila@sample.test", role: "analyst", title: "Valuation Analyst", titleAr: "محللة تقييم" },
   { id: "u-admin", name: "Salma Rashed", nameAr: "سلمى راشد", email: "salma@sample.test", role: "admin", title: "Platform Administrator", titleAr: "مسؤولة المنصة" },
 ] as const;
 

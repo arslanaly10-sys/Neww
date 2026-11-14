@@ -52,8 +52,8 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
           <h2 id="signin" className="mb-1 mt-12 scroll-mt-6 font-display text-2xl">{t("title")}</h2>
           <p className="mb-6 max-w-xl text-base text-muted">{t("sub")}</p>
         </Reveal>
-        <Stagger className="grid gap-4 lg:grid-cols-3">
-          {(["investor", "manager", "admin"] as const).map((role) => {
+        <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {(["investor", "manager", "analyst", "admin"] as const).map((role) => {
             const group = all.filter((u) => u.role === role);
             return (
               <StaggerItem key={role} className="flex"><Card className="flex flex-1 flex-col">

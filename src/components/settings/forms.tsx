@@ -116,7 +116,7 @@ export function UsersAdmin({ rows }: { rows: AdminUser[] }) {
             <p className="w-36 text-xs text-muted">{u.lastSeen ? t("lastSeen", { when: u.lastSeen }) : t("neverSignedIn")}</p>
             <label className="text-xs"><span className="sr-only">{t("roleOf", { name: u.name })}</span>
               <select aria-label={t("roleOf", { name: u.name })} value={u.role} disabled={u.me || pending} onChange={(e) => run(() => setUserRoleAction(u.id, e.target.value), t("roleChanged", { name: u.name }))} className="min-h-10 rounded-md border border-line bg-bg px-2 text-sm disabled:opacity-60">
-                {(["investor", "manager", "admin"] as const).map((x) => <option key={x} value={x}>{r(x)}</option>)}
+                {(["investor", "manager", "analyst", "admin"] as const).map((x) => <option key={x} value={x}>{r(x)}</option>)}
               </select>
             </label>
             {!u.me && (u.status === "deactivated"
@@ -153,7 +153,7 @@ function InviteUser() {
               <div><label htmlFor={`${id}-n`} className={label}>{t("name")}</label><input id={`${id}-n`} name="name" required minLength={2} maxLength={80} className={field} /></div>
               <div><label htmlFor={`${id}-na`} className={label}>{t("nameAr")}</label><input id={`${id}-na`} name="nameAr" dir="rtl" lang="ar" maxLength={80} className={field} /></div>
               <div><label htmlFor={`${id}-e`} className={label}>{t("email")}</label><input id={`${id}-e`} name="email" type="email" dir="ltr" required maxLength={120} className={field} /></div>
-              <div><label htmlFor={`${id}-r`} className={label}>{t("role")}</label><select id={`${id}-r`} name="role" defaultValue="investor" className={field}>{(["investor", "manager", "admin"] as const).map((x) => <option key={x} value={x}>{r(x)}</option>)}</select></div>
+              <div><label htmlFor={`${id}-r`} className={label}>{t("role")}</label><select id={`${id}-r`} name="role" defaultValue="investor" className={field}>{(["investor", "manager", "analyst", "admin"] as const).map((x) => <option key={x} value={x}>{r(x)}</option>)}</select></div>
               <div><label htmlFor={`${id}-t`} className={label}>{t("jobTitle")}</label><input id={`${id}-t`} name="title" maxLength={80} className={field} /></div>
               <p className="text-xs text-muted">{t("inviteNote")}</p>
               {err && <p role="alert" className="text-sm text-danger">{err}</p>}

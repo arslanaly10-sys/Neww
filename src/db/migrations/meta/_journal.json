@@ -71,6 +71,13 @@
       "when": 1794589878492,
       "tag": "0009_stage15_users",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794645823115,
+      "tag": "0010_stage16_asset_record",
+      "breakpoints": true
     }
   ]
 }

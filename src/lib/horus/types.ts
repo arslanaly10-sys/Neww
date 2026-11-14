@@ -37,4 +37,4 @@ export interface HorusAnswer {
 export interface HorusStep { tool: string }
 
 export interface ToolOut { data: unknown; cites: string[] }
-export interface HorusCtx { user: { id: string; name: string; role: "investor" | "manager" | "admin" }; locale: string; currency: "EGP" | "USD"; fx: number; fileIds?: string[] }
+export interface HorusCtx { user: { id: string; name: string; role: "investor" | "manager" | "analyst" | "admin" }; locale: string; currency: "EGP" | "USD"; fx: number; fileIds?: string[] }

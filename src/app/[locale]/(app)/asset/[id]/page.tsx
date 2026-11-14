@@ -78,6 +78,10 @@ export default async function AssetPage({ params }: { params: Promise<{ locale: 
       <PageHeader animated title={ar ? a.nameAr : a.name} lead={`${ar ? a.district.nameAr : a.district.name}${listSep(locale)}${ty(a.type as "villa")}${ar ? "" : `${listSep(locale)}${a.compound}`}`}>
         <span className="flex items-center gap-2"><span className="num text-sm text-muted">{a.id}</span><SampleBadge /></span>
       </PageHeader>
+      <Link href={`/asset/${a.id}/record`} className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gold-fill/50 bg-surface px-4 py-3 text-sm hover:border-gold-fill">
+        <span><span className="font-semibold text-gold">{(await getTranslations("record"))("openRecord")}</span><span className="block text-muted">{(await getTranslations("record"))("openRecordHelp")}</span></span>
+        <span aria-hidden="true" className="text-gold rtl:rotate-180">→</span>
+      </Link>
 
       <section className="grid gap-4 sm:grid-cols-3">
         <Card>

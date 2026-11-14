@@ -64,6 +64,10 @@ export const assets = pgTable(
     vacantSince: date("vacant_since"),
     lat: numeric("lat", { precision: 9, scale: 5 }).notNull(),
     lng: numeric("lng", { precision: 9, scale: 5 }).notNull(),
+    portfolioId: text("portfolio_id").notNull().default("P-001"),
+    plotAreaSqm: integer("plot_area_sqm"), // land and villas: the plot, separate from the built-up area
+    status: text("status").notNull().default("ready"), // ready | under_construction | off_plan
+    deliveryOn: date("delivery_on"), // off-plan: expected handover
   },
   (t) => [index("assets_district_idx").on(t.districtId)],
 );
@@ -569,3 +573,101 @@ export const dealEvents = pgTable("deal_events", {
   actorId: text("actor_id").notNull().references(() => users.id),
   at: timestamp("at", { withTimezone: true }).notNull(),
 }, (t) => [index("deal_events_deal").on(t.dealId, t.at)]);
+
+/** A portfolio: the assets one owner (or family office) holds. Every asset belongs to one. */
+export const portfolios = pgTable("portfolios", {
+  id: text("id").primaryKey(), // P-001
+  name: text("name").notNull(),
+  nameAr: text("name_ar").notNull(),
+  ownerId: text("owner_id").references(() => users.id),
+  baseCurrency: text("base_currency").notNull().default("EGP"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/** Who owns what share of an asset. Shares of one asset add up to 100. */
+export const ownershipShares = pgTable("ownership_shares", {
+  id: text("id").primaryKey(),
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  holder: text("holder").notNull(),
+  holderAr: text("holder_ar").notNull(),
+  sharePct: numeric("share_pct", { precision: 5, scale: 2 }).notNull(),
+  since: date("since").notNull(),
+  sourceDocId: text("source_doc_id"),
+}, (t) => [index("ownership_asset").on(t.assetId)]);
+
+/** Buildings on an asset (a plot has none). */
+export const buildings = pgTable("buildings", {
+  id: text("id").primaryKey(), // B-001
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  name: text("name").notNull(),
+  nameAr: text("name_ar").notNull(),
+  floors: integer("floors"),
+  yearBuilt: integer("year_built"),
+  structure: text("structure").notNull().default("concrete_frame"),
+});
+
+/** Lettable or usable units inside a building. A single apartment is one unit. */
+export const units = pgTable("units", {
+  id: text("id").primaryKey(), // U-0001
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  buildingId: text("building_id").references(() => buildings.id),
+  label: text("label").notNull(),
+  use: text("use").notNull(), // residential | office | retail | clinic | storage
+  areaSqm: integer("area_sqm").notNull(),
+  floor: integer("floor"),
+  beds: integer("beds"),
+  baths: integer("baths"),
+  status: text("status").notNull(), // let | vacant | owner
+  leaseId: text("lease_id").references(() => leases.id),
+}, (t) => [index("units_asset").on(t.assetId)]);
+
+/**
+ * The asset's history: every change to its details makes a new version with a full snapshot, what changed, why and
+ * on what source. The asset id never changes, so its history and its value over time stay attached. Append-only.
+ */
+export const assetVersions = pgTable("asset_versions", {
+  id: text("id").primaryKey(),
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  version: integer("version").notNull(),
+  snapshot: jsonb("snapshot").notNull(),
+  changed: jsonb("changed").notNull().default([]),
+  reason: text("reason").notNull().default(""),
+  sourceKind: text("source_kind").notNull(), // seed | document | survey | owner | valuation | import | manual
+  sourceRef: text("source_ref"),
+  actorId: text("actor_id").notNull(),
+  at: timestamp("at", { withTimezone: true }).notNull(),
+}, (t) => [index("asset_versions_asset").on(t.assetId, t.version)]);
+
+/**
+ * Facts about an asset, each with where it came from and when: area, plot area, year built, finish, occupancy, title
+ * status, permitted use, value. A new observation of a field supersedes the old one; the old one is kept. Analysts
+ * verify or dispute facts.
+ */
+export const assetFacts = pgTable("asset_facts", {
+  id: text("id").primaryKey(),
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  field: text("field").notNull(),
+  value: text("value").notNull(),
+  unit: text("unit"),
+  sourceKind: text("source_kind").notNull(),
+  sourceRef: text("source_ref"),
+  sourceLabel: text("source_label").notNull(),
+  observedOn: date("observed_on").notNull(),
+  recordedBy: text("recorded_by").notNull(),
+  recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull(),
+  status: text("status").notNull().default("unverified"), // unverified | verified | disputed
+  reviewNote: text("review_note"),
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  supersededAt: timestamp("superseded_at", { withTimezone: true }),
+}, (t) => [index("asset_facts_asset").on(t.assetId, t.field)]);
+
+/** Instalments still owed (or paid) to a developer for an off-plan or recently bought unit. */
+export const installments = pgTable("installments", {
+  id: text("id").primaryKey(),
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  seq: integer("seq").notNull(),
+  dueOn: date("due_on").notNull(),
+  amountEgp: bigint("amount_egp", { mode: "number" }).notNull(),
+  paidOn: date("paid_on"),
+}, (t) => [index("installments_asset").on(t.assetId, t.seq)]);

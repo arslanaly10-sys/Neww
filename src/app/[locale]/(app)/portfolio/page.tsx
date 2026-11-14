@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { pageContext } from "@/lib/page";
 import { getPortfolio } from "@/lib/access";
+import { recordSummary } from "@/lib/asset-record";
 import { getAggregateIncome, getHistory, getUpdates } from "@/lib/portfolio-data";
 import { portfolioMetrics } from "@/lib/metrics";
 import { can } from "@/lib/permissions";
@@ -35,6 +36,8 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
 
   const [rows, history, agg, updates] = await Promise.all([getPortfolio(user), getHistory(user), getAggregateIncome(), getUpdates(user)]);
   const m = portfolioMetrics(rows);
+  const rs = await recordSummary(user);
+  const rc = await getTranslations("record");
   const showAssetYield = can(user.role, "asset.income_costs.view");
   const netYield = agg.net / m.value;
 
@@ -61,6 +64,14 @@ export default async function Portfolio({ params }: { params: Promise<{ locale: 
   return (
     <div className="space-y-8">
       <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      {rs && (
+        <section aria-label={rc("pfRecord")} className="grid gap-3 rounded-lg border border-line bg-surface p-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+          <div><p className="text-muted">{rc("portfolio")}</p><p className="font-semibold">{rs.portfolio ? (locale === "ar" ? rs.portfolio.nameAr : rs.portfolio.name) : "–"}</p></div>
+          <div><p className="text-muted">{rc("pfOutstanding")}</p><p className="num font-semibold">{money(rs.outstandingEgp, currency, locale, { compact: true })}</p><p className="text-xs text-muted">{rc("pfNext12", { amount: money(rs.next12Egp, currency, locale, { compact: true }) })}</p></div>
+          <div><p className="text-muted">{rc("pfVerified")}</p><p className="num font-semibold">{pct(rs.verifiedShare, locale, 0)}</p></div>
+          <div><p className="text-muted">{rc("pfDisputed")}</p><p><Link href="/asset/facts" className="font-semibold text-gold underline underline-offset-4"><span className="num">{rs.disputed}</span></Link></p></div>
+        </section>
+      )}
 
       <section aria-label={pk("title")} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4 md:flex-row md:items-center md:justify-between">
         <div className="max-w-xl"><h2 className="font-display text-xl">{pk("title")}</h2><p className="text-sm text-muted">{pk("lead")}</p><p className="mt-1 text-xs text-muted">{pk("note")}</p></div>

@@ -27,7 +27,7 @@ BEGIN
   LOOP
     EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
     EXECUTE format('DROP POLICY IF EXISTS fin_read ON %I', t);
-    EXECUTE format($p$CREATE POLICY fin_read ON %I FOR SELECT TO app_user USING (app_role() IN ('investor','manager'))$p$, t);
+    EXECUTE format($p$CREATE POLICY fin_read ON %I FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'))$p$, t);
     EXECUTE format('DROP POLICY IF EXISTS fin_write ON %I', t);
     EXECUTE format($p$CREATE POLICY fin_write ON %I FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager')$p$, t);
   END LOOP;
@@ -121,7 +121,7 @@ REVOKE UPDATE, DELETE ON rent_payments FROM app_user;
 -- investors in src/lib/leasing.ts (row-level security is row-level, as for leases).
 ALTER TABLE lease_renewals ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS ren_read ON lease_renewals;
-CREATE POLICY ren_read ON lease_renewals FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+CREATE POLICY ren_read ON lease_renewals FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'));
 DROP POLICY IF EXISTS ren_write ON lease_renewals;
 CREATE POLICY ren_write ON lease_renewals FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
 
@@ -148,7 +148,7 @@ CREATE POLICY dist_write ON distributions FOR ALL TO app_user USING (app_role() 
 -- only managers change a work order. Costs are removed for investors in src/lib/work.ts.
 ALTER TABLE work_orders ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS wo_read ON work_orders;
-CREATE POLICY wo_read ON work_orders FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+CREATE POLICY wo_read ON work_orders FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'));
 DROP POLICY IF EXISTS wo_report ON work_orders;
 CREATE POLICY wo_report ON work_orders FOR INSERT TO app_user
   WITH CHECK (app_role() = 'manager' OR (app_role() = 'investor' AND reported_by = app_user_id() AND status = 'open' AND kind = 'maintenance'));
@@ -156,7 +156,7 @@ DROP POLICY IF EXISTS wo_update ON work_orders;
 CREATE POLICY wo_update ON work_orders FOR UPDATE TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
 ALTER TABLE work_order_events ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS woe_read ON work_order_events;
-CREATE POLICY woe_read ON work_order_events FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+CREATE POLICY woe_read ON work_order_events FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'));
 DROP POLICY IF EXISTS woe_write ON work_order_events;
 CREATE POLICY woe_write ON work_order_events FOR INSERT TO app_user WITH CHECK (app_role() IN ('investor','manager') AND actor_id = app_user_id());
 REVOKE UPDATE, DELETE ON work_order_events FROM app_user;
@@ -164,7 +164,7 @@ REVOKE UPDATE, DELETE ON work_order_events FROM app_user;
 -- Reports: statements are readable by the roles that see the portfolio; schedules and runs are managers' records.
 ALTER TABLE statements ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS stmt_read ON statements;
-CREATE POLICY stmt_read ON statements FOR SELECT TO app_user USING (app_role() IN ('investor','manager'));
+CREATE POLICY stmt_read ON statements FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'));
 DROP POLICY IF EXISTS stmt_write ON statements;
 CREATE POLICY stmt_write ON statements FOR INSERT TO app_user WITH CHECK (app_role() IN ('investor','manager') AND generated_by = app_user_id());
 DO $$
@@ -200,7 +200,7 @@ GRANT DELETE ON calendar_events TO app_user;
 -- Deals: managers run the pipeline. Investors read the deals shared with them, and those deals' timelines.
 ALTER TABLE deals ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS deals_read ON deals;
-CREATE POLICY deals_read ON deals FOR SELECT TO app_user USING (app_role() = 'manager' OR (app_role() = 'investor' AND shared = 1));
+CREATE POLICY deals_read ON deals FOR SELECT TO app_user USING (app_role() IN ('manager','analyst') OR (app_role() = 'investor' AND shared = 1));
 DROP POLICY IF EXISTS deals_write ON deals;
 CREATE POLICY deals_write ON deals FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
 ALTER TABLE deal_events ENABLE ROW LEVEL SECURITY;
@@ -221,3 +221,27 @@ DROP POLICY IF EXISTS users_self ON users;
 CREATE POLICY users_self ON users FOR UPDATE TO app_user USING (id = app_user_id()) WITH CHECK (id = app_user_id());
 REVOKE INSERT, UPDATE, DELETE ON users FROM app_user;
 GRANT UPDATE (name, name_ar, title, title_ar, prefs, last_seen_at) ON users TO app_user;
+
+-- The asset record. Investors, managers and analysts read it; managers change it; analysts review facts (status and
+-- note only, through column grants). Versions and facts are history: never rewritten or deleted.
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['portfolios','ownership_shares','buildings','units','asset_versions','asset_facts','installments']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS rec_read ON %I', t);
+    EXECUTE format($p$CREATE POLICY rec_read ON %I FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'))$p$, t);
+    EXECUTE format('DROP POLICY IF EXISTS rec_write ON %I', t);
+    EXECUTE format($p$CREATE POLICY rec_write ON %I FOR INSERT TO app_user WITH CHECK (app_role() = 'manager')$p$, t);
+  END LOOP;
+END $$;
+DROP POLICY IF EXISTS rec_update ON ownership_shares;
+CREATE POLICY rec_update ON ownership_shares FOR UPDATE TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+DROP POLICY IF EXISTS rec_update ON installments;
+CREATE POLICY rec_update ON installments FOR UPDATE TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+DROP POLICY IF EXISTS fact_review ON asset_facts;
+CREATE POLICY fact_review ON asset_facts FOR UPDATE TO app_user USING (app_role() IN ('analyst','manager')) WITH CHECK (app_role() IN ('analyst','manager'));
+REVOKE UPDATE, DELETE ON asset_versions FROM app_user;
+REVOKE UPDATE, DELETE ON asset_facts FROM app_user;
+GRANT UPDATE (status, review_note, reviewed_by, reviewed_at, superseded_at) ON asset_facts TO app_user;
