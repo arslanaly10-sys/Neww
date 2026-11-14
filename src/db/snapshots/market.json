@@ -1,0 +1,1801 @@
+{
+ "retrievedAt": "2026-11-14T16:40:34.314Z",
+ "sources": {
+  "worldbank": {
+   "obs": [
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2025",
+     "value": 118365995,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2024",
+     "value": 116538258,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2023",
+     "value": 114535772,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2022",
+     "value": 112618250,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2021",
+     "value": 110957008,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2020",
+     "value": 109315124,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2019",
+     "value": 107553158,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2018",
+     "value": 105682094,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2017",
+     "value": 103696057,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2016",
+     "value": 101644589,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2015",
+     "value": 99597342,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2014",
+     "value": 97528654,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2013",
+     "value": 95333553,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2012",
+     "value": 93161001,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2011",
+     "value": 91093059,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.POP.TOTL",
+     "label": "Population",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2010",
+     "value": 89196072,
+     "unit": "people",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2025",
+     "value": 42.9043204925248,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2024",
+     "value": 42.8004363938404,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2023",
+     "value": 42.7098115041919,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2022",
+     "value": 42.6325129008032,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2021",
+     "value": 42.5686062621468,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2020",
+     "value": 42.5181534630674,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2019",
+     "value": 42.4812027332648,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2018",
+     "value": 42.4577177449969,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2017",
+     "value": 42.4486008687179,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2016",
+     "value": 42.5210717266225,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2015",
+     "value": 42.6056314089048,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2014",
+     "value": 42.6825522284408,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2013",
+     "value": 42.7514277188751,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2012",
+     "value": 42.8118514138525,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2011",
+     "value": 42.8634168470177,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "SP.URB.TOTL.IN.ZS",
+     "label": "Urban population share",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2010",
+     "value": 42.9057175520154,
+     "unit": "%",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2025",
+     "value": 4.39201068570188,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2024",
+     "value": 2.3991692678251,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2023",
+     "value": 3.76028052279247,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2022",
+     "value": 6.58784560870467,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2021",
+     "value": 3.29064601193245,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2020",
+     "value": 3.55016483883115,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2019",
+     "value": 5.55209307084222,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2018",
+     "value": 5.33110861887155,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2017",
+     "value": 4.18122099961562,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2016",
+     "value": 4.34664345601914,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2015",
+     "value": 4.37201907781687,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2014",
+     "value": 2.91591188052836,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2013",
+     "value": 2.18546605363386,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2012",
+     "value": 2.22619979818487,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2011",
+     "value": 1.76457194806041,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "NY.GDP.MKTP.KD.ZG",
+     "label": "GDP growth",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2010",
+     "value": 5.14723485746742,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2025",
+     "value": 14.0735136645933,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2024",
+     "value": 28.2705899322082,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2023",
+     "value": 33.8847763115546,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2022",
+     "value": 13.8956609775177,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2021",
+     "value": 5.21404940513042,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2020",
+     "value": 5.04493288977538,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2019",
+     "value": 9.15279959324803,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2018",
+     "value": 14.4014657807421,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2017",
+     "value": 29.5066083940038,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2016",
+     "value": 13.8136062148289,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2015",
+     "value": 10.370490343517,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2014",
+     "value": 10.0702154687481,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2013",
+     "value": 9.4697198106492,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2012",
+     "value": 7.11172943343082,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2011",
+     "value": 10.0649259874818,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL.ZG",
+     "label": "Inflation, consumer prices",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2010",
+     "value": 11.2651882653185,
+     "unit": "% a year",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2025",
+     "value": 711.63038970895,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2024",
+     "value": 623.834899836024,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2023",
+     "value": 486.342894474661,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2022",
+     "value": 363.254813484487,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2021",
+     "value": 318.936481308266,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2020",
+     "value": 303.131077181708,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2019",
+     "value": 288.572774376262,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2018",
+     "value": 264.375055382558,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2017",
+     "value": 231.0941154279,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2016",
+     "value": 178.441948479441,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2015",
+     "value": 156.784372636979,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2014",
+     "value": 142.052800661665,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2013",
+     "value": 129.056530012879,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2012",
+     "value": 117.892445724817,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2011",
+     "value": 110.064925987481,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    },
+    {
+     "indicator": "FP.CPI.TOTL",
+     "label": "Consumer price index (2010 = 100)",
+     "location": "EGY",
+     "locationKind": "country",
+     "period": "2010",
+     "value": 100,
+     "unit": "index",
+     "currency": null,
+     "transform": "As published by the World Bank (annual); years without a value dropped."
+    }
+   ],
+   "error": "Not answered this time: PA.NUS.FCRF, FR.INR.LEND"
+  },
+  "worldpop": {
+   "obs": [
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-001",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 2796,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-001",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 29230,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-002",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 6601,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-002",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 34877,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-005",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 10668,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-005",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 62764,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-007",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 19972,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-007",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 137887,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-008",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 9113,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-008",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 78317,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-010",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 90,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-010",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 578,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-011",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 36,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-011",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 397,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-013",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 167756,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-013",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1168880,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-015",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 19649,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-015",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 604150,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-016",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 109692,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-016",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1202782,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-017",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 37649,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-017",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 802405,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-018",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 231210,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-018",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1679112,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-019",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 149275,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-019",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1388970,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-020",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 50927,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-020",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 517278,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-021",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 97234,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-021",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1165903,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-022",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 52135,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-022",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 391992,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-023",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 16963,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-023",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 314129,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-026",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 174,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-026",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1678,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-027",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 40,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-027",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 2847,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-028",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 50981,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-028",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 783436,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-029",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 231395,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-029",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1526036,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-030",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 77289,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-030",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 923988,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-003",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 7960,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-003",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 39964,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-004",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1173,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-004",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 27103,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-006",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 11160,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-006",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 62790,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-009",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 12704,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-009",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 114189,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-014",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 122702,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-014",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 951572,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-024",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 48680,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-024",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 324524,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-025",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 427,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-025",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 1214,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_1km",
+     "label": "People within 1 km",
+     "location": "A-012",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 86,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 1 km straight-line radius of the asset's recorded coordinates, rounded."
+    },
+    {
+     "indicator": "pop_3km",
+     "label": "People within 3 km",
+     "location": "A-012",
+     "locationKind": "asset",
+     "period": "2026",
+     "value": 492,
+     "unit": "people",
+     "transform": "WorldPop Global2 R2025A 100 m grid, people within a 3 km straight-line radius of the asset's recorded coordinates, rounded."
+    }
+   ]
+  },
+  "nasa_power": {
+   "obs": [
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.82,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "new-cairo",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.7127,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.82,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "sheikh-zayed",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.8334,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.29,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "6th-october",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 6.0286,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 20.48,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 65.7,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "new-capital",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.7127,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.82,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "maadi",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 6.078,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.82,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "zamalek",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.7127,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.82,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "heliopolis",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.7127,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.82,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "nasr-city",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.7127,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 20.68,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 131.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "north-coast",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.9297,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    },
+    {
+     "indicator": "temp_avg",
+     "label": "Average temperature",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 21.82,
+     "unit": "°C",
+     "transform": "NASA POWER climatology at the district centre, annual mean of T2M."
+    },
+    {
+     "indicator": "rain_year",
+     "label": "Rainfall",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 58.4,
+     "unit": "mm a year",
+     "transform": "NASA POWER PRECTOTCORR annual mean (mm a day) × 365."
+    },
+    {
+     "indicator": "solar",
+     "label": "Solar radiation",
+     "location": "dokki",
+     "locationKind": "district",
+     "period": "long-term average",
+     "value": 5.7127,
+     "unit": "kWh/m² a day",
+     "transform": "NASA POWER ALLSKY_SFC_SW_DWN annual mean."
+    }
+   ]
+  },
+  "osm": {
+   "error": "No Overpass server answered (The operation was aborted due to timeout)"
+  }
+ }
+}

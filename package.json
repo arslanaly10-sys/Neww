@@ -12,6 +12,7 @@
     "check:browser": "node scripts/stage1-check.cjs",
     "check:a11y": "node scripts/axe-check.cjs",
     "check:db": "tsx scripts/check-db.ts",
+    "snapshot:market": "NODE_USE_ENV_PROXY=1 tsx scripts/snapshot-market.ts",
     "prebuild": "node scripts/copy-maplibre.mjs",
     "predev": "node scripts/copy-maplibre.mjs",
     "check:stage2": "node scripts/stage2-check.cjs",
@@ -30,7 +31,8 @@
     "check:stage14": "node scripts/stage14-check.cjs",
     "check:stage15": "node scripts/stage15-check.cjs",
     "check:stage16": "node scripts/stage16-check.cjs",
-    "check:stage17": "node scripts/stage17-check.cjs"
+    "check:stage17": "node scripts/stage17-check.cjs",
+    "check:stage18": "node scripts/stage18-check.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

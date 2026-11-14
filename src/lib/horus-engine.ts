@@ -169,15 +169,20 @@ export function offPlanMethod(i: Intake, readyValue: number | null, today = DEMO
 }
 
 /** Prices of a past month, by the CPI path: how much today's figure would be in that month's money. */
-export function deflate(valueEgp: number, baseMonth: string) {
-  const pts = Object.entries(H.cpi.points).sort(([a], [b]) => a.localeCompare(b));
+export interface CpiSeries { source: string; published: string; points: Record<string, number> }
+/** The sample path, used until a real CPI series has been imported (stage 18 imports the World Bank's). */
+export const SAMPLE_CPI: CpiSeries = { source: H.cpi.source, published: H.cpi.published, points: { ...H.cpi.points } };
+
+export function deflate(valueEgp: number, baseMonth: string, cpi: CpiSeries = SAMPLE_CPI) {
+  const pts = Object.entries(cpi.points).sort(([a], [b]) => a.localeCompare(b));
   const at = (m: string) => { let v = pts[0][1]; for (const [k, x] of pts) if (k <= m) v = x; return v; };
   const d = at(DEMO_TODAY.slice(0, 7)) / at(baseMonth);
   return { valueEgp: round(valueEgp / d), deflator: r3(d) };
 }
 
 /** Run every method that fits, reconcile them, and say how sure the result is and why. */
-export function runHorus(i: Intake, sales: Sale[], market: Market, sources: { market: { label: string; date: string | null } }, today = DEMO_TODAY): RunResult {
+export function runHorus(i: Intake, sales: Sale[], market: Market, sources: { market: { label: string; date: string | null }; cpi?: CpiSeries }, today = DEMO_TODAY): RunResult {
+  const cpi = sources.cpi ?? SAMPLE_CPI;
   const Wt = H.weights;
   const local = i.districtId !== "other" && !!DISTRICT_PPSQM[i.districtId];
   const isLand = i.type === "land";
@@ -244,14 +249,14 @@ export function runHorus(i: Intake, sales: Sale[], market: Market, sources: { ma
     drivers.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
   }
   const baseMonth = i.purchaseDate ? i.purchaseDate.slice(0, 7) : "2024-01";
-  const real = deflate(value, baseMonth);
+  const real = deflate(value, baseMonth, cpi);
   const compSources = [...new Map(used.map((c) => [c.source, c.soldOn])).entries()].map(([label, date]) => ({ id: `comps:${label}`, label, date: used.filter((c) => c.source === label).map((c) => c.soldOn).sort().at(-1) ?? date, kind: "comparables" }));
   return {
     modelVersion: H.modelVersion, assumptionsVersion: H.version, asOf: today, currency: "EGP",
     methods, comps: used, evidence: ev, valueEgp: round(value), lowEgp: round(low), highEgp: round(high),
     confidence: { score, level, factors }, missing,
-    views: { usd: { value: Math.round(value / SAMPLE_FX_EGP_PER_USD), low: Math.round(low / SAMPLE_FX_EGP_PER_USD), high: Math.round(high / SAMPLE_FX_EGP_PER_USD), rate: SAMPLE_FX_EGP_PER_USD }, real: { baseMonth, valueEgp: real.valueEgp, deflator: real.deflator, source: H.cpi.source, published: H.cpi.published } },
+    views: { usd: { value: Math.round(value / SAMPLE_FX_EGP_PER_USD), low: Math.round(low / SAMPLE_FX_EGP_PER_USD), high: Math.round(high / SAMPLE_FX_EGP_PER_USD), rate: SAMPLE_FX_EGP_PER_USD }, real: { baseMonth, valueEgp: real.valueEgp, deflator: real.deflator, source: cpi.source, published: cpi.published } },
     drivers: drivers.slice(0, 5),
-    sources: [...compSources, { id: "market", label: sources.market.label, date: sources.market.date, kind: "index" }, { id: "assumptions", label: `${H.version} (${H.note})`, date: null, kind: "assumptions" }, { id: "cpi", label: H.cpi.source, date: H.cpi.published, kind: "cpi" }],
+    sources: [...compSources, { id: "market", label: sources.market.label, date: sources.market.date, kind: "index" }, { id: "assumptions", label: `${H.version} (${H.note})`, date: null, kind: "assumptions" }, { id: "cpi", label: cpi.source, date: cpi.published, kind: "cpi" }],
   };
 }

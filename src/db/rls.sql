@@ -263,3 +263,17 @@ ALTER TABLE intakes ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS ik_read ON intakes;
 CREATE POLICY ik_read ON intakes FOR SELECT TO app_user USING (app_role() IN ('manager','analyst'));
 REVOKE INSERT, UPDATE, DELETE ON intakes FROM app_user;
+
+-- Market data: the registry and observations are public context, readable by every signed-in role. Imports run on
+-- the privileged connection after the administrator's permission check (or the scheduler).
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['data_sources','market_observations','import_runs']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS md_read ON %I', t);
+    EXECUTE format($p$CREATE POLICY md_read ON %I FOR SELECT TO app_user USING (true)$p$, t);
+  END LOOP;
+END $$;
+REVOKE INSERT, UPDATE, DELETE ON data_sources, market_observations, import_runs FROM app_user;

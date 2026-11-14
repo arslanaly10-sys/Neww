@@ -35,6 +35,7 @@ export const PERMISSIONS = {
   "audit.verify": { investor: false, manager: false, analyst: false, admin: true },
   "horus.run": { investor: false, manager: true, analyst: true, admin: false },
   "horus.review": { investor: false, manager: false, analyst: true, admin: false },
+  "sources.manage": { investor: false, manager: false, analyst: false, admin: true },
   "records.edit": { investor: false, manager: true, analyst: false, admin: false },
   "records.verify": { investor: false, manager: false, analyst: true, admin: false },
   "users.manage": { investor: false, manager: false, analyst: false, admin: true },
@@ -45,14 +46,14 @@ export const PERMISSIONS = {
 export type Permission = keyof typeof PERMISSIONS;
 export const can = (role: Role, p: Permission) => PERMISSIONS[p][role];
 
-export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "calendar", "finance", "valuation", "deals", "reports", "notifications", "settings", "users", "governance"] as const;
+export const AREAS = ["overview", "portfolio", "asset", "market", "leases", "maintenance", "calendar", "finance", "valuation", "deals", "reports", "notifications", "settings", "users", "sources", "governance"] as const;
 export type Area = (typeof AREAS)[number];
 /** The sidebar's sections, in order. Every area belongs to exactly one. */
 export const AREA_GROUPS: { id: "portfolio" | "operations" | "money" | "records"; areas: Area[] }[] = [
   { id: "portfolio", areas: ["overview", "portfolio", "asset", "market"] },
   { id: "operations", areas: ["leases", "maintenance", "calendar"] },
   { id: "money", areas: ["finance", "valuation", "deals"] },
-  { id: "records", areas: ["reports", "notifications", "settings", "users", "governance"] },
+  { id: "records", areas: ["reports", "notifications", "settings", "users", "sources", "governance"] },
 ];
 export const AREA_ACCESS: Record<Area, Role[]> = {
   overview: ["investor", "manager", "analyst", "admin"],
@@ -65,6 +66,7 @@ export const AREA_ACCESS: Record<Area, Role[]> = {
   notifications: ["investor", "manager", "analyst", "admin"],
   settings: ["investor", "manager", "analyst", "admin"],
   users: ["admin"],
+  sources: ["manager", "analyst", "admin"],
   finance: ["investor", "manager"],
   valuation: ["investor", "manager", "analyst"],
   deals: ["investor", "manager", "analyst"],

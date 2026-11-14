@@ -13,6 +13,7 @@ import { NoAccess } from "@/components/no-access";
 import { HashTabs } from "@/components/hash-tabs";
 import { EditAsset, FactReview, PayInstallment } from "@/components/record/controls";
 import { StartRun } from "@/components/horus/run-controls";
+import { assetContext } from "@/lib/market-data/service";
 import { GrowBar, Stagger, StaggerItem } from "@/components/motion";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -163,6 +164,29 @@ export default async function AssetRecordPage({ params }: { params: Promise<{ lo
     </section>
   );
 
+  const ctx = await assetContext(user, a.id);
+  const md = await getTranslations("md");
+  const ov = (ind: string) => ctx?.obs.find((o) => o.indicator === ind) ?? null;
+  const ctxRow = (ind: string, label: string, show: (v: number) => string) => { const o = ov(ind); return o ? (
+    <li key={ind} className="rounded-lg border border-line p-3"><p className="text-muted">{label}</p><p className="num text-lg font-semibold">{show(o.value)}</p><p className="text-xs text-muted">{md(`src_${o.sourceId}` as "src_worldbank")}{listSep(locale)}{dateFmt(o.retrievedAt.slice(0, 10), locale)}{listSep(locale)}{o.licence}</p><p className="text-xs text-muted">{o.transform}</p></li>
+  ) : null; };
+  const location = (
+    <section aria-labelledby="lo-h" className="space-y-3">
+      <h2 id="lo-h" className="font-display text-2xl">{md("locTitle")}</h2>
+      <p className="max-w-2xl text-sm text-muted">{md("locLead")}</p>
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+        {ctxRow("pop_1km", md("cPop1"), (v) => int(v, locale))}
+        {ctxRow("pop_3km", md("cPop3"), (v) => int(v, locale))}
+        {ctxRow("temp_avg", md("cTemp"), (v) => `${v.toFixed(1)} °C`)}
+        {ctxRow("rain_year", md("cRain"), (v) => `${int(v, locale)} mm`)}
+        {ctxRow("solar", md("cSolar"), (v) => `${v.toFixed(2)} kWh/m²`)}
+      </ul>
+      {ctx?.obs.some((o) => o.sourceId === "osm") ? (
+        <ul className="grid gap-2 text-sm sm:grid-cols-3">{ctx.obs.filter((o) => o.sourceId === "osm").map((o) => <li key={o.indicator} className="flex justify-between rounded-md border border-line px-3 py-2"><span>{md(`osm_${o.indicator.slice(4)}` as "osm_schools")}</span><span className="num">{o.value}</span></li>)}</ul>
+      ) : <p className="text-sm text-muted">{md("osmMissing", { error: ctx?.osm?.lastError ?? md("never") })}</p>}
+      <p className="text-xs text-muted">{md("straightLine")}</p>
+    </section>
+  );
   const plan = r.planTotals && (
     <section aria-labelledby="pl-h" className="space-y-3">
       <h2 id="pl-h" className="font-display text-2xl">{t("plan")}</h2>
@@ -206,6 +230,7 @@ export default async function AssetRecordPage({ params }: { params: Promise<{ lo
           { id: "structure", label: t("tabStructure"), count: r.units.length, content: structure },
           { id: "facts", label: t("tabFacts"), count: r.factCount - r.verified, content: facts },
           { id: "history", label: t("tabHistory"), count: r.versions.length, content: history },
+          { id: "location", label: md("tabLocation"), content: location },
           ...(plan ? [{ id: "plan", label: t("tabPlan"), content: plan }] : []),
         ]} />
       </Card>

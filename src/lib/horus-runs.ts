@@ -12,6 +12,7 @@ import { IntakeSchema, PUBLIC_TYPES, runHorus, type Intake, type RunResult, type
 import { notify } from "./notify";
 import { rateLimited } from "./horus/gateway";
 import { submitLead } from "./leads";
+import { importedCpi } from "./market-data/service";
 import type { CurrentUser } from "./session";
 
 /**
@@ -27,7 +28,8 @@ async function evidence(db: Reader) {
   const sales = (await db.select().from(comparableSales)) as Sale[];
   const series = await db.select().from(marketSeries);
   const [src] = await db.select().from(marketSources).where(eq(marketSources.id, "ms-price-index"));
-  return { sales, market: makeMarket(series), src: { market: { label: src?.title ?? "District price index (sample)", date: src?.publishedOn ?? null } } };
+  const cpi = await importedCpi(db);
+  return { sales, market: makeMarket(series), src: { market: { label: src?.title ?? "District price index (sample)", date: src?.publishedOn ?? null }, ...(cpi ? { cpi } : {}) } };
 }
 
 export type IntakeError = "invalid" | "rate_limit" | "not_found";

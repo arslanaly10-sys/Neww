@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { asc } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { districts, marketSeries, marketSources } from "@/db/schema";
@@ -34,7 +35,7 @@ export default async function Market({ params }: { params: Promise<{ locale: str
 
   return (
     <div>
-      <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><span className="flex flex-wrap items-center gap-3"><Link href="/market/intelligence" className="tap text-sm text-gold underline underline-offset-4">{(await getTranslations("md"))("pulseTitle")}</Link><SampleBadge /></span></PageHeader>
 
       <Card className="mb-6 p-4 text-sm">
         <div className="flex flex-wrap items-center gap-2"><Badge tone="gold">{t("synthetic")}</Badge><span className="font-semibold">{ar ? idx.titleAr : idx.title}</span></div>

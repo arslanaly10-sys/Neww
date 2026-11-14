@@ -9,6 +9,7 @@ import {
   jsonb,
   primaryKey,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -711,4 +712,61 @@ export const intakes = pgTable("intakes", {
   contactEmail: text("contact_email"),
   leadId: text("lead_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/**
+ * Where outside data comes from. Each source belongs to one of the market-intelligence layers (official economic
+ * context, location context, climate and physical context, earth observation, permissioned property data), says how
+ * it is reached (an API, a published file someone imports, a partnership still to agree, or planned), its licence,
+ * and how fresh the copy here is.
+ */
+export const dataSources = pgTable("data_sources", {
+  id: text("id").primaryKey(), // worldbank | worldpop | nasa_power | osm | capmas_cpi | cbe_fx | ...
+  name: text("name").notNull(),
+  nameAr: text("name_ar").notNull(),
+  layer: text("layer").notNull(), // official | location | climate | earth | property
+  access: text("access").notNull(), // api | file | partnership | planned | internal
+  licence: text("licence").notNull(),
+  homepage: text("homepage").notNull(),
+  cadenceDays: integer("cadence_days"), // how often a fresh copy is expected
+  coverage: text("coverage").notNull(),
+  coverageAr: text("coverage_ar").notNull(),
+  note: text("note").notNull(),
+  noteAr: text("note_ar").notNull(),
+  lastImportAt: timestamp("last_import_at", { withTimezone: true }),
+  lastStatus: text("last_status"), // ok | failed | never
+  lastRows: integer("last_rows"),
+  lastError: text("last_error"),
+});
+
+/**
+ * One observed value from an outside source, with everything needed to judge it: what it measures, where, for which
+ * period, in what unit and currency, when it was fetched, under what licence, and the steps taken on the way in.
+ */
+export const marketObservations = pgTable("market_observations", {
+  id: text("id").primaryKey(),
+  sourceId: text("source_id").notNull().references(() => dataSources.id),
+  indicator: text("indicator").notNull(),
+  label: text("label").notNull(),
+  location: text("location").notNull(), // EGY, a district id or an asset id
+  locationKind: text("location_kind").notNull(), // country | district | asset
+  period: text("period").notNull(), // 2024, 2026-05, 1991-2020
+  value: numeric("value", { precision: 20, scale: 4 }).notNull(),
+  unit: text("unit").notNull(),
+  currency: text("currency"),
+  retrievedAt: timestamp("retrieved_at", { withTimezone: true }).notNull(),
+  licence: text("licence").notNull(),
+  transform: text("transform").notNull(),
+}, (t) => [uniqueIndex("obs_key").on(t.sourceId, t.indicator, t.location, t.period), index("obs_location").on(t.location)]);
+
+/** Every import attempt, successful or not. */
+export const importRuns = pgTable("import_runs", {
+  id: text("id").primaryKey(),
+  sourceId: text("source_id").notNull().references(() => dataSources.id),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  status: text("status").notNull(), // ok | failed
+  rows: integer("rows").notNull().default(0),
+  error: text("error"),
+  triggeredBy: text("triggered_by").notNull(), // a user id, "schedule" or "seed"
 });

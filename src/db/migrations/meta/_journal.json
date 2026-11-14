@@ -85,6 +85,13 @@
       "when": 1794668185236,
       "tag": "0011_stage17_horus",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794673513015,
+      "tag": "0012_stage18_market_data",
+      "breakpoints": true
     }
   ]
 }
