@@ -116,6 +116,12 @@ export async function seed(db: DB) {
     saleRows.push({
       id: `S-${String(i + 1).padStart(4, "0")}`, districtId: d.id, type, areaSqm: area, floor, finish, yearBuilt: built,
       soldOn, priceEgp: price, compound: compounds[Math.floor(r() * compounds.length)],
+      // Evidence mix, fixed by position so the random sequence (and every other sample figure) is unchanged:
+      // most are registered transactions, some are signed contracts, a third are asking prices from listings.
+      evidenceKind: i % 20 < 11 ? "transaction" : i % 20 < 14 ? "signed" : "asking",
+      paymentTerms: i % 3 === 0 ? "installments" : "cash",
+      source: i % 20 < 11 ? "Sample registry extract (fictional)" : i % 20 < 14 ? "Sample developer contract register (fictional)" : "Sample broker listings (fictional)",
+      sourceDate: soldOn,
     });
   }
   await db.insert(t.comparableSales).values(saleRows);

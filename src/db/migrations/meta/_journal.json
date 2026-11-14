@@ -78,6 +78,13 @@
       "when": 1794645823115,
       "tag": "0010_stage16_asset_record",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794668185236,
+      "tag": "0011_stage17_horus",
+      "breakpoints": true
     }
   ]
 }

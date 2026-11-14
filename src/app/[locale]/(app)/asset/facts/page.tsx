@@ -25,7 +25,7 @@ export default async function FactQueuePage({ params }: { params: Promise<{ loca
   const q = (await factQueue(user))!;
   const ar = locale === "ar";
   const verify = can(user.role, "records.verify");
-  const val = (field: string, v: string) => field === "value_egp" ? money(Number(v), currency, locale, { fx: SAMPLE_FX_EGP_PER_USD }) : field.endsWith("sqm") ? `${int(Number(v), locale)} m²` : field === "finish" ? fi(v as "luxury") : field === "occupancy" ? st(v as "let") : field === "status" ? t(`as_${v}` as "as_ready") : field === "title_status" && ds.has(v) ? ds(v as "verified") : field === "permitted_use" && t.has(`use_${v}`) ? t(`use_${v}` as "use_residential") : v;
+  const val = (field: string, v: string) => field === "value_egp" || field === "horus_estimate" ? money(Number(v), currency, locale, { fx: SAMPLE_FX_EGP_PER_USD }) : field.endsWith("sqm") ? `${int(Number(v), locale)} m²` : field === "finish" ? fi(v as "luxury") : field === "occupancy" ? st(v as "let") : field === "status" ? t(`as_${v}` as "as_ready") : field === "title_status" && ds.has(v) ? ds(v as "verified") : field === "permitted_use" && t.has(`use_${v}`) ? t(`use_${v}` as "use_residential") : v;
   const disputed = q.filter((f) => f.status === "disputed").length;
   return (
     <div className="space-y-6">

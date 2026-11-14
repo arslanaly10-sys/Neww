@@ -16,7 +16,7 @@ import type { CurrentUser } from "./session";
  * and analysts verify or dispute it. Everything runs under the reader's row-level security.
  */
 const sess = (u: CurrentUser) => ({ userId: u.id, role: u.role });
-export const FACT_FIELDS = ["area_sqm", "plot_area_sqm", "year_built", "finish", "occupancy", "status", "title_status", "permitted_use", "value_egp"] as const;
+export const FACT_FIELDS = ["area_sqm", "plot_area_sqm", "year_built", "finish", "occupancy", "status", "title_status", "permitted_use", "value_egp", "horus_estimate"] as const;
 export const SOURCE_KINDS = ["document", "survey", "owner", "valuation", "import", "manual"] as const;
 const EDITABLE = ["name", "nameAr", "areaSqm", "plotAreaSqm", "floor", "finish", "yearBuilt", "occupancy", "status", "deliveryOn"] as const;
 const FIELD_OF: Partial<Record<(typeof EDITABLE)[number], string>> = { areaSqm: "area_sqm", plotAreaSqm: "plot_area_sqm", yearBuilt: "year_built", finish: "finish", occupancy: "occupancy", status: "status" };

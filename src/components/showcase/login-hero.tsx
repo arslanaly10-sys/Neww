@@ -1,7 +1,8 @@
 "use client";
 import { Fragment, useRef } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { BrandEye } from "../brand";
 
 interface Chip { label: string; title: string; note: string }
@@ -29,7 +30,7 @@ function Line({ text, delay, className }: { text: string; delay: number; classNa
  * around it, and a headline that rises word by word. The eye leans toward the pointer. With reduced motion everything
  * is shown at rest.
  */
-export function LoginHero({ label, lineA, lineB, lead, cta, live, chips }: { label: string; lineA: string; lineB: string; lead: string; cta: string; live: string; chips: Chip[] }) {
+export function LoginHero({ label, lineA, lineB, lead, cta, live, chips, evaluate }: { label: string; lineA: string; lineB: string; lead: string; cta: string; live: string; chips: Chip[]; evaluate?: string }) {
   const reduce = useReducedMotion();
   const stage = useRef<HTMLDivElement>(null);
   const px = useMotionValue(0), py = useMotionValue(0);
@@ -61,7 +62,8 @@ export function LoginHero({ label, lineA, lineB, lead, cta, live, chips }: { lab
         </h1>
         <motion.p data-anim className="mt-6 max-w-md text-lg text-muted" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE, delay: 0.8 }}>{lead}</motion.p>
         <motion.div data-anim className="mt-8 flex flex-wrap items-center gap-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE, delay: 0.95 }}>
-          <motion.a href="#signin" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} className="inline-flex min-h-12 items-center gap-2 rounded-md bg-gold-fill px-6 text-sm font-semibold text-on-gold shadow-md">
+          {evaluate && <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}><Link href="/evaluate" className="inline-flex min-h-12 items-center gap-2 rounded-md bg-gold-fill px-6 text-sm font-semibold text-on-gold shadow-md">{evaluate}<ArrowRight aria-hidden="true" size={16} className="rtl:rotate-180" /></Link></motion.div>}
+          <motion.a href="#signin" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} className={evaluate ? "inline-flex min-h-12 items-center gap-2 rounded-md border border-gold-fill/70 px-5 text-sm font-semibold text-gold" : "inline-flex min-h-12 items-center gap-2 rounded-md bg-gold-fill px-6 text-sm font-semibold text-on-gold shadow-md"}>
             {cta}<ArrowDown aria-hidden="true" size={16} />
           </motion.a>
           <span className="flex items-center gap-2 text-xs text-muted">

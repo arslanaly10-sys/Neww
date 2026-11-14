@@ -245,3 +245,21 @@ CREATE POLICY fact_review ON asset_facts FOR UPDATE TO app_user USING (app_role(
 REVOKE UPDATE, DELETE ON asset_versions FROM app_user;
 REVOKE UPDATE, DELETE ON asset_facts FROM app_user;
 GRANT UPDATE (status, review_note, reviewed_by, reviewed_at, superseded_at) ON asset_facts TO app_user;
+
+-- HORUS valuation runs: asset runs are read by investors, managers and analysts; public intake runs (no asset) only
+-- by managers and analysts. Managers and analysts start asset runs; the review fields change through column grants.
+ALTER TABLE valuation_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS vr_read ON valuation_runs;
+CREATE POLICY vr_read ON valuation_runs FOR SELECT TO app_user
+  USING (app_role() IN ('manager','analyst') OR (app_role() = 'investor' AND asset_id IS NOT NULL));
+DROP POLICY IF EXISTS vr_insert ON valuation_runs;
+CREATE POLICY vr_insert ON valuation_runs FOR INSERT TO app_user WITH CHECK (app_role() IN ('manager','analyst') AND created_by = app_user_id());
+DROP POLICY IF EXISTS vr_review ON valuation_runs;
+CREATE POLICY vr_review ON valuation_runs FOR UPDATE TO app_user USING (app_role() = 'analyst') WITH CHECK (app_role() = 'analyst');
+REVOKE UPDATE, DELETE ON valuation_runs FROM app_user;
+GRANT UPDATE (status, reviewed_by, review_note, reviewed_at) ON valuation_runs TO app_user;
+-- Intakes come from the public page, on the privileged connection. Managers and analysts read them.
+ALTER TABLE intakes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ik_read ON intakes;
+CREATE POLICY ik_read ON intakes FOR SELECT TO app_user USING (app_role() IN ('manager','analyst'));
+REVOKE INSERT, UPDATE, DELETE ON intakes FROM app_user;

@@ -173,6 +173,10 @@ export const comparableSales = pgTable(
     soldOn: date("sold_on").notNull(),
     priceEgp: bigint("price_egp", { mode: "number" }).notNull(),
     compound: text("compound").notNull(),
+    evidenceKind: text("evidence_kind").notNull().default("transaction"), // transaction (registered sale) | signed (contract, not yet registered) | asking (listing)
+    paymentTerms: text("payment_terms").notNull().default("cash"), // cash | installments
+    source: text("source").notNull().default("Sample registry extract (fictional)"),
+    sourceDate: date("source_date"),
   },
   (t) => [index("sales_district_type_idx").on(t.districtId, t.type)],
 );
@@ -671,3 +675,40 @@ export const installments = pgTable("installments", {
   amountEgp: bigint("amount_egp", { mode: "number" }).notNull(),
   paidOn: date("paid_on"),
 }, (t) => [index("installments_asset").on(t.assetId, t.seq)]);
+
+/**
+ * A HORUS valuation run. It keeps everything needed to explain the result later: the input snapshot, each method's
+ * workings, the comparables with their adjustments, the assumptions and model version, the data sources and their
+ * dates, and the reviewer's decision. Runs are never edited; a new run is made instead.
+ */
+export const valuationRuns = pgTable("valuation_runs", {
+  id: text("id").primaryKey(), // VR-<random>
+  assetId: text("asset_id").references(() => assets.id), // null for a public intake
+  intakeId: text("intake_id"),
+  inputs: jsonb("inputs").notNull(),
+  result: jsonb("result").notNull(),
+  valueEgp: bigint("value_egp", { mode: "number" }).notNull(),
+  lowEgp: bigint("low_egp", { mode: "number" }).notNull(),
+  highEgp: bigint("high_egp", { mode: "number" }).notNull(),
+  confidence: integer("confidence").notNull(), // 0-100
+  modelVersion: text("model_version").notNull(),
+  assumptionsVersion: text("assumptions_version").notNull(),
+  status: text("status").notNull(), // illustrative (public) | in_review | signed_off | returned
+  createdBy: text("created_by").notNull(), // user id, or "public"
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  reviewedBy: text("reviewed_by"),
+  reviewNote: text("review_note"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+}, (t) => [index("valuation_runs_asset").on(t.assetId, t.createdAt)]);
+
+/** A public HORUS questionnaire: the answers, the illustrative run they produced, and contact details if given. */
+export const intakes = pgTable("intakes", {
+  id: text("id").primaryKey(), // IK-<random>, unguessable: it is the link to the result
+  answers: jsonb("answers").notNull(),
+  runId: text("run_id"),
+  locale: text("locale").notNull(),
+  contactName: text("contact_name"),
+  contactEmail: text("contact_email"),
+  leadId: text("lead_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});

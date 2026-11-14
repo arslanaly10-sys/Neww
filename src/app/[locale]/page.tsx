@@ -45,7 +45,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
         <LangToggle />
       </header>
       <main id="main" className="isolate mx-auto w-full max-w-6xl flex-1 px-4 pb-16 pt-10 md:pt-16">
-        <LoginHero label={b("tagline")} lineA={lg("heroA")} lineB={lg("heroB")} lead={lg("heroLead")} cta={lg("heroCta")} live={lg("heroLive")}
+        <LoginHero label={b("tagline")} lineA={lg("heroA")} lineB={lg("heroB")} lead={lg("heroLead")} cta={lg("heroCta")} live={lg("heroLive")} evaluate={lg("heroEvaluate")}
           chips={[{ label: lg("chip1Label"), title: lg("chip1Title"), note: lg("chip1Note", { n: nAssets }) }, { label: lg("chip2Label"), title: lg("chip2Title"), note: lg("chip2Note") }, { label: lg("chip3Label"), title: lg("chip3Title"), note: lg("chip3Note") }]} />
         <p className="mt-10 flex items-center gap-2 text-sm text-gold"><HorusGlyph size={18} />{b("triad")}. {b("aiLine")}.</p>
         <Reveal delay={0.16}>

@@ -33,6 +33,8 @@ export const PERMISSIONS = {
   "governance.view": { investor: true, manager: true, analyst: true, admin: true },
   "audit.view": { investor: false, manager: false, analyst: false, admin: true },
   "audit.verify": { investor: false, manager: false, analyst: false, admin: true },
+  "horus.run": { investor: false, manager: true, analyst: true, admin: false },
+  "horus.review": { investor: false, manager: false, analyst: true, admin: false },
   "records.edit": { investor: false, manager: true, analyst: false, admin: false },
   "records.verify": { investor: false, manager: false, analyst: true, admin: false },
   "users.manage": { investor: false, manager: false, analyst: false, admin: true },

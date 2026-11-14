@@ -131,7 +131,7 @@ export default async function Valuation({ params, searchParams }: { params: Prom
 
   return (
     <div>
-      <PageHeader animated title={t("title")} lead={t("lead")}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead")}><span className="flex flex-wrap items-center gap-3"><Link href="/valuation/runs" className="tap text-sm text-gold underline underline-offset-4">{(await getTranslations("hv"))("runsTitle")}</Link><SampleBadge /></span></PageHeader>
       <HashTabs label={t("title")} tabs={[
         { id: "run", label: t("tabRun"), content: <Workbench districts={ds.map((d) => ({ id: d.id, name: d.name, nameAr: d.nameAr }))} assets={options}
           initialAssetId={options.find((o) => o.id === asset)?.id ?? null} currency={currency} fx={fx} role={user.role} threshold={VALUATION_ASSUMPTIONS.adjustment.secondApproverAbovePct} /> },

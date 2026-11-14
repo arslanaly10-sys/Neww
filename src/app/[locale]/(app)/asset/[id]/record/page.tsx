@@ -12,6 +12,7 @@ import { Badge, Card, PageHeader } from "@/components/ui";
 import { NoAccess } from "@/components/no-access";
 import { HashTabs } from "@/components/hash-tabs";
 import { EditAsset, FactReview, PayInstallment } from "@/components/record/controls";
+import { StartRun } from "@/components/horus/run-controls";
 import { GrowBar, Stagger, StaggerItem } from "@/components/motion";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -37,7 +38,7 @@ export default async function AssetRecordPage({ params }: { params: Promise<{ lo
   const edit = can(user.role, "records.edit");
   const verify = can(user.role, "records.verify");
   const factValue = (field: string, v: string) => {
-    if (field === "value_egp") return M(Number(v));
+    if (field === "value_egp" || field === "horus_estimate") return M(Number(v));
     if (field.endsWith("sqm")) return `${int(Number(v), locale)} m²`;
     if (field === "finish") return fi(v as "luxury");
     if (field === "occupancy") return st(v as "let");
@@ -90,6 +91,7 @@ export default async function AssetRecordPage({ params }: { params: Promise<{ lo
           ))}
         </Stagger>
       </div>
+      {can(user.role, "horus.run") && <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gold-fill/50 p-3 text-sm"><StartRun assetId={a.id} /><span className="text-muted">{t("runHelp")}</span></div>}
       {edit && <EditAsset id={a.id} v={{ name: a.name, nameAr: a.nameAr, areaSqm: a.areaSqm, plotAreaSqm: a.plotAreaSqm, floor: a.floor, finish: a.finish, yearBuilt: a.yearBuilt, occupancy: a.occupancy, status: a.status, deliveryOn: a.deliveryOn }} />}
     </section>
   );

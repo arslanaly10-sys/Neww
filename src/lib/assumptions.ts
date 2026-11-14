@@ -84,3 +84,25 @@ export const ALERT_ASSUMPTIONS = {
   /** Who may see each kind. Vacancy cost and valuation drift reveal income or valuation work, so they are manager-only. */
   visibleTo: { lease_renewal: ["investor", "manager"], missing_document: ["investor", "manager"], valuation_drift: ["manager"], vacancy_cost: ["manager"] },
 } as const;
+
+/**
+ * HORUS valuation, version 2: several explicit methods, reconciled. Every coefficient below is a SAMPLE assumption
+ * for the demo, not a calibrated market figure. Changing any value means a new version string.
+ */
+export const HORUS_ASSUMPTIONS = {
+  version: "HA-2.0.0",
+  modelVersion: "HORUS-2.0.0",
+  note: "Comparable sales with itemised adjustments, income capitalisation, depreciated cost and off-plan discounting. Sample coefficients.",
+  comps: { count: 8, horizonMonths: 24, sizeElasticity: 0.08, evidenceWeight: { transaction: 1, signed: 0.85, asking: 0.6 }, askingToTransaction: -0.06, installmentsToCash: -0.08, otherDistrictPenalty: 0.6 },
+  amenityPremium: { parking: 0.02, view: 0.04, garden: 0.03, pool: 0.04, security: 0.01, elevator: 0.01 },
+  amenityCap: 0.1,
+  clinicPremium: 0.05,
+  income: { vacancy: { residential: 0.05, commercial: 0.1 }, opexShare: 0.12, rentGrowth: 0.08, exitCapUplift: 0.005, horizonYears: 5, discountUplift: 0.03 },
+  cost: { replacementPerSqm: { core_shell: 12000, semi_finished: 19000, fully_finished: 27000, luxury: 40000 }, depreciationPerYear: 0.015, depreciationCap: 0.55, landFactor: 0.34 },
+  offPlan: { annualDiscount: 0.12, installmentDiscount: 0.2 },
+  weights: { comps: 0.6, compsThin: 0.3, income: 0.3, incomeCommercial: 0.4, costVilla: 0.25, costLand: 1, costOther: 0.1 },
+  confidence: { highFrom: 70, mediumFrom: 45 },
+  range: { base: 0.06, perPointBelow100: 0.0025, max: 0.3 },
+  // Sample CPI path (index, January 2023 = 100) standing in for CAPMAS urban CPI until the import of stage 18.
+  cpi: { source: "CAPMAS urban CPI (sample path, not the published series)", published: "2026-10-10", points: { "2023-01": 100, "2024-01": 132.5, "2025-01": 165.8, "2026-01": 187.4, "2026-10": 203.1 } },
+} as const;
