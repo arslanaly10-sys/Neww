@@ -13,6 +13,7 @@ import { KPI5, Stat } from "@/components/stat";
 import { Stagger } from "@/components/motion";
 import { NewWork, NextStep } from "@/components/work/controls";
 import { titleFrom } from "@/lib/meta";
+import { OpsNav } from "@/components/ops/subnav";
 
 export const generateMetadata = titleFrom("work");
 const P_TONE = { urgent: "danger", high: "gold", normal: "muted", low: "muted" } as const;
@@ -57,6 +58,7 @@ export default async function MaintenancePage({ params, searchParams }: { params
   return (
     <div className="space-y-6">
       <PageHeader animated title={t("title")} lead={manage ? t("lead") : t("leadInvestor")}><SampleBadge /></PageHeader>
+      <OpsNav current="board" role={user.role} />
       <Stagger className={KPI5}>
         <Stat label={t("kOpen")}><span className="num">{int(active.length, locale)}</span></Stat>
         <Stat label={t("kOverdue")}><span className={cn("num", active.some((w) => w.overdue) && "text-danger")}>{int(active.filter((w) => w.overdue).length, locale)}</span></Stat>

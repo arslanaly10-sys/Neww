@@ -5,7 +5,8 @@ import { BUCKETS } from "@/lib/leasing-calc";
 import { DEMO_TODAY, SAMPLE_FX_EGP_PER_USD } from "@/lib/assumptions";
 import { dateFmt, int, listSep, money, pct } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
-import { Badge, Card, PageHeader } from "@/components/ui";
+import { Badge, Card, PageHeader, buttonStyles } from "@/components/ui";
+import { can } from "@/lib/permissions";
 import { SampleBadge } from "@/components/fig";
 import { NoAccess } from "@/components/no-access";
 import { HashTabs } from "@/components/hash-tabs";
@@ -142,7 +143,7 @@ export default async function LeasesPage({ params }: { params: Promise<{ locale:
 
   return (
     <div>
-      <PageHeader animated title={t("title")} lead={t("lead", { tenants: data.tenants.length, leases: leaseCount })}><SampleBadge /></PageHeader>
+      <PageHeader animated title={t("title")} lead={t("lead", { tenants: data.tenants.length, leases: leaseCount })}><span className="flex flex-wrap items-center gap-2"><SampleBadge />{can(user.role, "rent.manage") && <Link href="/leases/einvoices" className={buttonStyles({ variant: "outline", size: "sm" })}>{t("einvoices")}</Link>}</span></PageHeader>
       <HashTabs label={t("title")} tabs={[
         ...(rentPanel ? [{ id: "rent", label: t("tabRent"), count: rent!.open.filter((i) => i.daysOverdue > 0).length, content: rentPanel }] : []),
         { id: "renewals", label: t("tabRenewals"), count: data.renewals.length, content: renewalsPanel },

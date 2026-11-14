@@ -20,7 +20,7 @@ export const N_CATEGORIES = ["approvals", "work", "finance", "leasing", "reports
 export type NCategory = (typeof N_CATEGORIES)[number];
 export const KINDS = {
   approval_request: "approvals", approval_decided: "approvals",
-  work_assigned: "work", work_reported: "work", work_completed: "work",
+  work_assigned: "work", work_reported: "work", work_completed: "work", inspection_assigned: "work",
   distribution_paid: "finance", ledger_large: "finance",
   rent_overdue: "leasing", renewal_due: "leasing",
   report_ready: "reports", lead_new: "sales",

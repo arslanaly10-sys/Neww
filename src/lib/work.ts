@@ -32,7 +32,7 @@ export const boardOrder = <T extends { status: string; dueOn: string | null; pri
 
 export interface WorkView {
   id: string; kind: string; assetId: string | null; assetName: string | null; assetNameAr: string | null; title: string; description: string; category: string; priority: string; status: WorkStatus;
-  assigneeId: string | null; assigneeName: string | null; assigneeNameAr: string | null; vendor: string; dueOn: string | null; overdue: boolean;
+  assigneeId: string | null; assigneeName: string | null; assigneeNameAr: string | null; vendor: string; contractorId: string | null; rating: number | null; dueOn: string | null; overdue: boolean;
   estimateEgp: number | null; actualEgp: number | null; ledgerEntryId: string | null; reportedBy: string; reporterName: string; reporterNameAr: string; createdAt: string; completedOn: string | null;
 }
 
@@ -54,7 +54,7 @@ export async function listWork(user: CurrentUser) {
     id: w.id, kind: w.kind, assetId: w.assetId, assetName: w.assetId ? a.get(w.assetId)?.name ?? null : null, assetNameAr: w.assetId ? a.get(w.assetId)?.nameAr ?? null : null,
     title: w.title, description: w.description, category: w.category, priority: w.priority, status: w.status as WorkStatus,
     assigneeId: w.assigneeId, assigneeName: w.assigneeId ? u.get(w.assigneeId)?.name ?? null : null, assigneeNameAr: w.assigneeId ? u.get(w.assigneeId)?.nameAr ?? null : null,
-    vendor: w.vendor, dueOn: w.dueOn, overdue: isOverdue(w), estimateEgp: money ? w.estimateEgp : null, actualEgp: money ? w.actualEgp : null, ledgerEntryId: money ? w.ledgerEntryId : null,
+    vendor: w.vendor, contractorId: w.contractorId, rating: w.rating, dueOn: w.dueOn, overdue: isOverdue(w), estimateEgp: money ? w.estimateEgp : null, actualEgp: money ? w.actualEgp : null, ledgerEntryId: money ? w.ledgerEntryId : null,
     reportedBy: w.reportedBy, reporterName: u.get(w.reportedBy)?.name ?? w.reportedBy, reporterNameAr: u.get(w.reportedBy)?.nameAr ?? w.reportedBy,
     createdAt: w.createdAt.toISOString(), completedOn: w.completedOn,
   }));

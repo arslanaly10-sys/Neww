@@ -92,6 +92,13 @@
       "when": 1794673513015,
       "tag": "0012_stage18_market_data",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794677832390,
+      "tag": "0013_stage19_operations",
+      "breakpoints": true
     }
   ]
 }

@@ -441,6 +441,9 @@ export const workOrders = pgTable("work_orders", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
   completedOn: date("completed_on"),
+  contractorId: text("contractor_id"), // the contractor doing the job, if any
+  rating: integer("rating"), // 1-5, given by a manager once the job is done
+  ratedBy: text("rated_by"),
 }, (t) => [index("work_orders_status").on(t.status), index("work_orders_asset").on(t.assetId)]);
 
 /** The timeline of a work order: creation, status changes, assignment, notes and costs. Append-only. */
@@ -769,4 +772,65 @@ export const importRuns = pgTable("import_runs", {
   rows: integer("rows").notNull().default(0),
   error: text("error"),
   triggeredBy: text("triggered_by").notNull(), // a user id, "schedule" or "seed"
+});
+
+/** Contractors who do the portfolio's work. Their performance is computed from the jobs they did, never typed in. */
+export const contractors = pgTable("contractors", {
+  id: text("id").primaryKey(), // CT-001
+  name: text("name").notNull(),
+  nameAr: text("name_ar").notNull(),
+  trade: text("trade").notNull(), // plumbing | electrical | hvac | lift | cleaning | general | solar
+  email: text("email").notNull(),
+  active: integer("active").notNull().default(1),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/** Inspections of an asset: scheduled, then done with a result and findings; a finding can become a work order. */
+export const inspections = pgTable("inspections", {
+  id: text("id").primaryKey(), // IS-001
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  kind: text("kind").notNull(), // routine | safety | move_in | move_out | handover
+  scheduledOn: date("scheduled_on").notNull(),
+  inspectorId: text("inspector_id").references(() => users.id),
+  contractorId: text("contractor_id").references(() => contractors.id),
+  status: text("status").notNull(), // scheduled | done | cancelled
+  result: text("result"), // pass | issues | fail
+  findings: jsonb("findings").notNull().default([]), // [{ area, severity, note, workOrderId }]
+  notes: text("notes").notNull().default(""),
+  doneOn: date("done_on"),
+  createdBy: text("created_by").notNull().references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+}, (t) => [index("inspections_asset").on(t.assetId, t.scheduledOn)]);
+
+/** Meter readings. Consumption is the difference between consecutive readings of the same meter. */
+export const utilityReadings = pgTable("utility_readings", {
+  id: text("id").primaryKey(),
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  utility: text("utility").notNull(), // electricity | water | gas
+  readOn: date("read_on").notNull(),
+  reading: numeric("reading", { precision: 14, scale: 2 }).notNull(),
+  costEgp: bigint("cost_egp", { mode: "number" }),
+  recordedBy: text("recorded_by").notNull().references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+}, (t) => [index("utility_asset").on(t.assetId, t.utility, t.readOn)]);
+
+/** Capital works: improvements that add life or value, kept apart from running costs. A second manager approves. */
+export const capexItems = pgTable("capex_items", {
+  id: text("id").primaryKey(), // CX-001
+  assetId: text("asset_id").notNull().references(() => assets.id),
+  title: text("title").notNull(),
+  titleAr: text("title_ar"),
+  category: text("category").notNull(), // roof | mep | facade | interior | lift | solar | landscape | other
+  status: text("status").notNull(), // proposed | approved | in_progress | done | rejected
+  budgetEgp: bigint("budget_egp", { mode: "number" }).notNull(),
+  spentEgp: bigint("spent_egp", { mode: "number" }).notNull().default(0),
+  usefulLifeYears: integer("useful_life_years"),
+  expectedUpliftEgp: bigint("expected_uplift_egp", { mode: "number" }),
+  startOn: date("start_on"),
+  completedOn: date("completed_on"),
+  contractorId: text("contractor_id").references(() => contractors.id),
+  proposedBy: text("proposed_by").notNull().references(() => users.id),
+  decidedBy: text("decided_by"),
+  note: text("note").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
 });

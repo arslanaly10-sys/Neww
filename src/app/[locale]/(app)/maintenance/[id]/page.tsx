@@ -2,6 +2,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { pageContext } from "@/lib/page";
 import { getWorkOrder } from "@/lib/work";
+import { listContractors } from "@/lib/ops";
+import { ContractorPanel } from "@/components/ops/controls";
 import { SAMPLE_FX_EGP_PER_USD } from "@/lib/assumptions";
 import { can } from "@/lib/permissions";
 import { dateFmt, listSep, money } from "@/lib/format";
@@ -30,6 +32,7 @@ export default async function WorkOrderPage({ params }: { params: Promise<{ loca
   const M = (n: number) => money(n, currency, locale, { fx: SAMPLE_FX_EGP_PER_USD });
   const manage = can(user.role, "work.manage");
   const open = w.status !== "done" && w.status !== "cancelled";
+  const contractors = manage ? await listContractors(user) : null;
   const when = (iso: string) => new Date(iso).toLocaleString(ar ? "ar-EG" : "en-GB", { dateStyle: "medium", timeStyle: "short", numberingSystem: "latn" });
   const who = (e: { actorName: string; actorNameAr: string }) => (ar ? e.actorNameAr : e.actorName);
   const name = (id: unknown) => managers.find((m) => m.id === id);
@@ -65,6 +68,7 @@ export default async function WorkOrderPage({ params }: { params: Promise<{ loca
           {showMoney && w.status === "done" && <div><dt className="text-muted">{t("actualLabel")}</dt><dd>{w.actualEgp !== null ? M(w.actualEgp) : "–"}{w.ledgerEntryId ? <> <Link href="/finance?cat=maintenance#ledger" className="text-xs text-gold underline underline-offset-4">{t("inLedger", { id: w.ledgerEntryId })}</Link></> : null}</dd></div>}
         </dl>
         {w.description && <p className="mt-4 max-w-md text-sm">{w.description}</p>}
+        {manage && contractors && (open || w.contractorId) && <div className="mt-4 max-w-sm border-t border-line pt-4"><ContractorPanel workId={w.id} status={w.status} contractorId={w.contractorId} rating={w.rating} contractors={contractors.filter((c) => c.active).map((c) => ({ id: c.id, name: c.name, nameAr: c.nameAr }))} /></div>}
       </Card>
       {manage && open && (
         <section aria-labelledby="ed-h">

@@ -17,6 +17,7 @@ import { seedCalendar } from "./seed-calendar";
 import { seedDeals } from "./seed-deals";
 import { seedRecord } from "./seed-record";
 import { seedMarket } from "./seed-market";
+import { seedOps } from "./seed-ops";
 import { estimateWithDrivers, makeMarket, marketFactorFromRatio, runValuation, type SaleRow } from "@/lib/valuation";
 
 /** Deterministic PRNG so the demo looks identical on every boot. */
@@ -344,6 +345,7 @@ export async function seed(db: DB) {
   await seedDeals(db);
   await seedRecord(db);
   await seedMarket(db);
+  await seedOps(db);
   void now;
   await db.execute(sql`analyze`);
 }

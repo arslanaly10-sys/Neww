@@ -277,3 +277,27 @@ BEGIN
   END LOOP;
 END $$;
 REVOKE INSERT, UPDATE, DELETE ON data_sources, market_observations, import_runs FROM app_user;
+
+-- Operations: contractors and inspections are read by investors, managers and analysts; utilities and capital works
+-- carry costs, so they are for managers (and analysts reading). Only managers change any of them.
+DO $$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['contractors','inspections']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS ops_read ON %I', t);
+    EXECUTE format($p$CREATE POLICY ops_read ON %I FOR SELECT TO app_user USING (app_role() IN ('investor','manager','analyst'))$p$, t);
+    EXECUTE format('DROP POLICY IF EXISTS ops_write ON %I', t);
+    EXECUTE format($p$CREATE POLICY ops_write ON %I FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager')$p$, t);
+  END LOOP;
+  FOREACH t IN ARRAY ARRAY['utility_readings','capex_items']
+  LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
+    EXECUTE format('DROP POLICY IF EXISTS ops_read ON %I', t);
+    EXECUTE format($p$CREATE POLICY ops_read ON %I FOR SELECT TO app_user USING (app_role() IN ('manager','analyst'))$p$, t);
+    EXECUTE format('DROP POLICY IF EXISTS ops_write ON %I', t);
+    EXECUTE format($p$CREATE POLICY ops_write ON %I FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager')$p$, t);
+  END LOOP;
+END $$;
+REVOKE UPDATE, DELETE ON utility_readings FROM app_user;
