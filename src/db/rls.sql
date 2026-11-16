@@ -322,3 +322,13 @@ CREATE POLICY climate_insert ON climate_assessments FOR INSERT TO app_user WITH 
 DROP POLICY IF EXISTS climate_update ON climate_assessments;
 CREATE POLICY climate_update ON climate_assessments FOR UPDATE TO app_user USING (app_role() IN ('manager','analyst')) WITH CHECK (app_role() IN ('manager','analyst'));
 REVOKE DELETE ON climate_assessments FROM app_user;
+
+-- E-invoices and signing keys: managers only (they carry rent). Nothing is deleted; a mistake is voided.
+ALTER TABLE e_invoices ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS einv_all ON e_invoices;
+CREATE POLICY einv_all ON e_invoices FOR ALL TO app_user USING (app_role() = 'manager') WITH CHECK (app_role() = 'manager');
+REVOKE DELETE ON e_invoices FROM app_user;
+ALTER TABLE signing_keys ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS keys_read ON signing_keys;
+CREATE POLICY keys_read ON signing_keys FOR SELECT TO app_user USING (app_role() = 'manager');
+REVOKE INSERT, UPDATE, DELETE ON signing_keys FROM app_user;

@@ -876,3 +876,33 @@ export const climateAssessments = pgTable("climate_assessments", {
   recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull(),
   supersededAt: timestamp("superseded_at", { withTimezone: true }),
 }, (t) => [index("climate_asset").on(t.assetId, t.hazard)]);
+
+/** Public halves of the keys used to sign e-invoices. The demo signs with a test key, never an ITIDA certificate. */
+export const signingKeys = pgTable("signing_keys", {
+  id: text("id").primaryKey(),
+  label: text("label").notNull(),
+  publicKeyPem: text("public_key_pem").notNull(),
+  fingerprint: text("fingerprint").notNull(),
+  test: integer("test").notNull().default(1),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+/**
+ * E-invoice drafts through approval and signing. The document is frozen at approval; signing covers its canonical
+ * text. Whoever approves cannot sign. Voiding keeps the row.
+ */
+export const eInvoices = pgTable("e_invoices", {
+  id: text("id").primaryKey(), // EI-001
+  invoiceId: text("invoice_id").notNull().references(() => rentInvoices.id),
+  status: text("status").notNull(), // approved | signed | voided
+  document: text("document").notNull(), // JSON text, not jsonb: key order is part of what is signed
+  canonicalHash: text("canonical_hash").notNull(),
+  approvedBy: text("approved_by").notNull(),
+  approvedAt: timestamp("approved_at", { withTimezone: true }).notNull(),
+  signature: text("signature"),
+  keyId: text("key_id"),
+  signedBy: text("signed_by"),
+  signedAt: timestamp("signed_at", { withTimezone: true }),
+  voidedBy: text("voided_by"),
+  voidReason: text("void_reason"),
+}, (t) => [index("e_invoices_invoice").on(t.invoiceId)]);

@@ -113,6 +113,13 @@
       "when": 1794686269681,
       "tag": "0015_stage21_climate",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1794822199356,
+      "tag": "0016_stage23_einvoice_signing",
+      "breakpoints": true
     }
   ]
 }

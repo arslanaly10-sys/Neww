@@ -110,7 +110,7 @@ const RAWKEY = /\b(ops|einv|nav|ntf|gov2)\.[A-Za-z_]+\b(?!\.[a-z]{2,4}\b)/;
   await p.goto(`${BASE}/en/leases`); await settle(p);
   await p.getByRole("link", { name: "E-invoice drafts" }).click();
   await p.waitForURL("**/en/leases/einvoices"); await settle(p);
-  log(await p.getByText(/Drafts only. Nothing is signed or sent/).isVisible(), "e-invoices are labelled as unsigned drafts");
+  log(await p.getByText(/Nothing is sent to the Tax Authority. Signing here uses a test key/).isVisible(), "e-invoices say nothing is sent and signing is a test");
   await p.getByRole("table", { name: "Rent invoices available as drafts" }).locator("tbody tr th a").first().click();
   await p.waitForURL("**/en/leases/einvoices/RI-*"); await settle(p);
   log(await p.getByText("Digital signature").isVisible() && await p.getByText(/Not signed/).isVisible(), "the signature check fails honestly");

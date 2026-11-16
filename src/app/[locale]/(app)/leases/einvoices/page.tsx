@@ -8,6 +8,7 @@ import { Badge, PageHeader } from "@/components/ui";
 import { SampleBadge } from "@/components/fig";
 import { NoAccess } from "@/components/no-access";
 import { titleFrom } from "@/lib/meta";
+import { eInvoiceStatuses } from "@/lib/einvoice-sign";
 
 export const generateMetadata = titleFrom("einv", "title");
 const RESIDENTIAL = ["apartment", "villa"];
@@ -21,6 +22,7 @@ export default async function EInvoicesPage({ params }: { params: Promise<{ loca
   const rows = await listInvoicesForEInvoice(user);
   if (!rows) return <NoAccess role={user.role} />;
   const ar = locale === "ar";
+  const statuses = (await eInvoiceStatuses(user)) ?? new Map<string, string>();
   return (
     <div className="space-y-6">
       <div>
@@ -36,6 +38,7 @@ export default async function EInvoicesPage({ params }: { params: Promise<{ loca
             <th scope="col" className="p-3 text-start font-semibold">{t("tenant")}</th>
             <th scope="col" className="p-3 text-start font-semibold">{t("period")}</th>
             <th scope="col" className="p-3 text-start font-semibold">{t("vat")}</th>
+            <th scope="col" className="p-3 text-start font-semibold">{t("stage")}</th>
             <th scope="col" className="p-3 text-end font-semibold">{t("net")}</th>
           </tr></thead>
           <tbody>
@@ -45,6 +48,7 @@ export default async function EInvoicesPage({ params }: { params: Promise<{ loca
                 <td className="p-3">{ar ? tenantAr : tenant}</td>
                 <td className="p-3">{dateFmt(i.period, locale)}</td>
                 <td className="p-3"><Badge tone="muted">{RESIDENTIAL.includes(type) ? t("vatExempt") : t("vat14")}</Badge></td>
+                <td className="p-3">{(() => { const st = statuses.get(i.id) ?? "draft"; return <Badge tone={st === "signed" ? "ok" : st === "approved" ? "gold" : "muted"}>{t(`es_${st}`)}</Badge>; })()}</td>
                 <td className="p-3 text-end"><span className="num">{money(i.amountEgp, currency, locale, { fx: SAMPLE_FX_EGP_PER_USD })}</span></td>
               </tr>
             ))}

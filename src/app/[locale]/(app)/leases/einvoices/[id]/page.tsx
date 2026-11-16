@@ -9,6 +9,8 @@ import { cn } from "@/lib/cn";
 import { Badge, Card, PageHeader, buttonStyles } from "@/components/ui";
 import { NoAccess } from "@/components/no-access";
 import { titleFrom } from "@/lib/meta";
+import { eInvoiceState, SUBMISSION_BLOCKERS } from "@/lib/einvoice-sign";
+import { Signing } from "@/components/einvoice/signing";
 
 export const generateMetadata = titleFrom("einv", "title");
 const n5 = (x: number) => x.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 5 });
@@ -22,6 +24,10 @@ export default async function EInvoicePage({ params }: { params: Promise<{ local
   const r = await buildEInvoice(user, id);
   if (!r) notFound();
   const { doc, checks } = r;
+  const es = (await eInvoiceState(user, r.invoice.id))!;
+  const cur = es.current;
+  const ar = locale === "ar";
+  const stamp = (d: Date | null) => (d ? d.toLocaleString(ar ? "ar-EG" : "en-GB", { dateStyle: "medium", timeStyle: "short", numberingSystem: "latn" }) : null);
   const line = doc.invoiceLines[0];
   const errors = checks.filter((c) => !c.ok && c.level === "error").length;
   const warnings = checks.filter((c) => !c.ok && c.level === "warning").length;
@@ -42,6 +48,15 @@ export default async function EInvoicePage({ params }: { params: Promise<{ local
         </PageHeader>
       </div>
       <p className="max-w-2xl rounded-lg border border-gold/50 bg-gold-fill/10 p-3 text-sm">{t("draftOnly")}</p>
+      <section aria-labelledby="sg-h" className="space-y-3">
+        <h2 id="sg-h" className="font-display text-2xl">{t("signing")}</h2>
+        <Card>
+          <Signing invoiceId={r.invoice.id} me={user.id} hasErrors={errors > 0} blockers={[...SUBMISSION_BLOCKERS]} when={{ approved: stamp(cur?.approvedAt ?? null), signed: stamp(cur?.signedAt ?? null) }}
+            state={cur ? { id: cur.id, status: cur.status, approvedBy: cur.approvedBy, approverName: (ar ? cur.approver?.nameAr : cur.approver?.name) ?? cur.approvedBy, signerName: cur.signer ? (ar ? cur.signer.nameAr : cur.signer.name) : null, approvedAt: cur.approvedAt.toISOString(), signedAt: cur.signedAt?.toISOString() ?? null, keyId: cur.keyId, hash: cur.canonicalHash } : null} />
+          <p className="mt-4 text-xs text-muted">{t("testKeyNote")}</p>
+          {es.voided.length > 0 && <p className="mt-2 text-xs text-muted">{t("voidedList", { list: es.voided.map((v) => `${v.id} (${v.voidReason})`).join(ar ? "، " : ", ") })}</p>}
+        </Card>
+      </section>
       <div className="grid gap-4 lg:grid-cols-2">
         <section aria-labelledby="ck-h">
           <h2 id="ck-h" className="mb-3 font-display text-2xl">{t("checks")}</h2>
@@ -51,7 +66,7 @@ export default async function EInvoicePage({ params }: { params: Promise<{ local
               return (
                 <li key={c.id} className="flex items-start gap-2 rounded-lg border border-line bg-surface p-3">
                   <Icon aria-hidden="true" size={18} className={cn("mt-0.5 shrink-0", c.ok ? "text-ok" : c.level === "error" ? "text-danger" : "text-gold")} />
-                  <span><span className="sr-only">{c.ok ? t("passed") : c.level === "error" ? t("failedError") : t("failedWarning")}: </span><strong>{t(`c_${c.id}`, c.params ?? {})}</strong><span className="block text-muted">{t(c.ok ? `ok_${c.id}` : `no_${c.id}`, c.params ?? {})}</span></span>
+                  <span><span className="sr-only">{c.ok ? t("passed") : c.level === "error" ? t("failedError") : t("failedWarning")}: </span><strong>{t(`c_${c.id}`, c.params ?? {})}</strong><span className="block text-muted">{c.id === "signature" && cur?.status === "signed" ? t("no_signature_test", { key: cur.keyId ?? "" }) : t(c.ok ? `ok_${c.id}` : `no_${c.id}`, c.params ?? {})}</span></span>
                 </li>
               );
             })}

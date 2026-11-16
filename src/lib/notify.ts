@@ -29,6 +29,7 @@ export const KINDS = {
   role_changed: "account",
   facts_to_review: "records", fact_disputed: "records",
   run_to_review: "records", run_reviewed: "records",
+  einvoice_to_sign: "approvals",
   permit_to_verify: "records", permit_disputed: "records", permit_expiring: "records", climate_high: "records",
 } as const satisfies Record<string, NCategory>;
 export type NKind = keyof typeof KINDS;
