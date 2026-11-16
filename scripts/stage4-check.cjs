@@ -128,7 +128,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
   ({ c, p } = await open({ width: 1360, height: 900 }));
   await signIn(p, "en", "manager1");
   await p.goto(`${BASE}/en/asset/documents`); await settle(p);
-  log(await p.getByRole("link", { name: /^Missing 3$/ }).isVisible() && await p.getByRole("link", { name: /^Expired 2$/ }).isVisible() && await p.getByRole("link", { name: /^Pending 2$/ }).isVisible(), "flags: 3 missing, 2 expired, 2 pending");
+  log(await p.getByRole("link", { name: /^Missing 3$/ }).isVisible() && await p.getByRole("link", { name: /^Expired 2$/ }).isVisible() && await p.getByRole("link", { name: /^Pending 4$/ }).isVisible(), "flags: 3 missing, 2 expired, 4 pending (two scans waiting to be read)");
   await p.getByRole("link", { name: /^Missing 3$/ }).click(); await p.waitForURL("**/asset/documents?flag=missing*"); await settle(p);
   log((await p.locator("section[aria-labelledby=flags] ul.grid > li").count()) === 3, "the Missing chip filters the list to the 3 missing documents");
   await p.goto(`${BASE}/en/asset/documents`); await settle(p);
