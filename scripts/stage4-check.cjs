@@ -137,7 +137,7 @@ const NAMES = { manager1: ["Nour Abdelrahman", "نور عبد الرحمن"], ma
 
   // refusal of an unknown file
   await p.locator("#doc-file").setInputFiles("docs/stage-4/investor-pack-en.pdf");
-  await p.getByText("This demo reads only its three bundled sample documents. That file is not one of them").waitFor();
+  await p.getByText("This demo reads only its five bundled sample documents. That file is not one of them").waitFor();
   log(true, "an unknown PDF is refused plainly");
   // a real upload of a sample is recognised by hash
   await p.locator("#doc-file").setInputFiles("public/samples/sample-lease-en.pdf");

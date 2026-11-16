@@ -1,8 +1,8 @@
-// Generates the three bundled sample documents. All parties and data are fictional.
+// Generates the bundled sample documents (existing files are kept byte for byte unless --force). All parties and data are fictional.
 // Deliberate differences from the seeded records give the confirmation step something to catch.
 import React from "react";
 import { createHash } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { Document, Page, Text, View, Font, renderToFile, StyleSheet } from "@react-pdf/renderer";
 const h = React.createElement;
 const F = "assets/fonts/";
@@ -81,11 +81,33 @@ const docs = {
         "4. القانون الواجب التطبيق. يخضع هذا العقد للقانون المصري، وتختص به محاكم القاهرة.",
       ],
     }), Foot(true))),
+
+  "sample-permit-civil-defence.pdf": h(Document, { title: "Sample civil defence certificate (bilingual)", author: "ZMNHOOF OS demo" }, h(Page, { size: "A4", style: en(st.page) }, Stamp(false),
+    Title(false, "FIRE SAFETY APPROVAL CERTIFICATE"),
+    ...["Certificate type: Civil defence approval", "Issuing authority: Civil Protection Authority, Cairo (sample)", "Certificate number: CP-2026-11873", "Premises: Capital Gate Tower, Floor 11, New Administrative Capital",
+      "Licence holder: Sample Family Office", "Issue date: 8 November 2026", "Expiry date: 7 November 2027"].map((t) => L(false, t)),
+    L(false, "The premises were inspected on 3 November 2026. Fire alarms, sprinklers, extinguishers and escape routes meet the approved fire safety plan.", { marginTop: 14, color: muted }),
+    Foot(false)),
+    h(Page, { size: "A4", style: ar(st.page) }, Stamp(true),
+    Title(true, "شهادة موافقة الحماية المدنية"),
+    ...["نوع الشهادة: موافقة الحماية المدنية", "الجهة المصدرة: هيئة الحماية المدنية، القاهرة (تجريبي)", "رقم الشهادة: CP-2026-11873", "العقار: Capital Gate Tower, Floor 11, New Administrative Capital",
+      "صاحب الترخيص: Sample Family Office", "تاريخ الإصدار: 2026/11/08", "تاريخ الانتهاء: 2027/11/08"].map((t) => L(true, t)),
+    Foot(true))),
+
+  "sample-survey-flood.pdf": h(Document, { title: "Sample drainage and flood survey (English)", author: "ZMNHOOF OS demo" }, h(Page, { size: "A4", style: en(st.page) }, Stamp(false),
+    Title(false, "DRAINAGE AND FLOOD SURVEY"),
+    ...["Property: Gardenia Mixed-Use Block, 6th of October", "Hazard assessed: Flooding from heavy rain", "Risk rating: Medium (3 of 5)", "Method: Site survey",
+      "Surveyor: Delta Geo Engineering (fictional)", "Survey date: 30 October 2026",
+      "Findings: Ground-floor shops sit 40 cm above the street; two storm drains on the north side were blocked and have been cleared; roof outlets are adequate."].map((t) => L(false, t)),
+    Sub(false, "Recommendations"),
+    L(false, "Clear the street drains before each winter. Fit a flood barrier at the car park ramp."),
+    Foot(false))),
 };
 
+const force = process.argv.includes("--force");
 const manifest = [];
 for (const [file, doc] of Object.entries(docs)) {
-  await renderToFile(doc, `public/samples/${file}`);
+  if (force || !existsSync(`public/samples/${file}`)) await renderToFile(doc, `public/samples/${file}`);
   manifest.push({ file, sha256: createHash("sha256").update(readFileSync(`public/samples/${file}`)).digest("hex") });
 }
 writeFileSync("public/samples/manifest.json", JSON.stringify(manifest, null, 2));

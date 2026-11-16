@@ -3,11 +3,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { DocKind } from "./extract";
 
-/** The three bundled sample documents and the records they relate to. */
+/** The bundled sample documents and the records they relate to. */
 export const SAMPLES = [
   { id: "lease-en", file: "sample-lease-en.pdf", kind: "lease" as DocKind, assetId: "A-001", docId: "D-101", leaseId: "L-011", language: "en" },
   { id: "deed-ar", file: "sample-deed-ar.pdf", kind: "deed" as DocKind, assetId: "A-002", docId: "D-106", leaseId: null, language: "ar" },
   { id: "lease-bilingual", file: "sample-lease-bilingual.pdf", kind: "lease" as DocKind, assetId: "A-013", docId: "D-142", leaseId: "L-018", language: "bilingual" },
+  { id: "permit-civil-defence", file: "sample-permit-civil-defence.pdf", kind: "permit" as DocKind, assetId: "A-010", docId: "D-901", leaseId: null, language: "bilingual" },
+  { id: "survey-flood", file: "sample-survey-flood.pdf", kind: "survey" as DocKind, assetId: "A-008", docId: "D-902", leaseId: null, language: "en" },
 ] as const;
 export type Sample = (typeof SAMPLES)[number];
 

@@ -278,6 +278,11 @@ export async function seed(db: DB) {
   await db.insert(t.assets).values(assetRows);
   await db.insert(t.leases).values(leaseRows);
   await db.insert(t.cashflows).values(cashRows);
+  // Two scanned documents waiting to be read: the civil defence renewal for A-010 and a flood survey for A-008.
+  docRows.push(
+    { id: "D-901", assetId: "A-010", kind: "permit", title: "Civil defence certificate (renewal), scan", status: "pending", issuedOn: null, expiresOn: null, sampleFile: "sample-permit-civil-defence.pdf" },
+    { id: "D-902", assetId: "A-008", kind: "survey", title: "Drainage and flood survey", status: "pending", issuedOn: null, expiresOn: null, sampleFile: "sample-survey-flood.pdf" },
+  );
   await db.insert(t.documents).values(docRows);
   await db.insert(t.valuations).values(valuationRows);
   await db.insert(t.approvals).values(pendingApprovals);

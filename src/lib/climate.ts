@@ -98,3 +98,10 @@ export async function recordAssessment(user: CurrentUser, raw: unknown): Promise
   if (result.residual >= 4) await notify({ to: { roles: ["manager"] }, kind: "climate_high", params: { asset: v.assetId, hazard: v.hazard, level: result.residual }, link: `/asset/${v.assetId}/record#climate`, actorId: user.id });
   return { ok: true, id: r.id, result };
 }
+
+/** The current level for one hazard at one asset, and the date of the site assessment behind it (if any). */
+export async function assessmentLevel(user: CurrentUser, assetId: string, hazard: string) {
+  const c = await assetClimate(user, assetId);
+  const r = c?.results.find((x) => x.hazard === hazard);
+  return r ? { level: r.level, assessedOn: r.override?.assessedOn ?? null } : null;
+}

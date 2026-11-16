@@ -10,5 +10,13 @@
   {
     "file": "sample-lease-bilingual.pdf",
     "sha256": "288ac34aaa374246d109c0c302c1bd607c73aee0ebb564c05e73311b7f459e67"
+  },
+  {
+    "file": "sample-permit-civil-defence.pdf",
+    "sha256": "8ba7b73664cfecd2cd0e59b5bd9d7b3f2171dd12e58334076efdb11db0e20d5e"
+  },
+  {
+    "file": "sample-survey-flood.pdf",
+    "sha256": "0c5356666729d3a5dac87e2a87437c6fed5f97fe7a62927bdbdf4ef7c8f8daec"
   }
 ]

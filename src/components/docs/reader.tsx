@@ -9,7 +9,11 @@ import { dateFmt, money, listSep } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { Badge, Button, Card } from "../ui";
 
-const SAMPLE_IDS = ["lease-en", "deed-ar", "lease-bilingual"] as const;
+const SAMPLE_IDS = ["lease-en", "deed-ar", "lease-bilingual", "permit-civil-defence", "survey-flood"] as const;
+const CHOICE_OPTIONS: Record<string, string[]> = {
+  permitType: ["civil_defence", "building_permit", "occupancy", "commercial_licence", "title_registration", "reconciliation"],
+  hazard: ["flood", "heat", "coastal", "seismic", "dust"], method: ["site_survey", "engineer_report", "insurer_survey", "desk_review"],
+};
 const CLAUSE_CODES: Record<string, string[]> = { "clause.break": ["after12m90d", "none"], "clause.renewal": ["tenantFirstRight", "mutual"], "clause.sublet": ["consentRequired"], "clause.governingLaw": ["egypt"] };
 const field = "min-h-10 w-full rounded-md border border-line bg-surface px-2 text-sm";
 
@@ -76,13 +80,17 @@ export function Reader() {
 function Extraction({ view, reload }: { view: ExtractionView; reload: () => void }) {
   const t = useTranslations("docs");
   const cl = useTranslations("clause");
+  const pt = useTranslations("permits");
+  const ct = useTranslations("climate");
+  const choiceLabel = (key: string, code: string) => (key === "permitType" ? pt(`k_${code}` as "k_occupancy") : key === "hazard" ? ct(`h_${code}` as "h_heat") : ct(`m_${code}` as "m_site_survey"));
+  const ratingLabel = (n: number) => `${n}: ${ct(`lv_${n}` as "lv_1")}`;
   const locale = useLocale();
   const ar = locale === "ar";
   const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>({});
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [pending, start] = useTransition();
-  const [result, setResult] = useState<{ tone: "ok" | "danger"; text: string } | null>(null);
+  const [result, setResult] = useState<{ tone: "ok" | "danger"; text: string; link?: { href: string; text: string } } | null>(null);
 
   const cur = (f: FieldView) => values[f.key] ?? String(f.value);
   const edited = (f: FieldView) => cur(f) !== String(f.value);
@@ -94,6 +102,8 @@ function Extraction({ view, reload }: { view: ExtractionView; reload: () => void
     if (f.type === "date") return dateFmt(String(v), locale);
     if (f.type === "money") return money(Number(v), "EGP", locale);
     if (f.type === "clause") return cl(`${f.key.slice(7)}_${v}` as "break_none");
+    if (f.type === "choice") return choiceLabel(f.key, String(v));
+    if (f.type === "rating") return ratingLabel(Number(v));
     return String(v);
   };
   const label = (k: string) => t(`f_${k.replace(".", "_")}` as "f_reference");
@@ -101,10 +111,11 @@ function Extraction({ view, reload }: { view: ExtractionView; reload: () => void
   const confirm = () => start(async () => {
     setResult(null);
     const vals: Record<string, string | number> = {};
-    view.fields.forEach((f) => { if (edited(f)) vals[f.key] = f.type === "date" || f.type === "text" || f.type === "clause" ? cur(f) : Number(cur(f).replace(/,/g, "")); });
+    view.fields.forEach((f) => { if (edited(f)) vals[f.key] = f.type === "date" || f.type === "text" || f.type === "clause" || f.type === "choice" ? cur(f) : Number(cur(f).replace(/,/g, "")); });
     const r = await confirmExtractionAction({ sampleId: view.sample.id, values: vals, checked: [...checked] });
     if (!r.ok) { setResult({ tone: "danger", text: t(`err_${r.error}` as "err_unchecked") }); return; }
-    setResult({ tone: "ok", text: r.changes.length ? t("confirmedOk", { n: r.changes.length }) : t("noChange") });
+    const made = r.created;
+    setResult({ tone: "ok", text: made ? t(made.kind === "permit" ? "createdPermit" : "createdAssessment", { id: made.id }) : r.changes.length ? t("confirmedOk", { n: r.changes.length }) : t("noChange"), link: made ? { href: `/asset/${view.asset.id}/record#${made.kind === "permit" ? "permits" : "climate"}`, text: made.kind === "permit" ? t("openPermits") : t("openClimate") } : undefined });
     router.refresh();
     setTimeout(reload, 900);
   });
@@ -133,7 +144,11 @@ function Extraction({ view, reload }: { view: ExtractionView; reload: () => void
             </div>
             <div className="min-w-0">
               <label className="sr-only" htmlFor={`f-${f.key}`}>{label(f.key)}</label>
-              {f.type === "clause" ? (
+              {f.type === "choice" || f.type === "rating" ? (
+                <select id={`f-${f.key}`} className={field} value={cur(f)} onChange={(e) => setValues((p) => ({ ...p, [f.key]: e.target.value }))}>
+                  {f.type === "rating" ? [1, 2, 3, 4, 5].map((n) => <option key={n} value={String(n)}>{ratingLabel(n)}</option>) : (CHOICE_OPTIONS[f.key] ?? [String(f.value)]).map((c) => <option key={c} value={c}>{choiceLabel(f.key, c)}</option>)}
+                </select>
+              ) : f.type === "clause" ? (
                 <select id={`f-${f.key}`} className={field} value={cur(f)} onChange={(e) => setValues((p) => ({ ...p, [f.key]: e.target.value }))}>
                   {[...new Set([String(f.value), ...(CLAUSE_CODES[f.key] ?? [])])].map((c) => <option key={c} value={c}>{c === "unrecognised" ? t("unrecognised") : cl(`${f.key.slice(7)}_${c}` as "break_none")}</option>)}
                 </select>
@@ -157,7 +172,7 @@ function Extraction({ view, reload }: { view: ExtractionView; reload: () => void
         <Button variant="gold" onClick={confirm} disabled={pending || missing.length > 0}>{t("confirm")}</Button>
         <p className="text-xs text-muted">{missing.length > 0 ? t("err_unchecked") : t("confirmHelp")}</p>
       </div>
-      {result && <p role={result.tone === "danger" ? "alert" : "status"} className={cn("mt-3 flex gap-2 text-sm", result.tone === "ok" ? "text-ok" : "text-danger")}>{result.tone === "ok" && <CheckCircle2 aria-hidden="true" size={16} className="mt-0.5 shrink-0" />}{result.text}</p>}
+      {result && <p role={result.tone === "danger" ? "alert" : "status"} className={cn("mt-3 flex gap-2 text-sm", result.tone === "ok" ? "text-ok" : "text-danger")}>{result.tone === "ok" && <CheckCircle2 aria-hidden="true" size={16} className="mt-0.5 shrink-0" />}<span>{result.text}{result.link && <> <Link href={result.link.href} className="text-gold underline underline-offset-4">{result.link.text}</Link></>}</span></p>}
     </Card>
   );
 }

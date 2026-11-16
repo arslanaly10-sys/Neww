@@ -7,12 +7,24 @@ import { normaliseDigits } from "../horus/validate";
  * It is not a general document reader and does not use a model.
  */
 export const ENGINE = "sample-rules-1.0";
-export type DocKind = "lease" | "deed";
+export type DocKind = "lease" | "deed" | "permit" | "survey";
 export type FieldKey =
   | "reference" | "landlord" | "tenant" | "premises" | "areaSqm" | "startDate" | "endDate" | "monthlyRent" | "indexationPct" | "depositMonths"
   | "clause.break" | "clause.renewal" | "clause.sublet" | "clause.governingLaw"
-  | "registryNo" | "owner" | "unit" | "registeredOn";
-export type FieldType = "text" | "date" | "money" | "number" | "percent" | "months" | "clause";
+  | "registryNo" | "owner" | "unit" | "registeredOn"
+  | "permitType" | "certificateNo" | "authority" | "holder" | "issuedOn" | "expiresOn"
+  | "hazard" | "rating" | "method" | "surveyor" | "surveyedOn" | "findings";
+export type FieldType = "text" | "date" | "money" | "number" | "percent" | "months" | "clause" | "choice" | "rating";
+
+/** Words that identify a coded value in English or Arabic (matched fuzzily), for fields read as a choice. */
+export const CHOICES: Partial<Record<FieldKey, Record<string, string[]>>> = {
+  permitType: {
+    civil_defence: ["civil", "defence", "fire", "الحماية", "المدنية"], building_permit: ["building", "permit", "البناء"], occupancy: ["occupancy", "صلاحية"],
+    commercial_licence: ["commercial", "licence", "التجارية"], title_registration: ["title", "registration", "الشهر"], reconciliation: ["reconciliation", "التصالح"],
+  },
+  hazard: { flood: ["flood", "flooding", "rain", "سيول"], heat: ["heat", "الحرارة"], coastal: ["coastal", "sea", "السواحل"], seismic: ["earthquake", "seismic", "الزلازل"], dust: ["dust", "sand", "الأتربة"] },
+  method: { site_survey: ["site", "survey", "ميداني"], engineer_report: ["engineer", "مهندس"], insurer_survey: ["insurer", "التأمين"], desk_review: ["desk", "مكتبية"] },
+};
 
 export interface ExtractedField {
   key: FieldKey; type: FieldType; value: string | number; currency?: string;
@@ -39,6 +51,24 @@ const DEFS: Record<DocKind, { key: FieldKey; type: FieldType; en: string[]; ar: 
     { key: "unit", type: "text", en: ["Unit"], ar: ["الوحدة"] },
     { key: "areaSqm", type: "number", en: ["Area"], ar: ["المساحة"] },
     { key: "registeredOn", type: "date", en: ["Registration date"], ar: ["تاريخ التسجيل"] },
+  ],
+  permit: [
+    { key: "permitType", type: "choice", en: ["Certificate type"], ar: ["نوع الشهادة"] },
+    { key: "authority", type: "text", en: ["Issuing authority"], ar: ["الجهة المصدرة"] },
+    { key: "certificateNo", type: "text", en: ["Certificate number"], ar: ["رقم الشهادة"] },
+    { key: "premises", type: "text", en: ["Premises"], ar: ["العقار"] },
+    { key: "holder", type: "text", en: ["Licence holder"], ar: ["صاحب الترخيص"] },
+    { key: "issuedOn", type: "date", en: ["Issue date"], ar: ["تاريخ الإصدار"] },
+    { key: "expiresOn", type: "date", en: ["Expiry date"], ar: ["تاريخ الانتهاء"] },
+  ],
+  survey: [
+    { key: "premises", type: "text", en: ["Property"], ar: ["العقار"] },
+    { key: "hazard", type: "choice", en: ["Hazard assessed"], ar: ["الخطر"] },
+    { key: "rating", type: "rating", en: ["Risk rating"], ar: ["درجة الخطورة"] },
+    { key: "method", type: "choice", en: ["Method"], ar: ["الطريقة"] },
+    { key: "surveyor", type: "text", en: ["Surveyor"], ar: ["الجهة المنفذة"] },
+    { key: "surveyedOn", type: "date", en: ["Survey date"], ar: ["تاريخ المسح"] },
+    { key: "findings", type: "text", en: ["Findings"], ar: ["النتائج"] },
   ],
 };
 
@@ -81,12 +111,26 @@ function parseValue(type: FieldType, raw: string): { value: string | number; cur
       const egp = /EGP|جني|جنيه/i.test(text);
       return { value: Number(m[0].replace(/,/g, "")), currency: usd ? "USD" : egp ? "EGP" : undefined, conf: usd || egp ? 1 : 0.7 };
     }
+    case "rating": {
+      // "Medium (3 of 5)" or "3/5": the number out of five.
+      const m = text.match(/(\d)\s*(?:of|من|\/)\s*5/) ?? text.match(/\b([1-5])\b/);
+      return m ? { value: Number(m[1]), conf: /of|من|\//.test(text) ? 1 : 0.8 } : null;
+    }
     case "number": case "percent": case "months": {
       const m = text.match(/\d+(?:\.\d+)?/);
       return m ? { value: Number(m[0]), conf: 1 } : null;
     }
     default: return null;
   }
+}
+
+/** Read a coded value: the option whose words appear in the text (fuzzily), with confidence by how clearly it wins. */
+function choice(key: FieldKey, raw: string): { value: string; currency?: string; conf: number } | null {
+  const opts = CHOICES[key];
+  if (!opts) return null;
+  const scored = Object.entries(opts).map(([code, words]) => ({ code, hits: words.filter((w) => hasWord(raw, w, 0.75)).length })).sort((a, b) => b.hits - a.hits);
+  if (!scored[0]?.hits) return null;
+  return { value: scored[0].code, conf: scored[0].hits > (scored[1]?.hits ?? 0) ? 1 : 0.7 };
 }
 
 interface Line { text: string; page: number }
@@ -138,7 +182,9 @@ export function parseLines(pages: string[], kind: DocKind): ExtractedField[] {
       if (scored[0] && scored[0].s >= 0.62 && (!best || scored[0].s > best.sim)) best = { def: scored[0].d, sim: scored[0].s, margin: scored[0].s - (scored[1]?.s ?? 0), value: valuePart, lang };
     }
     if (!best) continue;
-    const v = parseValue(best.def.type, best.value);
+    // A text value that wraps continues on the next line in lower case, with no label.
+    if (best.def.type === "text") { const at = lines.indexOf(l); for (let j = at + 1; j < lines.length && !lines[j].text.includes(":") && /^[a-z]/.test(lines[j].text); j++) best.value += " " + lines[j].text; }
+    const v = best.def.type === "choice" ? choice(best.def.key, best.value) : parseValue(best.def.type, best.value);
     if (!v) continue;
     const conf = Math.min(1, best.sim * (best.margin >= 0.1 ? 1 : 0.85) * v.conf);
     add({ key: best.def.key, type: best.def.type, value: v.value, currency: v.currency, confidence: Math.round(conf * 100) / 100, snippet: l.text, page: l.page, langs: [best.lang] });
@@ -188,6 +234,6 @@ export async function extractFromBytes(bytes: Uint8Array, kind: DocKind) {
   const pdf = await getDocumentProxy(new Uint8Array(bytes));
   const { text, totalPages } = await extractText(pdf, { mergePages: false });
   const pages = Array.isArray(text) ? text : [text];
-  const hasEn = pages.some((p) => /[A-Za-z]{4}/.test(p) && /Lease|Landlord|Owner/.test(p)), hasAr = pages.some((p) => isAr(p));
+  const hasEn = pages.some((p) => /[A-Za-z]{4}/.test(p) && /Lease|Landlord|Owner|Certificate|Survey/.test(p)), hasAr = pages.some((p) => isAr(p));
   return { engine: ENGINE, pageCount: totalPages, language: hasEn && hasAr ? "bilingual" : hasAr ? "ar" : "en", fields: parseLines(pages, kind) };
 }

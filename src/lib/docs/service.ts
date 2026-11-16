@@ -1,13 +1,15 @@
 import "server-only";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { withSession } from "@/db/client";
-import { assets, documents, leases, tenants } from "@/db/schema";
+import { assets, documents, leases, permits, tenants } from "@/db/schema";
+import { recordPermit } from "../permits";
+import { assessmentLevel, recordAssessment } from "../climate";
 import { can } from "../permissions";
 import { appendAudit } from "../audit";
 import { DEMO_TODAY } from "../assumptions";
 import type { CurrentUser } from "../session";
-import { ENGINE, extractFromBytes, needsCheck, type ExtractedField, type FieldKey } from "./extract";
+import { CHOICES, ENGINE, extractFromBytes, needsCheck, type ExtractedField, type FieldKey } from "./extract";
 import { identifySample, readSample, SAMPLES, type Sample } from "./samples";
 
 export type DocError = "forbidden" | "not_sample" | "not_found" | "invalid" | "unchecked";
@@ -27,7 +29,7 @@ export async function identifyUpload(user: CurrentUser, hash: string): Promise<R
   return s ? { ok: true, sampleId: s.id } : { ok: false, error: "not_sample" };
 }
 
-interface Records { asset: typeof assets.$inferSelect; lease: typeof leases.$inferSelect | null; tenantName: string | null; doc: typeof documents.$inferSelect }
+interface Records { asset: typeof assets.$inferSelect; lease: typeof leases.$inferSelect | null; tenantName: string | null; doc: typeof documents.$inferSelect; permit: typeof permits.$inferSelect | null; climate: { level: number; assessedOn: string | null } | null }
 async function loadRecords(user: CurrentUser, s: Sample): Promise<Records | null> {
   return withSession(sess(user), async (tx) => {
     const [asset] = await tx.select().from(assets).where(eq(assets.id, s.assetId));
@@ -38,8 +40,10 @@ async function loadRecords(user: CurrentUser, s: Sample): Promise<Records | null
       [lease] = await tx.select().from(leases).where(eq(leases.id, s.leaseId));
       if (lease) tenantName = (await tx.select().from(tenants).where(eq(tenants.id, lease.tenantId)))[0]?.name ?? null;
     }
-    return { asset, lease: lease ?? null, tenantName, doc };
-  });
+    // A permit document is compared with the current entry of the kind it is likely to be (civil defence for the sample).
+    const [permit] = s.kind === "permit" ? await tx.select().from(permits).where(and(eq(permits.assetId, s.assetId), eq(permits.kind, "civil_defence"), isNull(permits.supersededAt))) : [];
+    return { asset, lease: lease ?? null, tenantName, doc, permit: permit ?? null, climate: null };
+  }).then(async (r) => (r && s.kind === "survey" ? { ...r, climate: await assessmentLevel(user, s.assetId, "flood") } : r));
 }
 
 function recordValue(key: FieldKey, r: Records): string | number | null {
@@ -56,6 +60,11 @@ function recordValue(key: FieldKey, r: Records): string | number | null {
     case "clause.break": case "clause.renewal": case "clause.sublet": case "clause.governingLaw":
       return l ? ((l.clauses as Record<string, string>)[key.slice(7)] ?? null) : null;
     case "registeredOn": return r.doc.issuedOn;
+    case "certificateNo": return r.permit?.reference ?? null;
+    case "issuedOn": return r.permit?.issuedOn ?? null;
+    case "expiresOn": return r.permit?.expiresOn ?? null;
+    case "rating": return r.climate?.level ?? null;
+    case "surveyedOn": return r.climate?.assessedOn ?? null;
     default: return null; // landlord, premises, owner, unit, registry number: kept with the document, not compared
   }
 }
@@ -96,12 +105,14 @@ function coerce(f: ExtractedField, v: string | number): string | number | null {
     case "date": return typeof v === "string" && ISO.test(v) && !Number.isNaN(Date.parse(v)) ? v : null;
     case "money": case "number": case "percent": case "months": { const n = Number(String(v).replace(/,/g, "")); return Number.isFinite(n) && n >= 0 ? n : null; }
     case "clause": return typeof v === "string" && /^[A-Za-z0-9]+$/.test(v) && v !== "unrecognised" ? v : null;
+    case "choice": return typeof v === "string" && Object.keys(CHOICES[f.key] ?? {}).includes(v) ? v : null;
+    case "rating": { const n = Number(v); return Number.isInteger(n) && n >= 1 && n <= 5 ? n : null; }
     default: return String(v).trim() || null;
   }
 }
 
 /** Apply confirmed fields to the records. The extraction is redone on the server; the client only supplies edits and ticks. */
-export async function confirmExtraction(user: CurrentUser, raw: unknown): Promise<Res<{ changes: { key: string; from: string | number | null; to: string | number }[] }>> {
+export async function confirmExtraction(user: CurrentUser, raw: unknown): Promise<Res<{ changes: { key: string; from: string | number | null; to: string | number }[]; created: { kind: "permit" | "assessment"; id: string } | null }>> {
   if (!can(user.role, "document.confirm_extraction")) return { ok: false, error: "forbidden" };
   const p = confirmSchema.safeParse(raw);
   if (!p.success) return { ok: false, error: "invalid" };
@@ -125,6 +136,22 @@ export async function confirmExtraction(user: CurrentUser, raw: unknown): Promis
   const changes: { key: string; from: string | number | null; to: string | number }[] = [];
   const track = (key: string, from: string | number | null, to: string | number | undefined) => { if (to !== undefined && !same(from, to)) changes.push({ key, from, to }); };
   const now = new Date();
+
+  // Permits and surveys become records through their own workflows, so the same checks and four-eyes rules apply.
+  let created: { kind: "permit" | "assessment"; id: string } | null = null;
+  if (s.kind === "permit") {
+    const expired = final.expiresOn !== undefined && String(final.expiresOn) < DEMO_TODAY;
+    const r = await recordPermit(user, { assetId: s.assetId, kind: String(final.permitType), status: expired ? "expired" : "valid", authority: String(final.authority ?? ""), reference: String(final.certificateNo ?? ""), issuedOn: String(final.issuedOn ?? ""), expiresOn: String(final.expiresOn ?? ""), documentId: s.docId, note: `Read from document ${s.docId} and confirmed.` });
+    if (!r.ok) return { ok: false, error: r.error === "forbidden" ? "forbidden" : "invalid", keys: ["issuedOn", "expiresOn"] };
+    created = { kind: "permit", id: r.id };
+    for (const k of ["certificateNo", "issuedOn", "expiresOn"] as const) track(k, recordValue(k, rec), final[k]);
+  }
+  if (s.kind === "survey") {
+    const r = await recordAssessment(user, { assetId: s.assetId, hazard: String(final.hazard), level: Number(final.rating), method: String(final.method), note: `${final.surveyor ? `${final.surveyor}: ` : ""}${final.findings ?? ""}`.slice(0, 600), assessedOn: String(final.surveyedOn ?? ""), documentId: s.docId });
+    if (!r.ok) return { ok: false, error: r.error === "forbidden" ? "forbidden" : "invalid", keys: ["surveyedOn", "findings"] };
+    created = { kind: "assessment", id: r.id };
+    track("rating", rec.climate?.level ?? null, final.rating);
+  }
   await withSession(sess(user), async (tx) => {
     // Asset area is shared by leases and deeds.
     if (final.areaSqm !== undefined) {
@@ -143,13 +170,14 @@ export async function confirmExtraction(user: CurrentUser, raw: unknown): Promis
     }
     if (s.kind === "deed") track("registeredOn", rec.doc.issuedOn, final.registeredOn);
     await tx.update(documents).set({
-      status: "verified", issuedOn: s.kind === "deed" ? String(final.registeredOn ?? rec.doc.issuedOn) : rec.doc.issuedOn,
+      status: "verified", issuedOn: s.kind === "deed" ? String(final.registeredOn ?? rec.doc.issuedOn) : s.kind === "permit" ? String(final.issuedOn) : s.kind === "survey" ? String(final.surveyedOn) : rec.doc.issuedOn,
+      expiresOn: s.kind === "permit" && final.expiresOn ? String(final.expiresOn) : rec.doc.expiresOn,
       extracted: { engine: ENGINE, sample: s.id, fields: ex.fields.map((f) => ({ key: f.key, extracted: f.value, confirmed: final[f.key], confidence: f.confidence, page: f.page, snippet: f.snippet })) },
       confirmedBy: user.id, confirmedAt: now,
     }).where(eq(documents.id, s.docId));
   });
-  await appendAudit({ actorId: user.id, actorRole: user.role, action: "document.confirm", entity: "document", entityId: s.docId, detail: { sample: s.id, asset: rec.asset.id, engine: ENGINE, changes } });
-  return { ok: true, changes };
+  await appendAudit({ actorId: user.id, actorRole: user.role, action: "document.confirm", entity: "document", entityId: s.docId, detail: { sample: s.id, asset: rec.asset.id, engine: ENGINE, changes, created: created ?? undefined } });
+  return { ok: true, changes, created };
 }
 
 export interface DocFlag { kind: "missing" | "expired" | "pending" | "lease_ending" | "doc_expiring"; assetId: string; assetName: string; assetNameAr: string; docId: string | null; label: string; date: string | null; days: number | null }

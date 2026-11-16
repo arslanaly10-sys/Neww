@@ -13,7 +13,7 @@ const investor = U("u-investor", "investor"), mgr = U("u-manager-1", "manager"),
 const hashOf = (f: string) => sha256Bytes(new Uint8Array(readFileSync(`public/samples/${f}`)));
 
 describe("document identification", () => {
-  it("recognises the three samples by hash and refuses everything else", async () => {
+  it("recognises the bundled samples by hash and refuses everything else", async () => {
     expect(await identifyUpload(mgr, hashOf("sample-lease-en.pdf"))).toEqual({ ok: true, sampleId: "lease-en" });
     expect(await identifyUpload(mgr, hashOf("sample-deed-ar.pdf"))).toEqual({ ok: true, sampleId: "deed-ar" });
     expect(await identifyUpload(mgr, hashOf("sample-lease-bilingual.pdf"))).toEqual({ ok: true, sampleId: "lease-bilingual" });
@@ -101,7 +101,7 @@ describe("missing and expiring documents", () => {
       const f = await getDocumentFlags(u);
       expect(f.counts.missing).toBe(3);
       expect(f.counts.expired).toBe(2);
-      expect(f.counts.pending).toBe(2);
+      expect(f.counts.pending).toBe(4); // two seeded, plus the permit and survey scans waiting to be read
       expect(f.counts.lease_ending).toBeGreaterThanOrEqual(6);
       expect(f.flags.filter((x) => x.kind === "lease_ending").every((x) => (x.days ?? 999) <= 120)).toBe(true);
       expect(f.flags[0].kind).toBe("missing");
